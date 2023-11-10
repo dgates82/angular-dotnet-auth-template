@@ -6,7 +6,8 @@
                [ngClass]="isExpanded ? 'sidenav-expanded' : 'sidenav-collpased'">
     <mat-nav-list class="">
       <div class="d-flex justify-content-center mt-3 mb-2">
-        <img src="/assets/images/logo-small.png" width="40" class="img-fluid" alt="Logo"/>
+        <img *ngIf="isExpanded"
+             src="/assets/images/logo-small.png" class="logo-sidenav" alt="Logo"/>
       </div>
       <mat-list-item routerLink="profile" class="">
         <div class="icon-container">

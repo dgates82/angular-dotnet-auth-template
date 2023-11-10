@@ -47,15 +47,38 @@ mat-nav-list {
     color: #888;
 }
 
-.expand-button {  
-  border: none;
+.expand-button {
+  /*border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
   bottom: 5px;
   width: 95%;
+  min-width: unset !important;*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  $size: 25px;
+  width: $size;
+  height: $size;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  right: 25%;
+  bottom: 20px;
+  border: 1px solid gray;
+  border-radius: 50%;
+  background-color: white;
+  cursor: pointer;
   min-width: unset !important;
+
+  &:hover {
+    border: 2px solid rgb(36, 82, 231);
+  }
 }
 
 
+.logo-sidenav {
+    width: 100px;
+}
