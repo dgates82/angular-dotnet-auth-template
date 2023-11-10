@@ -1,0 +1,78 @@
+<div *ngIf="is2FaRequired"
+     class="container-fluid d-flex justify-content-center align-items-center vh-100">
+  <div class="col-md-6">
+    <mat-card class="text-center">
+      <mat-card-content>
+        <div class="row pt-2 pb-5 align-items-center">
+          <div class="col-md-4">
+            <img src="assets/images/logo-small.png" alt="Logo" class="logo">
+          </div>
+          <div class="col-md-8 text-start">
+            <!-- Center the title and subtitle -->
+            <div class="">
+              <mat-card-title class="pb-4 fw-bold fs-3">Enable Authenticator</mat-card-title>
+              <mat-card-subtitle>2FA is Required for login. Configure an authenticator to continue.</mat-card-subtitle>
+            </div>
+
+            <div *ngIf="!isVerified" [formGroup]="verifyAuthenticatorForm">
+              <!--<h3>Configure Authenticator App</h3>-->
+              <p>To use an authenticator app complete the following steps:</p>
+              <p>1. Download a two-factor app like Microsoft Authenticator for <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> and <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> or Google Authenticator for <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS.</a></p>
+              <p>2. Scan the QR code or enter this key <kbd>{{ sharedKey }}</kbd> into your two factor authenticator app.</p>
+              <div *ngIf="authenticatorUri">
+                <qrcode [qrdata]="authenticatorUri" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+              </div>
+              <p>3. Once you have scanned the QR code above, your two factor authenticator app will provide you with a unique code. Enter the code in the box below.</p>
+
+              <div>
+                <mat-error *ngIf="errorMessage" class="mb-2">{{ errorMessage }}</mat-error>
+              </div>
+
+              <mat-form-field class="w-50 mt-2">
+                <mat-label>Verification code</mat-label>
+                <input matInput formControlName="code" required mask="000 000" (keyup.enter)="verifyCode()">
+              </mat-form-field>
+              <p></p>
+              <button mat-raised-button color="primary" class="w-50" (click)="verifyCode()">Verify</button>
+            </div>
+            <div *ngIf="isVerified">
+              <h3>Your authenticator app has been configured. Click here to <a [routerLink]="['/login']">login</a></h3>
+              <app-recovery-codes-list *ngIf="recoveryCodes" [recoveryCodes]="recoveryCodes"></app-recovery-codes-list>
+            </div>
+
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<!-- For displaying on the profile page when 2fa is not required -->
+<!-- HACK: Use two separate components here? -->
+<div *ngIf="!is2FaRequired" class="mt-3 mb-4" >
+  <div *ngIf="!isVerified" [formGroup]="verifyAuthenticatorForm">
+    <h3>Configure Authenticator App</h3>
+    <p>To use an authenticator app complete the following steps:</p>
+    <p>1. Download a two-factor app like Microsoft Authenticator for <a href="">Android</a> and <a href="">IOS</a> or Google Authenticator for <a href="">Android</a> and <a href="">IOS.</a></p>
+    <p>2. Scan the QR code or enter this key <kbd>{{ sharedKey }}</kbd> into your two factor authenticator app.</p>
+    <div *ngIf="authenticatorUri">
+      <qrcode [qrdata]="authenticatorUri" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+    </div>
+    <p>3. Once you have scanned the QR code above, your two factor authenticator app will provide you with a unique code. Enter the code in the box below.</p>
+
+    <div>
+      <mat-error *ngIf="errorMessage" class="mb-2">{{ errorMessage }}</mat-error>
+    </div>
+
+    <mat-form-field class="w-50 mt-2">
+      <mat-label>Verification code</mat-label>
+      <input matInput formControlName="code" required mask="000 000" (keyup.enter)="verifyCode()">
+    </mat-form-field>
+    <p></p>
+    <button mat-raised-button color="primary" class="w-50" (click)="verifyCode()">Verify</button>
+  </div>
+  <div *ngIf="isVerified">
+    <h3>Your authenticator app has been configured</h3>
+    <app-recovery-codes-list *ngIf="recoveryCodes" [recoveryCodes]="recoveryCodes"></app-recovery-codes-list>
+  </div>
+</div>
