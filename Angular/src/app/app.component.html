@@ -1,4 +1,5 @@
-<mat-sidenav-container  class="mat-sidenav-container">
+<!-- TODO: Move this into its own component -->
+<mat-sidenav-container class="mat-sidenav-container">
   <mat-sidenav #sidenav mode="side"
                [opened]="isLoggedIn"
                [disableClose]="true"
@@ -7,7 +8,7 @@
     <mat-nav-list class="">
       <div class="d-flex justify-content-center mt-3 mb-2">
         <img *ngIf="isExpanded"
-             src="/assets/images/logo-small.png" class="logo-sidenav" alt="Logo"/>
+             src="/assets/images/logo-small.png" class="logo-sidenav" alt="Logo" />
       </div>
       <mat-list-item routerLink="profile" class="">
         <div class="icon-container">
@@ -23,7 +24,7 @@
         </div>
       </mat-list-item>
       <mat-divider class="w-100 mt-2 mb-2"></mat-divider>
-      <mat-list-item routerLink="forbidden" [disabled]="true"  class="disabled-item">
+      <mat-list-item routerLink="forbidden" [disabled]="true" class="disabled-item">
         <div class="icon-container">
           <fa-icon [icon]="icons.home"></fa-icon>
           <span *ngIf="isExpanded">Dashboard</span>
@@ -74,12 +75,12 @@
           <span *ngIf="isExpanded">Users</span>
         </div>
       </mat-list-item>
-      <!--</div>-->      
+      <!--</div>-->
     </mat-nav-list>
     <button mat-stroked-button color="primary" class="expand-button" (click)="toggleSidebar()">
       <fa-icon *ngIf="isExpanded" [icon]="icons.left"></fa-icon>
       <fa-icon *ngIf="!isExpanded" [icon]="icons.right"></fa-icon>
-    </button>    
+    </button>
   </mat-sidenav>
 
   <mat-sidenav-content [ngClass]="!isLoggedIn ? 'content-closed' : isExpanded ? 'content-expanded' : 'content-collpased'">
@@ -92,7 +93,6 @@
   </mat-sidenav-content>
 </mat-sidenav-container>
 
-<!--<div *ngIf="!isLoggedIn">  
+<!--<div *ngIf="!isLoggedIn">
   <router-outlet></router-outlet>
 </div>-->
-

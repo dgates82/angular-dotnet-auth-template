@@ -1,6 +1,6 @@
-<mat-card class="ms-1 mb-3 mt-3 me-2">
+<mat-card class="ms-1 mb-3 mt-3 me-2 col-xl-8">
   <mat-card-title></mat-card-title>
-  <mat-card-content >
+  <mat-card-content>
     <form [formGroup]="profileForm">
       <div class="row mt-3">
         <mat-form-field class="col-md-6">
@@ -80,26 +80,26 @@
 
       <div class="row mt-3">
         <div *ngIf="!isEditMode" class="">
-          <button *ngIf="user?.isActive" mat-stroked-button color="primary" class="w-25 mt-3" (click)="onEditClick()">
+          <button *ngIf="user?.isActive" mat-stroked-button color="primary" class="col-6 col-lg-4 mt-3" (click)="onEditClick()">
             <fa-icon [icon]="icons.edit"></fa-icon>
             Edit
           </button>
-          <button *ngIf="user?.isActive" mat-stroked-button color="warn" class="w-25" (click)=onDeactivateClick()>
+          <button *ngIf="user?.isActive" mat-stroked-button color="warn" class="col-6 col-lg-4" (click)=onDeactivateClick()>
             <fa-icon [icon]="icons.deactivate"></fa-icon>
             Deactivate
           </button>
-          <button *ngIf="!user?.isActive" mat-stroked-button class="w-25" (click)="onActivateClick()">
+          <button *ngIf="!user?.isActive" mat-stroked-button class="col-6 col-lg-4" (click)="onActivateClick()">
             <fa-icon [icon]="icons.activate"></fa-icon>
             Re-Activate
           </button>
         </div>
 
         <div *ngIf="isEditMode" class="">
-          <button mat-stroked-button class="w-25 mt-3" (click)="onCancelClick()">
+          <button mat-stroked-button class="col-6 col-lg-4 mt-3" (click)="onCancelClick()">
             <fa-icon [icon]="icons.cancel"></fa-icon>
             Cancel
           </button>
-          <button mat-stroked-button color="primary" class="w-25 mt-3" (click)="onSaveClick()">
+          <button mat-stroked-button color="primary" class="col-6 col-lg-4 mt-3" (click)="onSaveClick()">
             <fa-icon [icon]="icons.save"></fa-icon>
             Save
           </button>

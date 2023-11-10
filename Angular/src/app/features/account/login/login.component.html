@@ -1,13 +1,13 @@
 <div class="container-fluid d-flex justify-content-center align-items-center vh-100">
   <div class="col-md-6">
     <mat-card class="text-center">
-      <mat-card-content >
+      <mat-card-content>
         <form [formGroup]="loginForm">
           <div class="row pt-5 pb-5">
-            <div class="col-md-6">
+            <div class="col-lg-6">
               <img src="assets/images/logo-small.png" alt="Logo" class="logo">
             </div>
-            <div class="col-md-6">
+            <div class="col-lg-6">
               <!-- Center the title and subtitle -->
               <div class="text-center">
                 <mat-card-title class="pb-4 fw-bold fs-1">Sign In</mat-card-title>
@@ -32,7 +32,7 @@
                 <div class="mt-2">
                   <mat-form-field class="w-75">
                     <mat-label>Password</mat-label>
-                    <input matInput formControlName="password" required type="password" (keyup.enter)="login()" autocomplete="on"/>
+                    <input matInput formControlName="password" required type="password" (keyup.enter)="login()" autocomplete="on" />
                     <mat-error *ngIf="password.invalid && (password.dirty || password.touched)" class="mb-1">
                       Password is required
                     </mat-error>

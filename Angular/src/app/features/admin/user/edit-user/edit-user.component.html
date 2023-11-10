@@ -1,6 +1,6 @@
-<div class="m-3 col-7">
+<div class="m-3">
   <!--<h2>User - {{ user.email }}</h2>-->
-  <h1>Account {{ user && !user?.isActive ? '- DEACTIVATED' : ''}}</h1> 
+  <h1>Account {{ user && !user?.isActive ? '- DEACTIVATED' : ''}}</h1>
   <mat-tab-group>
     <mat-tab>
       <ng-template mat-tab-label>
@@ -15,6 +15,6 @@
         Password and Security
       </ng-template>
       <app-admin-security-info *ngIf="user && user.isActive" [user]="user"></app-admin-security-info>
-    </mat-tab>    
+    </mat-tab>
   </mat-tab-group>
 </div>

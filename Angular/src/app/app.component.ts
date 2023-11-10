@@ -56,6 +56,8 @@ export class AppComponent {
 
     this.accountService.sendAuthStateChangeNotification(this.accountService.isUserAuthenticated());
 
+    // TODO: If on small screen start with sidenav closed
+
   }
 
   onAuthChanged() {

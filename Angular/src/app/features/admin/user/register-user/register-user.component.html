@@ -1,6 +1,6 @@
-<mat-card class="m-2 col-9 mat-elevation-z8">
+<mat-card class="m-2 col-md-9 mat-elevation-z8">
   <mat-card-title>Register New User</mat-card-title>
-  <mat-card-content >
+  <mat-card-content>
     <form [formGroup]="newUserForm">
       <div class="row mt-3">
         <mat-form-field class="col-md-6">
@@ -79,11 +79,11 @@
 
       <div class="row mt-3">
         <div class="">
-          <button mat-stroked-button class="w-25 mt-3" (click)="onCancelClick()">
+          <button mat-stroked-button class="col-6 col-md-4 mt-3" (click)="onCancelClick()">
             <fa-icon [icon]="icons.cancel"></fa-icon>
             Cancel
           </button>
-          <button mat-stroked-button color="primary" class="w-25 mt-3" (click)="onSaveClick()">
+          <button mat-stroked-button color="primary" class="col-6 col-md-4 mt-3" (click)="onSaveClick()">
             <fa-icon [icon]="icons.save"></fa-icon>
             Save
           </button>

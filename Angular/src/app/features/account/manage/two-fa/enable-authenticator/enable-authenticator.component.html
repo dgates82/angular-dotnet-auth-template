@@ -1,13 +1,14 @@
+<!-- TODO: Whey the screen is smaller some of the content is pushed off the top -->
 <div *ngIf="is2FaRequired"
      class="container-fluid d-flex justify-content-center align-items-center vh-100">
-  <div class="col-md-6">
+  <div class="col-lg-8">
     <mat-card class="text-center">
       <mat-card-content>
         <div class="row pt-2 pb-5 align-items-center">
-          <div class="col-md-4">
+          <div class="col-lg-4">
             <img src="assets/images/logo-small.png" alt="Logo" class="logo">
           </div>
-          <div class="col-md-8 text-start">
+          <div class="col-lg-8 text-start">
             <!-- Center the title and subtitle -->
             <div class="">
               <mat-card-title class="pb-4 fw-bold fs-3">Enable Authenticator</mat-card-title>
@@ -49,7 +50,7 @@
 
 <!-- For displaying on the profile page when 2fa is not required -->
 <!-- HACK: Use two separate components here? -->
-<div *ngIf="!is2FaRequired" class="mt-3 mb-4" >
+<div *ngIf="!is2FaRequired" class="mt-3 mb-4">
   <div *ngIf="!isVerified" [formGroup]="verifyAuthenticatorForm">
     <h3>Configure Authenticator App</h3>
     <p>To use an authenticator app complete the following steps:</p>
