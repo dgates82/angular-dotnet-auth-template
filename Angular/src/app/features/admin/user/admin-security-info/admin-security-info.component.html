@@ -18,8 +18,50 @@
 <mat-card class="mat-elevation-z8 ms-2 mb-3 me-2">
   <mat-card-title>
     <div class="row fs-5">
-      <div class="col-4">Password Set?</div>
-      <div class="col-3">{{ user.hasSetPassword ? 'Yes' : 'No' }}</div>    
+      <div class="col-4">Password Set?</div><mat-card class="mat-elevation-z8 ms-2 mb-3 mt-3 me-2">
+        <mat-card-title>
+          <div class="row fs-5">
+            <div class="col-md-4 mt-3">Confirmed Email?</div>
+            <div class="col-md-3 mt-3">{{ user.emailConfirmed ? 'Yes' : 'No' }}</div>
+            <div class="col-md-4 mt-3">
+              <button *ngIf="!user.emailConfirmed"
+                      mat-raised-button
+                      color="primary"
+                      class="w-75"
+                      (click)="onResendEmailConfirmationClick()">
+                Resend Confirmation Email
+              </button>
+            </div>
+          </div>
+        </mat-card-title>
+      </mat-card>
+      <mat-card class="mat-elevation-z8 ms-2 mb-3 me-2">
+        <mat-card-title>
+          <div class="row fs-5">
+            <div class="col-md-4 mt-3">Password Set?</div>
+            <div class="col-md-3 mt-3">{{ user.hasSetPassword ? 'Yes' : 'No' }}</div>
+          </div>
+        </mat-card-title>
+      </mat-card>
+      <mat-card class="mat-elevation-z8 ms-2 mb-3 me-2">
+        <mat-card-title>
+          <div class="row fs-5">
+            <div class="col-md-4 mt-3">2 FA Enabled?</div>
+            <div class="col-md-3 mt-3">{{ user.twoFactorEnabled ? 'Yes' : 'No' }}</div>
+            <div class="col-md-4 mt-3">
+              <button *ngIf="user.twoFactorEnabled"
+                      mat-raised-button
+                      color="warn"
+                      class="w-75"
+                      (click)="onResetAuthenticatorClick()">
+                Reset 2 FA
+              </button>
+            </div>
+          </div>
+        </mat-card-title>
+      </mat-card>
+
+      <div class="col-3">{{ user.hasSetPassword ? 'Yes' : 'No' }}</div>
     </div>
   </mat-card-title>
 </mat-card>

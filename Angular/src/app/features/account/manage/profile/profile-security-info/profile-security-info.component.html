@@ -4,13 +4,16 @@
     <mat-card-title>Password</mat-card-title>
     <mat-card-content>
       <div *ngIf="!isUpdatingPassword">
-        <button mat-stroked-button color="primary" class="w-25 mt-3" (click)="updatePassword()">Update Password</button>
+        <button mat-stroked-button color="primary" class="col-12 col-md-3 mt-3"
+                (click)="updatePassword()">
+          Update Password
+        </button>
       </div>
       <div *ngIf="isUpdatingPassword">
         <app-update-password (passwordUpdated)="onPasswordUpdated($event)" (passwordUpdateCancelled)="onPasswordUpdateCancelled($event)"></app-update-password>
-      </div>      
+      </div>
     </mat-card-content>
-  </mat-card>  
+  </mat-card>
 </div>
 
 <div *ngIf="!is2FaRequired" class="mt-3">
