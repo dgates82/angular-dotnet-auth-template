@@ -17,7 +17,7 @@ export class AppComponent {
   constructor(private readonly accountService: AccountService,
     private readonly logger: LoggerService) { }
 
-  title = 'SkillSpring';
+  title = 'Authentication Template';
 
   isExpanded = true;
   isLoggedIn = false;

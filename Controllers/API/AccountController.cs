@@ -188,7 +188,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
             
             await _emailSender.SendEmailAsync(
                 forgotPasswordDto.Email,
-                "SkillSpring Password Reset",
+                "Auth Template Password Reset",
                 $"Forgot your password?<br/>We received a request to reset the password for your account.<br/><br/>To reset your password <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>click here</a>.<br/><br/>If you did not request a password reset please ignore this email.");
 
             _logger.LogInformation($"Password reset email sent to {forgotPasswordDto.Email}");
@@ -294,8 +294,8 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
 
             await _emailSender.SendEmailAsync(
                                request.Email,
-                               "SkillSpring Email Confirmation", 
-                               $"In order to start using SkillSpring, you need to verify your email.<br/><br/>Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.<br/><br/>If you did not request a login to SkillSpring, please ignore this email.");
+                               "Auth Template Email Confirmation", 
+                               $"In order to start using Auth Template, you need to verify your email.<br/><br/>Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.<br/><br/>If you did not request a login to SkillSpring, please ignore this email.");
 
             _logger.LogInformation($"Email confirmation sent to {request.Email}");
 
