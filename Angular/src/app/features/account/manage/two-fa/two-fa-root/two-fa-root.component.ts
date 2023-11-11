@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
+import { UserService } from '@data/services/user.service';
 import { IApplicationUser } from '@interfaces/account/application-user';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-two-fa-root',
@@ -12,7 +14,8 @@ import { IApplicationUser } from '@interfaces/account/application-user';
 export class TwoFaRootComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService) { }
+    private readonly accountService: AccountService,
+    private readonly userService: UserService) { }
 
   user!: IApplicationUser;
 
@@ -51,11 +54,28 @@ export class TwoFaRootComponent implements OnInit {
       this.isTwoFaEnabled = isTwofaEnabled;
       this.isTwoFaEnabledString = "Enabling..."
       this.isTwoFaEnabling = true;
-    } else {
-      
+    } else {      
       if (this.user?.twoFactorEnabled) {
-        // TODO: SWAL confirmation to disable 2fa
-
+        // SWAL confirmation to disable 2fa
+        Swal.fire({
+          title: 'Disable Two-Factor Authentication',
+          text: 'Are you sure you want to disable two-factor authentication?',
+          icon: 'warning',
+          showCancelButton: true,
+          heightAuto: false,
+          confirmButtonText: 'Yes, disable it!',
+        }).then(result => {
+          if (result.isConfirmed) {
+            this.logger.trace(`two-fa-root.component.onEnabledChanged | confirmed`);
+              // Call reset 2fa
+              this.accountService.resetAuthenticator({ email: this.user.email }).then(response => {
+              this.logger.trace(`two-fa-root.component.onEnabledChanged | response:`, response)
+              this.isTwoFaEnabling = false;
+              this.isTwoFaEnabled = isTwofaEnabled;
+              this.isTwoFaEnabledString = "Disabled";
+            })
+          }
+        })
       } else {
         // User was enabling and cancelled
         this.isTwoFaEnabling = false;
