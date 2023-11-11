@@ -70,6 +70,8 @@ export class ProfilePersonalInfoComponent implements OnInit {
     });
 
     // Get current user info
+    // TODO: Pulling from the cached user causes the information to not be updated unless the user logs out and back en
+    // TODO: Need to either pull this from the API, or update the cached user after saving
     this.user = this.accountService.getLoggedInUser();
 
     this.handleFormState(false);

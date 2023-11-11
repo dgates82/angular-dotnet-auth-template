@@ -50,7 +50,7 @@ export class UpdatePasswordComponent implements OnInit {
     ])
     ),
     confirmPassword: new FormControl('', [Validators.required])
-  }, {validators: this.validateAreEqual})
+  }, {validators: PasswordValidators.matchValidator})
   
   get currentPassword(): any {
     return this.passwordUpdateForm.get('currentPassword')
@@ -95,6 +95,10 @@ export class UpdatePasswordComponent implements OnInit {
 
   get requiresSpecialCharsValid() {
     return !this.newPasswordControl.hasError('requiresSpecialChars');
+  }
+
+  get passwordsMatchValid() {
+    return !this.passwordUpdateForm.hasError('mismatch');
   }
 
 
@@ -149,14 +153,6 @@ export class UpdatePasswordComponent implements OnInit {
     
    }
 
-   public validateAreEqual(c: AbstractControl): { notSame: boolean } | null {
-    return c.value.newPassword === c.value.confirmPassword ? null : { notSame: true };
-  }
-
-  public passwordMismatch(): boolean {
-    return this.newPassword.touched
-      && this.confirmPassword.touched
-      && (this.passwordUpdateForm?.errors ? this.passwordUpdateForm.errors['notSame'] : false);
-  }
+   
 
 }

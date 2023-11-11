@@ -23,6 +23,8 @@ export class LoginComponent implements OnInit {
 
   private returnUrl: string = '';
 
+  allowSelfRegister = Constants.allowSelfRegister;
+
   isInvalidLogin = false;
   errorMessage: string = '';
   subtitle: string = 'Enter your details to get started.'
@@ -71,7 +73,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.accountService.login(authRequest).then(response => {
-      this.logger.trace(`account.login | response: ${JSON.stringify(response)}`)
+      this.logger.trace(`account.login | response:`, response)
 
       this.onLoginResponse(response);
       
@@ -86,7 +88,7 @@ export class LoginComponent implements OnInit {
   }
 
   onLoginResponse(response: IAuthResponse) {
-    this.logger.debug(`account.onLoginResponse | response: ${JSON.stringify(response)}`)
+    this.logger.debug(`account.onLoginResponse | response:`, response)
 
     if (response.isAuthSuccessful) {
 

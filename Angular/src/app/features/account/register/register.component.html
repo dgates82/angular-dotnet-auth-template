@@ -2,21 +2,16 @@
   <div class="col-md-6">
     <mat-card class="text-center">
       <mat-card-content>
-        <form [formGroup]="resetPasswordForm">
+        <form [formGroup]="registerForm">
           <div class="row pt-5 pb-5">
             <div class="col-lg-6">
               <img src="assets/images/logo-small.png" alt="Logo" class="logo">
             </div>
-            <div class="col-lg-6">
-              <!-- Center the title and subtitle -->
+            <div class="col-lg-6">              
               <div class="text-center">
-                <mat-card-title class="pb-4 fw-bold fs-2">Password Reset</mat-card-title>
-                <mat-card-subtitle *ngIf="subtitle" class="">{{ subtitle }}</mat-card-subtitle>
-                <!--<mat-card-subtitle>Enter your details to get started.</mat-card-subtitle>-->
+                <mat-card-title class="pb-4 fw-bold fs-2">Register</mat-card-title>                
               </div>
-
-              <!-- Rest of the login form -->
-              <!-- HACK: Should I make another component for reset complete? -->
+                            
               <div *ngIf="!isComplete">
                 <div>
                   <mat-error *ngIf="isInvalidAttempt" class="mb-2">{{ errorMessage }}</mat-error>
@@ -73,7 +68,7 @@
                 <div class="mt-2">
                   <mat-form-field class="w-75">
                     <mat-label>Confirm Password</mat-label>
-                    <input matInput formControlName="confirmPassword" required type="password" (keyup.enter)="resetPassword()" />
+                    <input matInput formControlName="confirmPassword" required type="password" (keyup.enter)="onRegister()" />
                     <mat-error *ngIf="confirmPassword?.errors?.required && (confirmPassword.dirty || confirmPassword.touched)" class="mb-1">
                       Confirm Password is required
                     </mat-error>
@@ -82,11 +77,11 @@
                   <mat-error *ngIf="!passwordsMatchValid">Passwords do not match</mat-error>
                 </div>
                 <p></p>
-                <button mat-raised-button color="primary" class="w-75" (click)="resetPassword()">Reset Password</button>
+                <button mat-raised-button color="primary" class="w-75" (click)="onRegister()">Register</button>
               </div>
 
               <div *ngIf="isComplete">
-                <p>Password reset complete. Continue to <a [routerLink]="['/login']">login</a></p>
+                <p>You've been registered!. Continue to <a [routerLink]="['/login']">login</a></p>
               </div>
 
             </div>

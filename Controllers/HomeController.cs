@@ -16,7 +16,8 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers
 
 
         [Route("~/")]
-        [Route("~/home")]        
+        [Route("~/home")]
+        [Route("~/register")]
         [Route("~/profile")]
         [Route("~/admin/users")]
         [Route("~/admin/edit-user/{id?}")]

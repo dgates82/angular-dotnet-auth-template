@@ -34,7 +34,7 @@ export class ForgotPasswordComponent implements OnInit {
     };
 
     this.accountService.sendForgotPassword(forgotPasswordRequest).then(response => {
-      this.logger.trace(`forgot-password.component.sendPasswordReset | response: ${JSON.stringify(response)}`)
+      this.logger.trace(`forgot-password.component.sendPasswordReset | response:`, response)
 
       // Route user to the forgot password confirmation page
       this.router.navigate(['/forgot-password/confirm']);

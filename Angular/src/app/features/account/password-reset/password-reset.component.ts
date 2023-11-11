@@ -55,7 +55,7 @@ export class PasswordResetComponent implements OnInit {
     ])
     ),
     confirmPassword: new FormControl('', [Validators.required])
-  }, {validators: this.validateAreEqual})
+  }, {validators: PasswordValidators.matchValidator})
 
   get email(): any {
     return this.resetPasswordForm.get('email');
@@ -102,6 +102,10 @@ export class PasswordResetComponent implements OnInit {
     return !this.newPasswordControl.hasError('requiresSpecialChars');
   }
 
+  get passwordsMatchValid() {
+    return !this.resetPasswordForm.hasError('mismatch');
+  }
+
   public resetPassword(): void {    
     this.logger.debug(`password-reset.component.resetPassword | email: ${this.email.value}`);
 
@@ -109,8 +113,7 @@ export class PasswordResetComponent implements OnInit {
       this.logger.debug(`password-reset.component.resetPassword | form is invalid`)
       return;        
     }
-
-    // TODO: Add password rules
+        
 
     // Call the account service to reset the password
     const request: IResetPasswordRequest = {
@@ -162,15 +165,4 @@ export class PasswordResetComponent implements OnInit {
     }
 
   }
-
-  public validateAreEqual(c: AbstractControl): { notSame: boolean } | null {
-    return c.value.newPassword === c.value.confirmPassword ? null : { notSame: true };
-  }
-
-  public passwordMismatch(): boolean {
-    return this.newPassword.touched
-      && this.confirmPassword.touched
-      && (this.resetPasswordForm?.errors ? this.resetPasswordForm.errors['notSame'] : false);
-  }
-
 }

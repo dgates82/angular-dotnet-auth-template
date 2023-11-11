@@ -7,6 +7,7 @@ import { ApplicationListComponent } from "@features/applications/application-lis
 import { ApplicationDetailComponent } from '@features/applications/application-detail/application-detail.component';
 import { AuthGuard } from '@core/guards/auth.guard';
 import { LoginGuard } from '@core/guards/login.guard';
+import { RegisterComponent } from '@features/account/register/register.component';
 import { ListUsersComponent } from '@features/admin/user/list-users/list-users.component';
 import { AdminGuard } from '@core/guards/admin.guard';
 import { ForbiddenComponent } from '@features/account/forbidden/forbidden.component';
@@ -32,6 +33,8 @@ const routes: Routes = [
   { path: 'forgot-password/confirm', component: ForgotPasswordConfirmComponent, canActivate: [LoginGuard] },
   { path: 'forgot-password/reset', component: PasswordResetComponent },
   { path: 'forgot-password/reset/:code', component: PasswordResetComponent },
+  /* Register */
+  { path: 'register', component: RegisterComponent, canActivate: [LoginGuard] },
   /* Email Confirmation */
   { path: 'email-confirmation', component: EmailConfirmationComponent, canActivate: [LoginGuard] },
   { path: 'email-confirmation/reset', component: PasswordResetComponent },

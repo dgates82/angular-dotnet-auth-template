@@ -25,7 +25,7 @@ export class UserService {
     this.logger.debug(`user.service.get`);
 
     return this.httpClient.get<IApplicationUser[]>(`${this.apiUrl}`).pipe(
-      tap(response => this.logger.trace(`user.service.get | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`user.service.get | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();   
 
   }
@@ -38,24 +38,24 @@ export class UserService {
     this.logger.debug(`user.service.getbyId | url: ${url}`);
 
     return this.httpClient.get<IApplicationUser>(url).pipe(
-      tap(response => this.logger.trace(`user.service.getById | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`user.service.getById | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();   
 
   }
 
   public createUser(request: IApplicationUser): Promise<IApplicationUser> {
-    this.logger.debug(`user.service.createUser | request: ${JSON.stringify(request)}`);
+    this.logger.debug(`user.service.createUser | request:`, request);
 
     return this.httpClient.post<IApplicationUser>(this.apiUrl, request, Constants.postOptions).pipe(
-      tap(response => this.logger.trace(`user.service.createUser | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`user.service.createUser | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
   }
 
   public update(user: IApplicationUser): Promise<IApplicationUser> {
-    this.logger.debug(`user.service.update | user: ${JSON.stringify(user)}`);
+    this.logger.debug(`user.service.update | user:`, user);
 
     return this.httpClient.put<IApplicationUser>(`${this.apiUrl}`, user).pipe(
-      tap(response => this.logger.trace(`user.service.update | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`user.service.update | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();   
 
   }
@@ -66,7 +66,7 @@ export class UserService {
     const url = `${this.apiUrl}/deactivate?id=${id}`;
     
     return this.httpClient.post<IApplicationUser>(url, null).pipe(
-      tap(response => this.logger.trace(`user.service.deactivate | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`user.service.deactivate | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();   
 
   }
@@ -77,7 +77,7 @@ export class UserService {
     const url = `${this.apiUrl}/activate?id=${id}`;
 
     return this.httpClient.post<IApplicationUser>(url, null).pipe(
-      tap(response => this.logger.trace(`user.service.activate | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`user.service.activate | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();   
 
   }

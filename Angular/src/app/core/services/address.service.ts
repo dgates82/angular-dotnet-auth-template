@@ -21,7 +21,7 @@ export class AddressService {
     const url = '../assets/data/states.json';
 
     return this.httpClient.get<IState[]>(url).pipe(
-      tap(response => this.logger.trace(`address.service.getStates | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`address.service.getStates | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
   }
 
@@ -29,7 +29,7 @@ export class AddressService {
     const url = `https://api.zippopotam.us/us/${zipCode}`;
     
     return this.httpClient.get<IZippoResponse>(url).pipe(
-      tap(response => { this.logger.trace(`address.service.getPlaceByZipCode | response: ${JSON.stringify(response)}`) }),
+      tap(response => { this.logger.trace(`address.service.getPlaceByZipCode | response:`, response) }),
       map((response: any) => ({
         postCode: response['post code'],                
         places: response.places.map((place: any) => ({

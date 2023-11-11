@@ -72,6 +72,47 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
         }
 
         [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto)
+        {
+            _logger.LogDebug($"Register | registerRequestDto: {registerRequestDto.ToJson()}");
+
+            var user = new ApplicationUser
+            {
+                UserName = registerRequestDto.Email,
+                Email = registerRequestDto.Email,
+                IsActive = true,
+                HasSetPassword = true
+            };
+
+            var result = await _userManager.CreateAsync(user, registerRequestDto.Password);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }                
+
+            // Generate a email confirmation token and send email            
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+            var callbackUrl = Url.Action("ConfirmEmail", "Home", values: null, protocol: Request.Scheme);
+            callbackUrl = $"{callbackUrl}?userId={user.Id}";
+            callbackUrl = $"{callbackUrl}&emailCode={code}";
+
+            await _emailSender.SendEmailAsync(
+                registerRequestDto.Email,
+                "Auth Template Email Confirmation",
+                $"In order to start using Auth Template, you need to verify your email.<br/><br/>Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.<br/><br/>If you did not request a login to SkillSpring, please ignore this email.");
+
+            _logger.LogInformation($"User created a new account with password.");
+
+            return Ok(new ResponseDto { IsSuccess = true });            
+
+        }
+
+
+        [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] AuthRequestDto userForAuthentication)
         {            

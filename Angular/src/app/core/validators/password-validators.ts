@@ -1,8 +1,10 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 
+import { LoggerService } from '@core/services/logger.service';
+
 export class PasswordValidators {
 
-  constructor() { }
+  constructor(private readonly logger: LoggerService) { }
 
   static patternValidator(regex: RegExp, error: ValidationErrors): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
@@ -17,28 +19,12 @@ export class PasswordValidators {
   }
 
 
-  // TODO: This method isn't working
-  static MatchValidator(control: AbstractControl) {
-    const newPassword: string = control.get('newPassword')?.value;
-    const confirmPassword: string = control.get('confirmPassword')?.value;
-
-    if (!confirmPassword?.length) {
+  static matchValidator(c: AbstractControl): { mismatch: boolean } | null {
+    if (c.value.confirmPassword.length === 0) {
       return null;
     }
 
-    const confirmPasswordControl = control.get('confirmPassword');
-
-    if (!confirmPasswordControl) {
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      confirmPasswordControl.setErrors({ mismatch: true });
-    } else if (confirmPasswordControl.errors && confirmPasswordControl.hasError('mismatch')) {
-        delete confirmPasswordControl.errors['mismatch'];
-    }
-
-    return null;
+    return c.value.newPassword === c.value.confirmPassword ? null : { mismatch: true };
   }
 
 }
