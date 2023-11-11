@@ -24,7 +24,8 @@ import { IEnableAuthenticatorRequest } from '@interfaces/account/enable-authenti
 import { IVerifyAuthenticatorRequest } from '@interfaces/account/verify-authenticator-request';
 import { IVerifyAuthenticatorResponse } from '@interfaces/account/verify-authenticator-response';
 import { IChangePasswordRequest } from '@interfaces/account/change-password-request';
-import { ISendEmailConfirmRequest } from '../../interfaces/account/send-email-confirm-request';
+import { ISendEmailConfirmRequest } from '@interfaces/account/send-email-confirm-request';
+import { IRegisterRequest } from '@interfaces/account/register-request';
 
 
 @Injectable({
@@ -75,7 +76,7 @@ export class AccountService {
     const authResponse = this.getAuthResponse();
     const user = authResponse?.user ?? null
 
-    this.logger.trace(`account.service.getLoggedInUser | user: ${JSON.stringify(user)}`);
+    this.logger.trace(`account.service.getLoggedInUser | user:`, user);
 
     return user;
   }
@@ -95,13 +96,25 @@ export class AccountService {
     return (token && !this.jwtHelper.isTokenExpired(token)) ? true : false;
   }
 
+
+  async register(request: IRegisterRequest): Promise<IResponse>{
+    this.logger.debug(`account.service.register | email: ${request.email}`);
+
+    let url = `${this.apiUrl}/register`;
+
+    return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+      tap(response => this.logger.trace(`account.service.register | response: `, response)),
+      catchError(err => this.errorService.handleError(err))).toPromise();
+
+  }
+
   async getUserByEmail(email: string): Promise<IApplicationUser> {
     this.logger.debug(`account.service.getUserByEmail | email: ${email}`)
 
     let url = `${this.apiUrl}/getuserbyemail?email=${email}`;
 
     return this.httpClient.get<IApplicationUser>(url).pipe(
-      tap(data => this.logger.trace(`account.service.getUserByEmail | response: ${JSON.stringify(data)}`)),
+      tap(response => this.logger.trace(`account.service.getUserByEmail | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
   }
 
@@ -111,17 +124,17 @@ export class AccountService {
     let url = `${this.apiUrl}/login`;
 
     return this.httpClient.post<IAuthResponse>(url, authRequest, Constants.postOptions).pipe(
-      tap(data => this.logger.trace(`account.service.login | response: ${JSON.stringify(data)}`)),
+      tap(response => this.logger.trace(`account.service.login | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
   }
 
   async login2fa(authRequest: ITwoFaAuthRequest): Promise<IAuthResponse> {
-    this.logger.debug(`account.service.login2fa | authRequest: ${JSON.stringify(authRequest)}`)
+    this.logger.debug(`account.service.login2fa | authRequest:`, authRequest)
 
     let url = `${this.apiUrl}/login2fa`;
 
     return this.httpClient.post<IAuthResponse>(url, authRequest, Constants.postOptions).pipe(
-      tap(reponse => this.logger.trace(`account.service.login2fa | response: ${JSON.stringify(reponse)}`)),
+      tap(response => this.logger.trace(`account.service.login2fa | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
@@ -132,7 +145,7 @@ export class AccountService {
     let url = `${this.apiUrl}/forgotpassword`;
 
     return this.httpClient.post<IResponse>(url, forgotPasswordRequest, Constants.postOptions).pipe(
-      tap(response => this.logger.trace(`account.service.sendForgotPassword | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`account.service.sendForgotPassword | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
     
   }
@@ -142,7 +155,7 @@ export class AccountService {
 
     let url = `${this.apiUrl}/resetpassword`;
     return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
-      tap(response => this.logger.trace(`account.service.resetPassword | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`account.service.resetPassword | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
   }
 
@@ -152,7 +165,7 @@ export class AccountService {
     let url = `${this.apiUrl}/changepassword`;
 
     return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
-      tap(response => this.logger.trace(`account.service.changePassword | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`account.service.changePassword | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
@@ -163,7 +176,7 @@ export class AccountService {
     let url = `${this.apiUrl}/sendemailconfirmation`;
 
     return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
-      tap(response => this.logger.trace(`account.service.sendConfirmEmail | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`account.service.sendConfirmEmail | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
@@ -174,7 +187,7 @@ export class AccountService {
     let url = `${this.apiUrl}/confirmemail`;
 
     return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
-      tap(response => this.logger.trace(`account.service.resetPassword | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`account.service.resetPassword | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
     
   }
@@ -185,7 +198,7 @@ export class AccountService {
     let url = `${this.apiUrl}/enableauthenticator`;
 
     return this.httpClient.post<IEnableAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
-      tap(response => this.logger.trace(`account.service.enableAuthenticator | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`account.service.enableAuthenticator | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();    
 
   }
@@ -196,7 +209,7 @@ export class AccountService {
     let url = `${this.apiUrl}/verifyauthenticator`;
 
     return this.httpClient.post<IVerifyAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
-      tap(response => this.logger.trace(`account.service.verifyAuthenticator | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`account.service.verifyAuthenticator | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
     
   }
@@ -207,7 +220,7 @@ export class AccountService {
     let url = `${this.apiUrl}/resetauthenticator`;
 
     return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
-      tap(response => this.logger.trace(`account.service.resetAuthenticator | response: ${JSON.stringify(response)}`)),
+      tap(response => this.logger.trace(`account.service.resetAuthenticator | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
 
   }

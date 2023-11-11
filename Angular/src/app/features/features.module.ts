@@ -41,6 +41,7 @@ import { RecoveryCodesListComponent } from './account/manage/two-fa/recovery-cod
 import { EditUserComponent } from './admin/user/edit-user/edit-user.component';
 import { AdminSecurityInfoComponent } from './admin/user/admin-security-info/admin-security-info.component';
 import { AdminPersonalInfoComponent } from './admin/user/admin-personal-info/admin-personal-info.component';
+import { RegisterComponent } from './account/register/register.component';
 
 
 
@@ -69,7 +70,8 @@ import { AdminPersonalInfoComponent } from './admin/user/admin-personal-info/adm
     RecoveryCodesListComponent,
     EditUserComponent,
     AdminSecurityInfoComponent,
-    AdminPersonalInfoComponent
+    AdminPersonalInfoComponent,
+    RegisterComponent
     
   ],
   imports: [

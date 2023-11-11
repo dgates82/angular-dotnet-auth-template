@@ -57,7 +57,7 @@ ngAfterViewInit() {
     }
 
     this.accountService.login2fa(authRequest).then(response => {
-        this.logger.trace(`login-two-factor.component.login2Fa | response: ${JSON.stringify(response)}`)      
+        this.logger.trace(`login-two-factor.component.login2Fa | response:`, response)      
 
         this.loginResponse.emit(response);
 

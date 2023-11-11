@@ -40,6 +40,9 @@
                 </div>
                 <p></p>
                 <button mat-raised-button color="primary" class="w-75" (click)="login()">Log In</button>
+                <div *ngIf="allowSelfRegister" class="mt-3">
+                  <a [routerLink]="['/register']">Register</a>
+                </div>
                 <div class="mt-3">
                   <a [routerLink]="['/forgot-password']">Forgot Password?</a>
                 </div>

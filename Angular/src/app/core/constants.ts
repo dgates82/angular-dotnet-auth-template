@@ -8,8 +8,10 @@ export class Constants {
     })
   }
 
-  public static is2FaRequired = true;
+  public static is2FaRequired = false;
 
-  public static allowUserEdit = false;
+  public static allowUserEdit = true;
+
+  public static allowSelfRegister = true;
 
 }

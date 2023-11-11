@@ -35,7 +35,7 @@ export class EmailConfirmationComponent implements OnInit {
       }
 
       this.accountService.confirmEmail(emailConfirmationRequest).then(response => {
-        this.logger.trace(`email-confirmation.component.ngOnInit | response: ${JSON.stringify(response)}`);
+        this.logger.trace(`email-confirmation.component.ngOnInit | response:`, response);
 
         // If this is the user's first login, route to password reset
         if (isFirstLogin) {
