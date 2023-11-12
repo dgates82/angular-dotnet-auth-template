@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -18,6 +18,7 @@ export class PasswordResetComponent implements OnInit {
   constructor(private readonly logger: LoggerService,
     private readonly accountService: AccountService,
     private readonly route: ActivatedRoute,
+    private readonly formBuilder: FormBuilder,
     private readonly router: Router) { }
 
   token: string = "";
@@ -35,27 +36,28 @@ export class PasswordResetComponent implements OnInit {
     valid: faSquareCheck
   }
 
-  resetPasswordForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    newPassword: new FormControl('', Validators.compose([
-      Validators.required,
-      Validators.minLength(8),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[0-9])"), {
-        requiresDigit: true
-      }),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[A-Z])"), {
-        requiresUppercase: true
-      }),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[a-z])"), {
-        requiresLowercase: true
-      }),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[$@^!%*?&_])"), {
-        requiresSpecialChars: true
-      }),
-    ])
-    ),
-    confirmPassword: new FormControl('', [Validators.required])
-  }, {validators: PasswordValidators.matchValidator})
+  resetPasswordForm = this.formBuilder.group({
+    currentPassword: ['', [Validators.required]],
+    newPassword: ['',
+      Validators.compose([
+        Validators.required,
+        Validators.minLength(8),
+        PasswordValidators.patternValidator(new RegExp("(?=.*[0-9])"), {
+          requiresDigit: true
+        }),
+        PasswordValidators.patternValidator(new RegExp("(?=.*[A-Z])"), {
+          requiresUppercase: true
+        }),
+        PasswordValidators.patternValidator(new RegExp("(?=.*[a-z])"), {
+          requiresLowercase: true
+        }),
+        PasswordValidators.patternValidator(new RegExp("(?=.*[$@^!%*?&_])"), {
+          requiresSpecialChars: true
+        })      
+      ]),
+    ],
+    confirmPassword: ['', [Validators.required]]
+  }, {validators: PasswordValidators.matchValidator});
 
   get email(): any {
     return this.resetPasswordForm.get('email');

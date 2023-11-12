@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -17,7 +17,8 @@ import Swal from 'sweetalert2';
 export class UpdatePasswordComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService) { }
+    private readonly accountService: AccountService,
+    private readonly formBuilder: FormBuilder){ }
 
   @Output() passwordUpdated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() passwordUpdateCancelled: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -30,27 +31,28 @@ export class UpdatePasswordComponent implements OnInit {
   }
 
   // HACK: Refactor the password form to its own component to reduce duplication
-  passwordUpdateForm = new FormGroup({    
-    currentPassword: new FormControl('', [Validators.required]),
-    newPassword: new FormControl('', Validators.compose([
-      Validators.required,
-      Validators.minLength(8),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[0-9])"), {
-        requiresDigit: true
-      }),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[A-Z])"), {
-        requiresUppercase: true
-      }),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[a-z])"), {
-        requiresLowercase: true
-      }),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[$@^!%*?&_])"), {
-        requiresSpecialChars: true
-      }),
-    ])
-    ),
-    confirmPassword: new FormControl('', [Validators.required])
-  }, {validators: PasswordValidators.matchValidator})
+  passwordUpdateForm = this.formBuilder.group({
+    currentPassword: ['', [Validators.required]],
+    newPassword: ['',
+      Validators.compose([
+        Validators.required,
+        Validators.minLength(8),
+        PasswordValidators.patternValidator(new RegExp("(?=.*[0-9])"), {
+          requiresDigit: true
+        }),
+        PasswordValidators.patternValidator(new RegExp("(?=.*[A-Z])"), {
+          requiresUppercase: true
+        }),
+        PasswordValidators.patternValidator(new RegExp("(?=.*[a-z])"), {
+          requiresLowercase: true
+        }),
+        PasswordValidators.patternValidator(new RegExp("(?=.*[$@^!%*?&_])"), {
+          requiresSpecialChars: true
+        })      
+      ]),
+    ],
+    confirmPassword: ['', [Validators.required]]
+  }, {validators: PasswordValidators.matchValidator});
   
   get currentPassword(): any {
     return this.passwordUpdateForm.get('currentPassword')

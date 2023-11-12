@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -15,12 +15,13 @@ export class ForgotPasswordComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
     private readonly accountService: AccountService,
-    private readonly router: Router) { }
+    private readonly router: Router,
+    private readonly formBuilder: FormBuilder) { }
 
 
-  forgotPasswordForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email])    
-  })
+  forgotPasswordForm = this.formBuilder.group({
+    email: ['', [Validators.required, Validators.email]]
+  });
 
   get email(): any {
     return this.forgotPasswordForm.get('email');
