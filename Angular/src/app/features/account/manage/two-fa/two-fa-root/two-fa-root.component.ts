@@ -67,13 +67,15 @@ export class TwoFaRootComponent implements OnInit {
         }).then(result => {
           if (result.isConfirmed) {
             this.logger.trace(`two-fa-root.component.onEnabledChanged | confirmed`);
-              // Call reset 2fa
-              this.accountService.resetAuthenticator({ email: this.user.email }).then(response => {
+            // Call reset 2fa
+            this.accountService.resetAuthenticator({ email: this.user.email }).then(response => {
               this.logger.trace(`two-fa-root.component.onEnabledChanged | response:`, response)
-              this.isTwoFaEnabling = false;
-              this.isTwoFaEnabled = isTwofaEnabled;
+              this.isTwoFaEnabling = false;              
               this.isTwoFaEnabledString = "Disabled";
             })
+          } else {
+            // User was disabling and cancelled
+            this.isTwoFaEnabled = true;
           }
         })
       } else {

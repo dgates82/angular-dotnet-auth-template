@@ -68,7 +68,7 @@ export class RegisterUserComponent implements OnInit {
 
   onZipCodeChange(event: any): void {
     this.logger.debug(`register-user.component.onZipCodeChange | zipCode: ${this.zipCode?.value}`);
-    this.addressService.getPlaceByZipCode(this.zipCode?.value).then(zippoResponse => {
+    this.addressService.getPlaceByZipCode(this.zipCode?.value ?? '').then(zippoResponse => {
       const place = zippoResponse.places[0];
       this.logger.trace(`register-user.component.onZipCodeChange | place: ${JSON.stringify(place)}`)
       if (place) {
@@ -106,15 +106,15 @@ export class RegisterUserComponent implements OnInit {
 
     // Save user
     const user: IApplicationUser = {
-      firstName: this.firstName?.value,
-      lastName: this.lastName?.value,
-      email: this.email?.value,
-      phoneNumber: this.phoneNumber?.value,
-      streetAddress: this.streetAddress?.value,
-      city: this.city?.value,
-      zipCode: this.zipCode?.value,
-      state: this.state?.value,
-      isAdmin: this.isAdmin?.value,
+      firstName: this.firstName?.value ?? '',
+      lastName: this.lastName?.value ?? '',
+      email: this.email?.value ?? '',
+      phoneNumber: this.phoneNumber?.value ?? '',
+      streetAddress: this.streetAddress?.value ?? '',
+      city: this.city?.value ?? '',
+      zipCode: this.zipCode?.value ?? '',
+      state: this.state?.value ?? '',
+      isAdmin: this.isAdmin?.value ?? false,
 
       // Unused properties
       id: '',

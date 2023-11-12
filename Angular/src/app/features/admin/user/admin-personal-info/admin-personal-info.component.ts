@@ -110,14 +110,14 @@ export class AdminPersonalInfoComponent implements OnInit {
     this.handleFormState(false);
 
     // Update user
-    this.user.firstName = this.firstName?.value;
-    this.user.lastName = this.lastName?.value;
-    this.user.phoneNumber = this.phoneNumber?.value;
-    this.user.streetAddress = this.streetAddress?.value;
-    this.user.city = this.city?.value;
-    this.user.zipCode = this.zipCode?.value;
-    this.user.state = this.state?.value;
-    this.user.isAdmin = this.isAdmin?.value;       
+    this.user.firstName = this.firstName?.value ?? '';
+    this.user.lastName = this.lastName?.value ?? '';
+    this.user.phoneNumber = this.phoneNumber?.value ?? '';
+    this.user.streetAddress = this.streetAddress?.value ?? '';
+    this.user.city = this.city?.value ?? '';
+    this.user.zipCode = this.zipCode?.value ?? '';
+    this.user.state = this.state?.value ?? '';
+    this.user.isAdmin = this.isAdmin?.value ?? false;       
 
     this.userService.update(this.user).then(response => {
       this.logger.trace(`admin-personal-info.component.onSaveClick | response: ${JSON.stringify(response)}`)
@@ -218,7 +218,7 @@ export class AdminPersonalInfoComponent implements OnInit {
 
   onZipCodeChange(event: any) {
     this.logger.debug(`admin-personal-info.component.onZipCodeChange | zipCode: ${this.zipCode?.value}`);
-    this.addressService.getPlaceByZipCode(this.zipCode?.value).then(zippoResponse => {
+    this.addressService.getPlaceByZipCode(this.zipCode?.value ?? '').then(zippoResponse => {
       const place = zippoResponse.places[0];
       this.logger.trace(`admin-personal-info.component.onZipCodeChange | place: ${JSON.stringify(place)}`)
       if (place) {
