@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { FormControl, Validators, FormGroup, FormBuilder } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -19,7 +19,8 @@ export class LoginComponent implements OnInit {
   constructor(private readonly logger: LoggerService,
     private readonly accountService: AccountService,
     private readonly route: ActivatedRoute,
-    private readonly router: Router) { }
+    private readonly router: Router,
+    private readonly formBuilder: FormBuilder) { }
 
   private returnUrl: string = '';
 
@@ -32,10 +33,10 @@ export class LoginComponent implements OnInit {
   is2FaRequired: boolean = Constants.is2FaRequired;
   is2FaEnabled: boolean = false;
 
-  loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required])
-  })
+  loginForm = this.formBuilder.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required]]
+  });  
 
   get email(): any {
     return this.loginForm.get('email');

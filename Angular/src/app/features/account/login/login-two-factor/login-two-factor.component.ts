@@ -3,7 +3,7 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild }
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { ITwoFaAuthRequest } from '@interfaces/account/two-fa-auth-request';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IAuthResponse } from '@interfaces/account/auth-response';
 
 @Component({
@@ -14,18 +14,19 @@ import { IAuthResponse } from '@interfaces/account/auth-response';
 export class LoginTwoFactorComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService) { }
+    private readonly accountService: AccountService,
+    private readonly formBuilder: FormBuilder) { }
 
   @Input() email: string = '';
 
   @Output() loginResponse: EventEmitter<IAuthResponse> = new EventEmitter<IAuthResponse>();
 
-  login2FaForm = new FormGroup({    
-    twoFaCode: new FormControl('', [Validators.required,
+  login2FaForm = this.formBuilder.group({
+    twoFaCode: ['', [Validators.required,
     Validators.pattern("^[0-9]*$"),
     Validators.minLength(6),
-    Validators.maxLength(6)])
-  })
+    Validators.maxLength(6)]]
+  });
 
   get twoFaCode(): any {
     return this.login2FaForm.get('twoFaCode');
