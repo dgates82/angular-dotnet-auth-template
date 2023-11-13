@@ -1,5 +1,5 @@
-<mat-card class="mat-elevation-z8 ms-2 mb-3 mt-3 me-2">
-  <mat-card-title>
+<mat-card appearance="outlined" class="mat-elevation-z8 ms-2 mb-3 mt-3 me-2 col-xl-8 col-11">
+  <mat-card-title class="m-3">
     <div class="row fs-5">
       <div class="col-md-4 mt-3">Confirmed Email?</div>
       <div class="col-md-3 mt-3">{{ user.emailConfirmed ? 'Yes' : 'No' }}</div>
@@ -9,22 +9,22 @@
                 color="primary"
                 class="w-75"
                 (click)="onResendEmailConfirmationClick()">
-          Resend Confirmation Email
+          Resend
         </button>
       </div>
     </div>
   </mat-card-title>
 </mat-card>
-<mat-card class="mat-elevation-z8 ms-2 mb-3 me-2">
-  <mat-card-title>
+<mat-card appearance="outlined" class="mat-elevation-z8 ms-2 mb-3 me-2 col-xl-8 col-11">
+  <mat-card-title class="m-3">
     <div class="row fs-5">
       <div class="col-md-4 mt-3">Password Set?</div>
       <div class="col-md-3 mt-3">{{ user.hasSetPassword ? 'Yes' : 'No' }}</div>
     </div>
   </mat-card-title>
 </mat-card>
-<mat-card class="mat-elevation-z8 ms-2 mb-3 me-2">
-  <mat-card-title>
+<mat-card appearance="outlined" class="mat-elevation-z8 ms-2 mb-3 me-2 col-xl-8 col-11">
+  <mat-card-title class="m-3">
     <div class="row fs-5">
       <div class="col-md-4 mt-3">2 FA Enabled?</div>
       <div class="col-md-3 mt-3">{{ user.twoFactorEnabled ? 'Yes' : 'No' }}</div>
