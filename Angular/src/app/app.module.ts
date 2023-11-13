@@ -15,6 +15,7 @@ import { JwtModule } from "@auth0/angular-jwt";
 
 import { NgxMaskModule } from 'ngx-mask';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 /*import { library } from '@fortawesome/fontawesome-svg-core';
 import { fausers } from '@fortawesome/free-solid-svg-icons';
@@ -62,7 +63,8 @@ export function tokenGetter() {
     
   ],
   providers: [
-    { provide: APP_BASE_HREF, useValue: '/'}
+    { provide: APP_BASE_HREF, useValue: '/'},
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' }}
   ],
   bootstrap: [AppComponent]
 })

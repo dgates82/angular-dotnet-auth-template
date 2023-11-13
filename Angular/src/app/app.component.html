@@ -30,37 +30,37 @@
           <span *ngIf="isExpanded">Dashboard</span>
         </div>
       </mat-list-item>
-      <mat-list-item [routerLink]="'applications'">
+      <mat-list-item routerLInk="forbidden">
         <div class="icon-container">
           <fa-icon [icon]="icons.applicationReview"></fa-icon>
-          <span *ngIf="isExpanded">Applications</span>
+          <span *ngIf="isExpanded">Section 1</span>
         </div>
       </mat-list-item>
-      <mat-list-item RouterLink="/home">
+      <mat-list-item routerLInk="section2">
         <div class="icon-container">
           <fa-icon [icon]="icons.progress"></fa-icon>
-          <span *ngIf="isExpanded">Progress</span>
+          <span *ngIf="isExpanded">Section 2</span>
         </div>
       </mat-list-item>
-      <mat-list-item RouterLink="/home">
+      <mat-list-item routerLInk="section3">
         <div class="icon-container">
           <fa-icon [icon]="icons.attendance"></fa-icon>
-          <span *ngIf="isExpanded">Attendance</span>
+          <span *ngIf="isExpanded">Section 3</span>
         </div>
       </mat-list-item>
-      <mat-list-item RouterLink="/home" [disabled]="true" class="disabled-item">
+      <mat-list-item routerLInk="section4" [disabled]="true" class="disabled-item">
         <div class="icon-container">
           <fa-icon [icon]="icons.partners"></fa-icon>
-          <span *ngIf="isExpanded">Partners</span>
+          <span *ngIf="isExpanded">Section 4</span>
         </div>
       </mat-list-item>
-      <mat-list-item RouterLink="/home" [disabled]="true" class="disabled-item">
+      <mat-list-item routerLInk="section5" [disabled]="true" class="disabled-item">
         <div class="icon-container">
           <fa-icon [icon]="icons.reports"></fa-icon>
-          <span *ngIf="isExpanded">Reporting</span>
+          <span *ngIf="isExpanded">Section 5</span>
         </div>
       </mat-list-item>
-      <mat-list-item RouterLink="/home" [disabled]="true" class="disabled-item">
+      <mat-list-item routerLink="search" [disabled]="true" class="disabled-item">
         <div class="icon-container">
           <fa-icon [icon]="icons.search"></fa-icon>
           <span *ngIf="isExpanded">Search</span>

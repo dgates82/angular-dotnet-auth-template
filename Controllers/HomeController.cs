@@ -22,6 +22,9 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers
         [Route("~/admin/users")]
         [Route("~/admin/edit-user/{id?}")]
         [Route("~/admin/register-user")]
+
+        // TODO: Remove these
+        [Route("~/")]
         public IActionResult Index()
         {
             return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp", "index.html"), "text/HTML");
