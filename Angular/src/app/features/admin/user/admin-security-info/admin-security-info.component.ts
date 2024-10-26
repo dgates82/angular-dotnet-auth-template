@@ -5,8 +5,8 @@ import { UserService } from '@data/services/user.service';
 import { AccountService } from '@data/services/account.service';
 import { IApplicationUser } from '@interfaces/account/application-user';
 import Swal from 'sweetalert2';
-import { IEnableAuthenticatorRequest } from '../../../../interfaces/account/enable-authenticator-request';
-import { ISendEmailConfirmRequest } from '../../../../interfaces/account/send-email-confirm-request';
+import { IEnableAuthenticatorRequest } from '@interfaces/account/enable-authenticator-request';
+import { ISendEmailConfirmRequest } from '@interfaces/account/send-email-confirm-request';
 
 @Component({
   selector: 'app-admin-security-info',
@@ -15,9 +15,9 @@ import { ISendEmailConfirmRequest } from '../../../../interfaces/account/send-em
 })
 export class AdminSecurityInfoComponent implements OnInit {
 
-  constructor(private readonly logger: LoggerService,    
-    private readonly userService: UserService,
-    private readonly accountService: AccountService) { }
+  constructor(private readonly logger: LoggerService,
+              private readonly userService: UserService,
+              private readonly accountService: AccountService) { }
 
   @Input() user!: IApplicationUser;
 
@@ -47,7 +47,7 @@ export class AdminSecurityInfoComponent implements OnInit {
         };
 
         this.accountService.resetAuthenticator(request).then(response => {
-          this.logger.trace(`admin-security-info.component.onResetAuthenticatorClick: response = ${JSON.stringify(response)}`);
+          this.logger.trace(`admin-security-info.component.onResetAuthenticatorClick: response:`, response);
 
           // Confirm success
           Swal.fire({
@@ -55,17 +55,17 @@ export class AdminSecurityInfoComponent implements OnInit {
             icon: 'success'
           });
 
-          this.user.twoFactorEnabled = false;          
+          this.user.twoFactorEnabled = false;
 
-        }).catch(err => {          
-          this.logger.error(`admin-security-info.component.onResetAuthenticatorClick: error = ${JSON.stringify(err)}`);
+        }).catch(err => {
+          this.logger.error(`admin-security-info.component.onResetAuthenticatorClick: error:`, err);
 
           Swal.fire({
             title: 'Error',
             text: 'There was an error resetting the authenticator app. Please try again.',
             icon: 'error'
           });
-          
+
         });
       }
     });
@@ -74,30 +74,28 @@ export class AdminSecurityInfoComponent implements OnInit {
   onResendEmailConfirmationClick() {
     this.logger.debug(`admin-security-info.component.onResendEmailConfirmationClick`);
 
-    // TODO: Should I confirm before sending the email?
-
     // Resend email confirmation
     const request: ISendEmailConfirmRequest = {
       email: this.user.email
     };
     this.accountService.sendConfirmEmail(request).then(response => {
-    this.logger.trace(`admin-security-info.component.onResendEmailConfirmationClick: response = ${JSON.stringify(response)}`);
+      this.logger.trace(`admin-security-info.component.onResendEmailConfirmationClick: response:`, response);
 
-    // Confirm success
-    Swal.fire({
-      title: 'Verification Email Sent',
-      icon: 'success'
-    });
+      // Confirm success
+      Swal.fire({
+        title: 'Verification Email Sent',
+        icon: 'success'
+      });
 
-    }).catch(err => {          
-      this.logger.error(`admin-security-info.component.onResendEmailConfirmationClick: error = ${JSON.stringify(err)}`);
+    }).catch(err => {
+      this.logger.error(`admin-security-info.component.onResendEmailConfirmationClick: error:`, err);
 
       Swal.fire({
         title: 'Error',
         text: 'There was an error sending the email confirmation. Please try again.',
         icon: 'error'
       });
-      
+
     });
 
   }

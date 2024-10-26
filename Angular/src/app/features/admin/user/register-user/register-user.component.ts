@@ -22,11 +22,11 @@ import { AccountService } from '@data/services/account.service';
 export class RegisterUserComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly addressService: AddressService,
-    private readonly userService: UserService,
-    private readonly accountService: AccountService,
-    private readonly formBuilder: FormBuilder,
-    private readonly router: Router) { }
+              private readonly addressService: AddressService,
+              private readonly userService: UserService,
+              private readonly accountService: AccountService,
+              private readonly formBuilder: FormBuilder,
+              private readonly router: Router) { }
 
   states!: IState[];
 
@@ -44,7 +44,7 @@ export class RegisterUserComponent implements OnInit {
     city: ['', [Validators.required]],
     zipCode: ['', [Validators.required]],
     state: ['', [Validators.required]],
-    isAdmin: false    
+    isAdmin: false
   });
 
   get firstName() { return this.newUserForm.get('firstName'); }
@@ -61,7 +61,7 @@ export class RegisterUserComponent implements OnInit {
     this.logger.debug(`register-user.component.ngOnInit`);
 
     this.addressService.getStates().then(states => {
-      this.logger.trace(`register-user.component.ngOnInit | states: ${JSON.stringify(states)}`);
+      this.logger.trace(`register-user.component.ngOnInit | states:`, states);
       this.states = states;
     });
   }
@@ -70,7 +70,7 @@ export class RegisterUserComponent implements OnInit {
     this.logger.debug(`register-user.component.onZipCodeChange | zipCode: ${this.zipCode?.value}`);
     this.addressService.getPlaceByZipCode(this.zipCode?.value ?? '').then(zippoResponse => {
       const place = zippoResponse.places[0];
-      this.logger.trace(`register-user.component.onZipCodeChange | place: ${JSON.stringify(place)}`)
+      this.logger.trace(`register-user.component.onZipCodeChange | place:`, place)
       if (place) {
         this.city?.patchValue(place.placeName);
         this.state?.patchValue(place.stateAbbreviation);
@@ -94,13 +94,13 @@ export class RegisterUserComponent implements OnInit {
         // Go back to user list
         this.router.navigate(['/admin/users']);
       }
-    });        
+    });
   }
 
   onSaveClick(): void {
     this.logger.debug(`register-user.component.onSaveClick`);
 
-    if (this.newUserForm.invalid) {      
+    if (this.newUserForm.invalid) {
       return;
     }
 
@@ -126,12 +126,12 @@ export class RegisterUserComponent implements OnInit {
     };
 
     this.userService.createUser(user).then(response => {
-      this.logger.trace(`register-user.component.onSaveClick | response: ${JSON.stringify(response)}`);
+      this.logger.trace(`register-user.component.onSaveClick | response:`, response);
 
       this.onUserCreatedSuccess(response);
-      
+
     }).catch(error => {
-      this.logger.error(`register-user.component.onSaveClick | error: ${JSON.stringify(error)}`);
+      this.logger.error(`register-user.component.onSaveClick | error:`, error);
 
       // Display error
       Swal.fire({
@@ -140,45 +140,45 @@ export class RegisterUserComponent implements OnInit {
         icon: 'error',
         heightAuto: false
       });
-    });    
+    });
 
   }
 
   onUserCreatedSuccess(response: IApplicationUser): void {
     // HACK: Should the create method return a IResponse so we can check isSuccess?
 
-      // Confirm
-      Swal.fire({
-        title: 'User created',        
-        icon: 'success',
-        heightAuto: false
-      });
+    // Confirm
+    Swal.fire({
+      title: 'User created',
+      icon: 'success',
+      heightAuto: false
+    });
 
-      // Send email confirmation
-      const request: ISendEmailConfirmRequest = {
-        email: response.email
-      };
-      this.accountService.sendConfirmEmail(request).then(response => {
-        this.logger.trace(`register-user.component.onSaveClick | response: ${JSON.stringify(response)}`);
-        if (!response.isSuccess) {
-          this.logger.error(`register-user.component.onSaveClick | error: ${response.message}`);
-          Swal.fire({
-            title: 'Error',
-            text: 'There was an error sending the email confirmation. Please resend',
-            icon: 'error'
-          });
-        }
-      }).catch(error => {
-        this.logger.error(`register-user.component.onSaveClick | error: ${JSON.stringify(error)}`);
+    // Send email confirmation
+    const request: ISendEmailConfirmRequest = {
+      email: response.email
+    };
+    this.accountService.sendConfirmEmail(request).then(response => {
+      this.logger.trace(`register-user.component.onSaveClick | response:`, response);
+      if (!response.isSuccess) {
+        this.logger.error(`register-user.component.onSaveClick | error: ${response.message}`);
         Swal.fire({
-            title: 'Error',
-            text: 'There was an error sending the email confirmation. Please resend',
-            icon: 'error'
-          });
+          title: 'Error',
+          text: 'There was an error sending the email confirmation. Please resend',
+          icon: 'error'
+        });
+      }
+    }).catch(error => {
+      this.logger.error(`register-user.component.onSaveClick | error:`, error);
+      Swal.fire({
+        title: 'Error',
+        text: 'There was an error sending the email confirmation. Please resend',
+        icon: 'error'
       });
+    });
 
-      // Route to list
-      this.router.navigate(['/admin/users']);
+    // Route to list
+    this.router.navigate(['/admin/users']);
   }
 
 }

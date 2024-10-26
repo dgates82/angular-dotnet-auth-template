@@ -15,9 +15,9 @@ import { Constants } from '@core/constants';
 export class UserService {
 
   constructor(private readonly logger: LoggerService,
-    private readonly locationStrategy: LocationStrategy,
-    private readonly httpClient: HttpClient,
-    private readonly errorService: HttpErrorService) { }
+              private readonly locationStrategy: LocationStrategy,
+              private readonly httpClient: HttpClient,
+              private readonly errorService: HttpErrorService) { }
 
   private apiUrl: string = `${this.locationStrategy.getBaseHref()}api/admin/user`
 
@@ -26,7 +26,7 @@ export class UserService {
 
     return this.httpClient.get<IApplicationUser[]>(`${this.apiUrl}`).pipe(
       tap(response => this.logger.trace(`user.service.get | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();   
+      catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
 
@@ -39,12 +39,12 @@ export class UserService {
 
     return this.httpClient.get<IApplicationUser>(url).pipe(
       tap(response => this.logger.trace(`user.service.getById | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();   
+      catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
 
   public createUser(request: IApplicationUser): Promise<IApplicationUser> {
-    this.logger.debug(`user.service.createUser | request:`, request);
+    this.logger.debug(`user.service.createUser | request: ${JSON.stringify(request)}`);
 
     return this.httpClient.post<IApplicationUser>(this.apiUrl, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`user.service.createUser | response:`, response)),
@@ -52,11 +52,11 @@ export class UserService {
   }
 
   public update(user: IApplicationUser): Promise<IApplicationUser> {
-    this.logger.debug(`user.service.update | user:`, user);
+    this.logger.debug(`user.service.update | user: ${JSON.stringify(user)}`);
 
     return this.httpClient.put<IApplicationUser>(`${this.apiUrl}`, user).pipe(
       tap(response => this.logger.trace(`user.service.update | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();   
+      catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
 
@@ -64,10 +64,10 @@ export class UserService {
     this.logger.debug(`user.service.deactivate | id: ${id}`);
 
     const url = `${this.apiUrl}/deactivate?id=${id}`;
-    
+
     return this.httpClient.post<IApplicationUser>(url, null).pipe(
       tap(response => this.logger.trace(`user.service.deactivate | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();   
+      catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
 
@@ -78,7 +78,7 @@ export class UserService {
 
     return this.httpClient.post<IApplicationUser>(url, null).pipe(
       tap(response => this.logger.trace(`user.service.activate | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();   
+      catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
 

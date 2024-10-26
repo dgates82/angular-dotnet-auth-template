@@ -25,7 +25,7 @@ import { IVerifyAuthenticatorRequest } from '@interfaces/account/verify-authenti
 import { IVerifyAuthenticatorResponse } from '@interfaces/account/verify-authenticator-response';
 import { IChangePasswordRequest } from '@interfaces/account/change-password-request';
 import { ISendEmailConfirmRequest } from '@interfaces/account/send-email-confirm-request';
-import { IRegisterRequest } from '@interfaces/account/register-request';
+import {IRegisterRequest} from "@interfaces/account/register-request";
 
 
 @Injectable({
@@ -34,13 +34,13 @@ import { IRegisterRequest } from '@interfaces/account/register-request';
 export class AccountService {
 
   constructor(private readonly logger: LoggerService,
-    private readonly httpClient: HttpClient,
-    private readonly errorService: HttpErrorService,
-    private readonly locationStrategy: LocationStrategy,
-    private readonly jwtHelper: JwtHelperService) { }
+              private readonly httpClient: HttpClient,
+              private readonly errorService: HttpErrorService,
+              private readonly locationStrategy: LocationStrategy,
+              private readonly jwtHelper: JwtHelperService) { }
 
   private apiUrl: string = `${this.locationStrategy.getBaseHref()}api/account`
-    
+
   public authChanged: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   public sendAuthStateChangeNotification(isAuthenticated: boolean) {
@@ -54,12 +54,12 @@ export class AccountService {
     if (!response) {
       this.logger.trace(`account.service.getAuthResponse | No authResponse found in local storage`)
       return null;
-    }   
+    }
 
     this.logger.trace(`account.service.getAuthResponse | authResponse: ${response}`)
     const authResponse = JSON.parse(response) as IAuthResponse;
 
-    // TODO: Finish decoding user from token and remove user from authResponse so it is not stored in plain text in local storage
+    // HACK: Finish decoding user from token and remove user from authResponse so it is not stored in plain text in local storage
     /*
     const decodedToken = this.jwtHelper.decodeToken(authResponse.token ?? "");
     this.logger.trace(`account.service.getAuthResponse | decodedToken: ${JSON.stringify(decodedToken)}`)
@@ -68,7 +68,7 @@ export class AccountService {
     */
 
     return authResponse
-    
+
   }
 
   public getLoggedInUser(): IApplicationUser | null{
@@ -95,7 +95,6 @@ export class AccountService {
 
     return (token && !this.jwtHelper.isTokenExpired(token)) ? true : false;
   }
-
 
   async register(request: IRegisterRequest): Promise<IResponse>{
     this.logger.debug(`account.service.register | email: ${request.email}`);
@@ -129,7 +128,7 @@ export class AccountService {
   }
 
   async login2fa(authRequest: ITwoFaAuthRequest): Promise<IAuthResponse> {
-    this.logger.debug(`account.service.login2fa | authRequest:`, authRequest)
+    this.logger.debug(`account.service.login2fa | authRequest: ${JSON.stringify(authRequest)}`)
 
     let url = `${this.apiUrl}/login2fa`;
 
@@ -141,13 +140,13 @@ export class AccountService {
 
   async sendForgotPassword(forgotPasswordRequest: IForgotPasswordRequest): Promise<IResponse> {
     this.logger.debug(`account.service.sendForgotPassword`);
-    
+
     let url = `${this.apiUrl}/forgotpassword`;
 
     return this.httpClient.post<IResponse>(url, forgotPasswordRequest, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.sendForgotPassword | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
-    
+
   }
 
   async resetPassword(request: IResetPasswordRequest): Promise<IResponse> {
@@ -189,7 +188,7 @@ export class AccountService {
     return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.resetPassword | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
-    
+
   }
 
   async enableAuthenticator(request: IEnableAuthenticatorRequest): Promise<IEnableAuthenticatorResponse> {
@@ -199,7 +198,7 @@ export class AccountService {
 
     return this.httpClient.post<IEnableAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.enableAuthenticator | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();    
+      catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
 
@@ -211,7 +210,7 @@ export class AccountService {
     return this.httpClient.post<IVerifyAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.verifyAuthenticator | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
-    
+
   }
 
   async resetAuthenticator(request: IEnableAuthenticatorRequest): Promise<IResponse> {
@@ -224,7 +223,7 @@ export class AccountService {
       catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
-    
+
 
 
   /**

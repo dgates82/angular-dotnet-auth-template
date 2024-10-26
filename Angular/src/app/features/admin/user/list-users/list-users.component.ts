@@ -18,8 +18,8 @@ import { Router } from '@angular/router';
 export class ListUsersComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly userService: UserService,
-    private readonly router: Router) { }
+              private readonly userService: UserService,
+              private readonly router: Router) { }
 
   @ViewChild(DataTableDirective) dtElement!: DataTableDirective;
   dtOptions: any = {};
@@ -43,28 +43,18 @@ export class ListUsersComponent implements OnInit {
       columnDefs: [
         {
           targets: 3,
-          orderable: false // TODO: Why isn't this working?
+          orderable: false // HACK: Why isn't this working?
         }
       ]
-      //dom: 'Bfrtip',
-      //buttons: [
-      //  'csv', 'excel', {          
-      //    text: $('#faUserAdd').html(),
-      //    className: 'mat-button fa fa-user-plus',
-      //    action: () => {
-      //      this.onAddUser();
-      //    }
-      //  }
-      //]
     }
 
     this.reloadData();
-    
+
   }
 
   reloadData(): void {
     this.userService.get().then(response => {
-      this.logger.trace(`list-users.component.ngOnInit | response: ${JSON.stringify(response)}`)
+      this.logger.trace(`list-users.component.ngOnInit | response:`, response)
 
       if (!this.includeInactiveUsers) {
         response = response.filter(x => x.isActive);
@@ -87,7 +77,7 @@ export class ListUsersComponent implements OnInit {
     this.dtTrigger.next();
   }
 
-  ngOnDestry() {
+  ngOnDestroy() {
     this.dtTrigger.unsubscribe();
   }
 
