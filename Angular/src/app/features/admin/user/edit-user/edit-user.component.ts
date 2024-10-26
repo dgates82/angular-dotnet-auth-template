@@ -14,8 +14,8 @@ import { IApplicationUser } from '@interfaces/account/application-user';
 export class EditUserComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly userService: UserService,
-    private readonly route: ActivatedRoute) { }
+              private readonly userService: UserService,
+              private readonly route: ActivatedRoute) { }
 
   user!: IApplicationUser;
 
@@ -30,14 +30,14 @@ export class EditUserComponent implements OnInit {
     // Get the id from the route
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-      this.logger.debug(`edit-user.component.ngOnInit: id = ${id}`)
+      this.logger.debug(`edit-user.component.ngOnInit: id: ${id}`)
 
       if (id) {
         this.userService.getById(id).then(user => {
-          this.logger.trace(`edit-user.component.ngOnInit: user = ${JSON.stringify(user)}`)
+          this.logger.trace(`edit-user.component.ngOnInit: user:`, user)
           this.user = user;
         });
-      }      
+      }
     });
 
   }

@@ -18,9 +18,9 @@ import Swal from 'sweetalert2';
 export class AdminPersonalInfoComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly addressService: AddressService,
-    private readonly userService: UserService,
-    private readonly formBuilder: FormBuilder) { }
+              private readonly addressService: AddressService,
+              private readonly userService: UserService,
+              private readonly formBuilder: FormBuilder) { }
 
   @Input() user!: IApplicationUser;
 
@@ -45,7 +45,7 @@ export class AdminPersonalInfoComponent implements OnInit {
     city: ['', [Validators.required]],
     zipCode: ['', [Validators.required]],
     state: ['', [Validators.required]],
-    isAdmin: false    
+    isAdmin: false
   });
 
   get firstName() { return this.profileForm.get('firstName'); }
@@ -59,7 +59,7 @@ export class AdminPersonalInfoComponent implements OnInit {
   get isAdmin() {return this.profileForm.get('isAdmin'); }
 
   ngOnInit(): void {
-    this.logger.trace(`admin-personal-info.component.ngOnInit | user: ${JSON.stringify(this.user)}`)
+    this.logger.trace(`admin-personal-info.component.ngOnInit | user:`, this.user)
 
     this.addressService.getStates().then(states => {
       this.states = states;
@@ -117,18 +117,18 @@ export class AdminPersonalInfoComponent implements OnInit {
     this.user.city = this.city?.value ?? '';
     this.user.zipCode = this.zipCode?.value ?? '';
     this.user.state = this.state?.value ?? '';
-    this.user.isAdmin = this.isAdmin?.value ?? false;       
+    this.user.isAdmin = this.isAdmin?.value ?? false;
 
     this.userService.update(this.user).then(response => {
-      this.logger.trace(`admin-personal-info.component.onSaveClick | response: ${JSON.stringify(response)}`)
-      
+      this.logger.trace(`admin-personal-info.component.onSaveClick | response:`, response)
+
       // Confirmation
       Swal.fire({
-        title: 'User Updated',        
+        title: 'User Updated',
         icon: 'success',
         heightAuto: false
       });
-      
+
     });
   }
 
@@ -149,7 +149,7 @@ export class AdminPersonalInfoComponent implements OnInit {
 
         // Update user
         this.userService.deactivate(this.user.id).then(response => {
-          this.logger.trace(`admin-personal-info.component.onDeactivateClick | response: ${JSON.stringify(response)}`)
+          this.logger.trace(`admin-personal-info.component.onDeactivateClick | response:`, response)
 
           this.user.isActive = false;
 
@@ -162,21 +162,21 @@ export class AdminPersonalInfoComponent implements OnInit {
           });
 
         }).catch(err => {
-          this.logger.error(`admin-personal-info.component.onDeactivateClick | error: ${JSON.stringify(err)}`)
+          this.logger.error(`admin-personal-info.component.onDeactivateClick | error:`, err)
           Swal.fire({
             title: 'An error occurred',
             text: 'User could not be deactivated',
             icon: 'error',
             heightAuto: false
           });
-        });        
+        });
       }
-    }); 
+    });
   }
 
   onActivateClick() {
     this.logger.trace(`admin-personal-info.component.onActivateClick`)
-    
+
     // Confirm
     Swal.fire({
       title: 'Are you sure?',
@@ -191,7 +191,7 @@ export class AdminPersonalInfoComponent implements OnInit {
 
         // Update user
         this.userService.activate(this.user.id).then(response => {
-          this.logger.trace(`admin-personal-info.component.onActivateClick | response: ${JSON.stringify(response)}`)
+          this.logger.trace(`admin-personal-info.component.onActivateClick | response:`, response)
 
           this.user.isActive = true;
 
@@ -203,7 +203,7 @@ export class AdminPersonalInfoComponent implements OnInit {
             heightAuto: false
           });
         }).catch(err => {
-          this.logger.error(`admin-personal-info.component.onActivateClick | error: ${JSON.stringify(err)}`)
+          this.logger.error(`admin-personal-info.component.onActivateClick | error:`, err)
 
           Swal.fire({
             title: 'An error occurred',
@@ -220,7 +220,7 @@ export class AdminPersonalInfoComponent implements OnInit {
     this.logger.debug(`admin-personal-info.component.onZipCodeChange | zipCode: ${this.zipCode?.value}`);
     this.addressService.getPlaceByZipCode(this.zipCode?.value ?? '').then(zippoResponse => {
       const place = zippoResponse.places[0];
-      this.logger.trace(`admin-personal-info.component.onZipCodeChange | place: ${JSON.stringify(place)}`)
+      this.logger.trace(`admin-personal-info.component.onZipCodeChange | place:`, place)
       if (place) {
         this.city?.patchValue(place.placeName);
         this.state?.patchValue(place.stateAbbreviation);
@@ -230,14 +230,14 @@ export class AdminPersonalInfoComponent implements OnInit {
 
   handleFormState(enableForm: boolean) {
     switch (enableForm) {
-        case true:
+      case true:
         this.profileForm.enable();
         break;
       case false:
         this.profileForm.disable();
-        break;        
+        break;
     }
-    
+
     this.email?.disable();
   }
 
