@@ -13,11 +13,11 @@ import { IConfirmEmailRequest } from '@interfaces/account/confirm-email-request'
 export class EmailConfirmationComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute) { }
+              private readonly accountService: AccountService,
+              private readonly router: Router,
+              private readonly route: ActivatedRoute) { }
 
-    isConfirmed: boolean = false;
+  isConfirmed: boolean = false;
 
   ngOnInit(): void {
     this.logger.debug(`email-confirmation.component.ngOnInit`);
@@ -39,13 +39,12 @@ export class EmailConfirmationComponent implements OnInit {
 
         // If this is the user's first login, route to password reset
         if (isFirstLogin) {
-          // TODO: Include password reset token in query params
+          // Include password reset token in query params
           this.router.navigate(['/email-confirmation/reset'], { queryParamsHandling: 'preserve' });
         }
         else {
-          // TODO: Display message to user that their email has been confirmed
+          // HACK: There is no current use case for this
           this.isConfirmed = true;
-                    
         }
 
       });

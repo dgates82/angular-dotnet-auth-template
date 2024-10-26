@@ -3,7 +3,7 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild }
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { ITwoFaAuthRequest } from '@interfaces/account/two-fa-auth-request';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { IAuthResponse } from '@interfaces/account/auth-response';
 
 @Component({
@@ -14,8 +14,8 @@ import { IAuthResponse } from '@interfaces/account/auth-response';
 export class LoginTwoFactorComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService,
-    private readonly formBuilder: FormBuilder) { }
+              private readonly accountService: AccountService,
+              private readonly formBuilder: FormBuilder) { }
 
   @Input() email: string = '';
 
@@ -23,9 +23,9 @@ export class LoginTwoFactorComponent implements OnInit {
 
   login2FaForm = this.formBuilder.group({
     twoFaCode: ['', [Validators.required,
-    Validators.pattern("^[0-9]*$"),
-    Validators.minLength(6),
-    Validators.maxLength(6)]]
+      Validators.pattern("^[0-9]*$"),
+      Validators.minLength(6),
+      Validators.maxLength(6)]]
   });
 
   get twoFaCode(): any {
@@ -35,20 +35,19 @@ export class LoginTwoFactorComponent implements OnInit {
   @ViewChild("twoFaCodeInput") twoFaCodeInput: ElementRef | undefined;
 
   ngOnInit(): void {
-    this.logger.debug(`login-two-factor.component.ngOnInit | email: ${this.email}`)
+    this.logger.debug(`login-two-factor.component.ngOnInit | email: ${this.email}`);
 
-  }
+    setTimeout(() => {
+      this.twoFaCodeInput?.nativeElement.focus();
+    }, 100);
 
-ngAfterViewInit() {
-    this.logger.debug(`login-two-factor.component.ngAfterViewInit`)    
-    this.twoFaCodeInput?.nativeElement.focus();
   }
 
   login2Fa() {
     this.logger.info(`User logging in with 2fa | email: ${this.email}`)
 
     if (this.login2FaForm.invalid) {
-      this.logger.trace(`login-two-factor.component.login2Fa | Invalid form`)
+      this.logger.trace(`login-two-factor.component.login2Fa | Invalid form`);
       return;
     }
 
@@ -58,20 +57,11 @@ ngAfterViewInit() {
     }
 
     this.accountService.login2fa(authRequest).then(response => {
-        this.logger.trace(`login-two-factor.component.login2Fa | response:`, response)      
+        this.logger.trace(`login-two-factor.component.login2Fa | response:`, response);
 
         this.loginResponse.emit(response);
 
-        //if (response.isAuthSuccessful) {
-        //  this.logger.trace(`login-two-factor.component.login2Fa | Login successful`)
-        //  localStorage.setItem("authResponse", JSON.stringify(response));        
-        //  this.accountService.sendAuthStateChangeNotification(true);
-        //}
-        //else {
-        //  this.logger.trace(`login-two-factor.component.login2Fa | Login failed`)
-        //  this.accountService.sendAuthStateChangeNotification(false);
-        //}
-      }      
+      }
     );
 
   }

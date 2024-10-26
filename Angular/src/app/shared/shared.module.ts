@@ -17,6 +17,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {MatIconModule} from "@angular/material/icon";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 
 
@@ -38,7 +40,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     MatSlideToggleModule,
     MatSelectModule,
     MatCheckboxModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
   ],
   exports: [
     RouterModule,
@@ -55,7 +59,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     MatSlideToggleModule,
     MatSelectModule,
     MatCheckboxModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
   ]
 })
 export class SharedModule { }

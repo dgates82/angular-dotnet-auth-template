@@ -21,11 +21,12 @@ export class RegisterComponent implements OnInit {
     private readonly accountService: AccountService,
     private readonly router: Router) { }
 
+  isSubmitting: boolean = false;
   isComplete: boolean = false;
   isInvalidAttempt: boolean = false;
   errorMessage: string = "";
 
-  icons = {        
+  icons = {
     invalid: faSquareXmark,
     valid: faSquareCheck
   }
@@ -68,16 +69,16 @@ export class RegisterComponent implements OnInit {
     return this.registerForm.get('confirmPassword');
   }
 
-  get passwordValid() {  
+  get passwordValid() {
     return !this.newPasswordControl.valid;
   }
 
-  get requiredValid() {        
-    const result = !this.newPasswordControl.hasError('required')    
-    return result;    
+  get requiredValid() {
+    const result = !this.newPasswordControl.hasError('required')
+    return result;
   }
 
-  get minLengthValid() {    
+  get minLengthValid() {
     return !this.newPasswordControl.hasError('minlength');
   }
 
@@ -109,6 +110,8 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
+    this.isSubmitting = true;
+
     const request: IRegisterRequest = {
       email: this.email.value,
       password: this.newPassword.value
@@ -119,11 +122,13 @@ export class RegisterComponent implements OnInit {
         this.logger.info("RegisterComponent: onRegister() success");
 
         this.isComplete = true;
+        this.isSubmitting = false;
 
       },
       (error: any) => {
         this.logger.error("RegisterComponent: onRegister() error");
         this.isInvalidAttempt = true;
+        this.isSubmitting = false;
         this.errorMessage = "An error occurred with your registration";
       }
     );

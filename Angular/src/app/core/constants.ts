@@ -8,6 +8,7 @@ export class Constants {
     })
   }
 
+  // HACK: Seems like these could be in a config file
   public static is2FaRequired = false;
 
   public static allowUserEdit = true;

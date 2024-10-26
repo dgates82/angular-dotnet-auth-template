@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -16,28 +16,30 @@ import { faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons'
 export class PasswordResetComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService,
-    private readonly route: ActivatedRoute,
-    private readonly formBuilder: FormBuilder,
-    private readonly router: Router) { }
+              private readonly accountService: AccountService,
+              private readonly route: ActivatedRoute,
+              private readonly formBuilder: FormBuilder,
+              private readonly router: Router) { }
 
   token: string = "";
-  
+
   isInvalidAttempt: boolean = false;
   errorMessage: string = "";
 
   isFirstLogin: boolean = false;
   subtitle: string = "";
 
+  isSubmitting: boolean = false;
+
   isComplete: boolean = false;
 
-  icons = {        
+  icons = {
     invalid: faSquareXmark,
     valid: faSquareCheck
   }
 
   resetPasswordForm = this.formBuilder.group({
-    currentPassword: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
     newPassword: ['',
       Validators.compose([
         Validators.required,
@@ -53,7 +55,7 @@ export class PasswordResetComponent implements OnInit {
         }),
         PasswordValidators.patternValidator(new RegExp("(?=.*[$@^!%*?&_])"), {
           requiresSpecialChars: true
-        })      
+        })
       ]),
     ],
     confirmPassword: ['', [Validators.required]]
@@ -75,16 +77,16 @@ export class PasswordResetComponent implements OnInit {
     return this.resetPasswordForm.get('confirmPassword');
   }
 
-  get passwordValid() {  
+  get passwordValid() {
     return !this.newPasswordControl.valid;
   }
 
-  get requiredValid() {        
-    const result = !this.newPasswordControl.hasError('required')    
-    return result;    
+  get requiredValid() {
+    const result = !this.newPasswordControl.hasError('required')
+    return result;
   }
 
-  get minLengthValid() {    
+  get minLengthValid() {
     return !this.newPasswordControl.hasError('minlength');
   }
 
@@ -108,14 +110,19 @@ export class PasswordResetComponent implements OnInit {
     return !this.resetPasswordForm.hasError('mismatch');
   }
 
-  public resetPassword(): void {    
+  public resetPassword(): void {
     this.logger.debug(`password-reset.component.resetPassword | email: ${this.email.value}`);
+
+    if (this.isSubmitting) {
+      return;
+    }
 
     if (this.resetPasswordForm.invalid) {
       this.logger.debug(`password-reset.component.resetPassword | form is invalid`)
-      return;        
+      return;
     }
-        
+
+    this.isSubmitting = true;
 
     // Call the account service to reset the password
     const request: IResetPasswordRequest = {
@@ -125,11 +132,12 @@ export class PasswordResetComponent implements OnInit {
     }
 
     this.accountService.resetPassword(request).then(response => {
-      this.logger.trace(`password-reset.component.resetPassword | response: ${JSON.stringify(response)}`);
+      this.logger.trace(`password-reset.component.resetPassword | response:`, response);
       if (response.isSuccess) {
         this.logger.debug(`password-reset.component.resetPassword | password reset succeeded`)
         // On success display a success message and provide link to login page
         this.isComplete = true;
+        this.isSubmitting = false;
 
         // HACK: Should I route to a new page?
 
@@ -143,15 +151,22 @@ export class PasswordResetComponent implements OnInit {
       else {
         this.logger.debug(`password-reset.component.resetPassword | password reset failed`)
 
+        this.isSubmitting = false;
+
         // TODO: Try to determine what the error was
 
-        // Display an error to the user        
+        // Display an error to the user
         this.isInvalidAttempt = true;
         this.errorMessage = "Password reset failed. Please try again."
       }
+    }).catch(err => {
+      this.logger.error(`password-reset.component.resetPassword | error:`, err);
+      this.isInvalidAttempt = true;
+      this.errorMessage = "Password reset failed. Please try again."
+      this.isSubmitting = false;
     });
 
-    
+
   }
 
   ngOnInit(): void {
@@ -167,4 +182,6 @@ export class PasswordResetComponent implements OnInit {
     }
 
   }
+
+
 }

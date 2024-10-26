@@ -1,3 +1,4 @@
+<script src="profile-personal-info.component.ts"></script>
 <mat-card appearance="outlined" class="ms-1 mb-3 mt-3 me-2 col-xl-8">
   <mat-card-title></mat-card-title>
   <mat-card-content>
@@ -7,7 +8,7 @@
           <mat-label>Email</mat-label>
           <input matInput formControlName="email">
         </mat-form-field>
-        <div class="row mt-3">
+        <div class="row mt-2">
           <mat-form-field class="col-md-6">
             <mat-label>First Name</mat-label>
             <input matInput formControlName="firstName" required>
@@ -23,7 +24,7 @@
             </mat-error>
           </mat-form-field>
         </div>
-        <div class="row mt-3">
+        <div class="row mt-2">
           <mat-form-field class="col-md-6">
             <mat-label>Phone Number</mat-label>
             <input matInput formControlName="phoneNumber" required mask="(000) 000-0000">
@@ -32,7 +33,7 @@
             </mat-error>
           </mat-form-field>
         </div>
-        <div class="row mt-3">
+        <div class="row mt-2">
           <mat-form-field class="col-md-6">
             <mat-label>Street Address</mat-label>
             <input matInput formControlName="streetAddress" required>
@@ -41,7 +42,7 @@
             </mat-error>
           </mat-form-field>
         </div>
-        <div class="row mt-3">
+        <div class="row mt-2">
           <mat-form-field class="col-md-6">
             <mat-label>Zip Code</mat-label>
             <input matInput formControlName="zipCode" required (blur)="onZipCodeChange($event)">
@@ -58,7 +59,7 @@
           </mat-form-field>
         </div>
 
-        <div class="row mt-3">
+        <div class="row mt-2">
           <mat-form-field class="col-md-6">
             <mat-label>State</mat-label>
             <!--<input matInput formControlName="state" required>-->
@@ -71,7 +72,7 @@
           </mat-form-field>
         </div>
 
-        <div class="row mt-3">
+        <div class="row mt-2">
           <div class="col-md-6">
             <mat-checkbox class="" formControlName="isAdmin">Is Admin</mat-checkbox>
           </div>

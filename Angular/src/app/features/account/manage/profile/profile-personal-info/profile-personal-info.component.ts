@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AddressService } from '@core/services/address.service';
@@ -20,10 +20,10 @@ import Swal from 'sweetalert2';
 export class ProfilePersonalInfoComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly addressService: AddressService,
-    private readonly userService: UserService,
-    private readonly accountService: AccountService,
-    private readonly formBuilder: FormBuilder) { }
+              private readonly addressService: AddressService,
+              private readonly userService: UserService,
+              private readonly accountService: AccountService,
+              private readonly formBuilder: UntypedFormBuilder) { }
 
   states!: IState[];
 
@@ -36,7 +36,7 @@ export class ProfilePersonalInfoComponent implements OnInit {
   icons = {
     edit: faEdit,
     cancel: faCancel,
-    save: faSave    
+    save: faSave
   }
 
   profileForm = this.formBuilder.group({
@@ -48,7 +48,7 @@ export class ProfilePersonalInfoComponent implements OnInit {
     city: ['', [Validators.required]],
     zipCode: ['', [Validators.required]],
     state: ['', [Validators.required]],
-    isAdmin: false    
+    isAdmin: false
   });
 
   get firstName() { return this.profileForm.get('firstName'); }
@@ -70,8 +70,6 @@ export class ProfilePersonalInfoComponent implements OnInit {
     });
 
     // Get current user info
-    // TODO: Pulling from the cached user causes the information to not be updated unless the user logs out and back en
-    // TODO: Need to either pull this from the API, or update the cached user after saving
     this.user = this.accountService.getLoggedInUser();
 
     this.handleFormState(false);
@@ -126,33 +124,33 @@ export class ProfilePersonalInfoComponent implements OnInit {
     this.handleFormState(false);
 
     // Update user
-    this.user.firstName = this.firstName?.value ?? '';
-    this.user.lastName = this.lastName?.value ?? '';
-    this.user.phoneNumber = this.phoneNumber?.value ?? '';
-    this.user.streetAddress = this.streetAddress?.value ?? '';
-    this.user.city = this.city?.value ?? '';
-    this.user.zipCode = this.zipCode?.value ?? '';
-    this.user.state = this.state?.value ?? '';
-    this.user.isAdmin = this.isAdmin?.value ?? false;       
+    this.user.firstName = this.firstName?.value;
+    this.user.lastName = this.lastName?.value;
+    this.user.phoneNumber = this.phoneNumber?.value;
+    this.user.streetAddress = this.streetAddress?.value;
+    this.user.city = this.city?.value;
+    this.user.zipCode = this.zipCode?.value;
+    this.user.state = this.state?.value;
+    this.user.isAdmin = this.isAdmin?.value;
 
     this.userService.update(this.user).then(response => {
-      this.logger.trace(`profile-personal-info.component.onSaveClick | response: ${JSON.stringify(response)}`)
-      
+      this.logger.trace(`profile-personal-info.component.onSaveClick | response:`, response)
+
       // Confirmation
       Swal.fire({
-        title: 'Profile Updated',        
+        title: 'Profile Updated',
         icon: 'success',
         heightAuto: false
       });
-      
+
     });
   }
 
   onZipCodeChange(event: any) {
     this.logger.debug(`profile-personal-info.component.onZipCodeChange | zipCode: ${this.zipCode?.value}`);
-    this.addressService.getPlaceByZipCode(this.zipCode?.value ?? '').then(zippoResponse => {
+    this.addressService.getPlaceByZipCode(this.zipCode?.value).then(zippoResponse => {
       const place = zippoResponse.places[0];
-      this.logger.trace(`profile-personal-info.component.onZipCodeChange | place: ${JSON.stringify(place)}`)
+      this.logger.trace(`profile-personal-info.component.onZipCodeChange | place:`, place)
       if (place) {
         this.city?.patchValue(place.placeName);
         this.state?.patchValue(place.stateAbbreviation);
@@ -162,14 +160,14 @@ export class ProfilePersonalInfoComponent implements OnInit {
 
   handleFormState(enableForm: boolean) {
     switch (enableForm) {
-        case true:
+      case true:
         this.profileForm.enable();
         break;
       case false:
         this.profileForm.disable();
-        break;        
+        break;
     }
-    
+
     this.email?.disable();
     this.isAdmin?.disable();
   }
