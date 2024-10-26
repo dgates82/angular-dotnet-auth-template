@@ -12,9 +12,9 @@ import { LoggerService } from '@core/services/logger.service';
 export class LogoutComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly location: Location,
-    private readonly router: Router,
-    private readonly accountService: AccountService) { }
+              private readonly location: Location,
+              private readonly router: Router,
+              private readonly accountService: AccountService) { }
 
   ngOnInit(): void {
     this.logger.debug(`logout.component.ngOnInit`);

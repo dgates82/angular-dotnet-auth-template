@@ -21,7 +21,7 @@ export class ProfileSecurityInfoComponent implements OnInit {
   }
 
   updatePassword() {
-    this.isUpdatingPassword = true;    
+    this.isUpdatingPassword = true;
   }
 
   onPasswordUpdated(event: boolean) {
@@ -31,6 +31,6 @@ export class ProfileSecurityInfoComponent implements OnInit {
   onPasswordUpdateCancelled(event: boolean) {
     this.isUpdatingPassword = false;
   }
-    
+
 
 }

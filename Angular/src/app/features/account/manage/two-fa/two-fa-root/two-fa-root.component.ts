@@ -2,9 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
-import { UserService } from '@data/services/user.service';
 import { IApplicationUser } from '@interfaces/account/application-user';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-two-fa-root',
@@ -14,8 +12,7 @@ import Swal from 'sweetalert2';
 export class TwoFaRootComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService,
-    private readonly userService: UserService) { }
+              private readonly accountService: AccountService) { }
 
   user!: IApplicationUser;
 
@@ -28,7 +25,7 @@ export class TwoFaRootComponent implements OnInit {
   ngOnInit(): void {
 
     this.getUserInfo();
-    
+
   }
 
   getUserInfo() {
@@ -37,7 +34,7 @@ export class TwoFaRootComponent implements OnInit {
     const applicationUser = this.accountService.getAuthResponse()?.user;
     if (applicationUser) {
       this.accountService.getUserByEmail(applicationUser?.email).then(response => {
-        this.logger.trace(`two-fa-root.component.ngOnInit | response: ${JSON.stringify(response)}`)
+        this.logger.trace(`two-fa-root.component.ngOnInit | response:`, response)
         this.user = response;
         this.isTwoFaEnabled = response.twoFactorEnabled;
         this.isTwoFaEnabledString = this.isTwoFaEnabled ? 'Enabled' : 'Disabled';
@@ -54,38 +51,19 @@ export class TwoFaRootComponent implements OnInit {
       this.isTwoFaEnabled = isTwofaEnabled;
       this.isTwoFaEnabledString = "Enabling..."
       this.isTwoFaEnabling = true;
-    } else {      
+    } else {
+
       if (this.user?.twoFactorEnabled) {
-        // SWAL confirmation to disable 2fa
-        Swal.fire({
-          title: 'Disable Two-Factor Authentication',
-          text: 'Are you sure you want to disable two-factor authentication?',
-          icon: 'warning',
-          showCancelButton: true,
-          heightAuto: false,
-          confirmButtonText: 'Yes, disable it!',
-        }).then(result => {
-          if (result.isConfirmed) {
-            this.logger.trace(`two-fa-root.component.onEnabledChanged | confirmed`);
-            // Call reset 2fa
-            this.accountService.resetAuthenticator({ email: this.user.email }).then(response => {
-              this.logger.trace(`two-fa-root.component.onEnabledChanged | response:`, response)
-              this.isTwoFaEnabling = false;              
-              this.isTwoFaEnabledString = "Disabled";
-            })
-          } else {
-            // User was disabling and cancelled
-            this.isTwoFaEnabled = true;
-          }
-        })
+        // TODO: SWAL confirmation to disable 2fa
+
       } else {
         // User was enabling and cancelled
         this.isTwoFaEnabling = false;
         this.isTwoFaEnabled = isTwofaEnabled;
         this.isTwoFaEnabledString = "Disabled";
-      }      
-      
-    }    
+      }
+
+    }
   }
 
   onAuthenticatorEnabled(event: boolean) {
@@ -93,7 +71,7 @@ export class TwoFaRootComponent implements OnInit {
     // this.isTwoFaEnabling = false;
     this.isTwoFaEnabled = event;
     this.isTwoFaEnabledString = this.isTwoFaEnabled ? 'Enabled' : 'Disabled';
-      
+
   }
 
 }

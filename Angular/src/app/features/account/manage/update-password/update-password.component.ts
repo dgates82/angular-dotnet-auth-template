@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -17,13 +17,13 @@ import Swal from 'sweetalert2';
 export class UpdatePasswordComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService,
-    private readonly formBuilder: FormBuilder){ }
+              private readonly accountService: AccountService,
+              private readonly formBuilder: FormBuilder) { }
 
   @Output() passwordUpdated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() passwordUpdateCancelled: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  icons = {    
+  icons = {
     cancel: faCancel,
     save: faSave,
     invalid: faSquareXmark,
@@ -48,12 +48,14 @@ export class UpdatePasswordComponent implements OnInit {
         }),
         PasswordValidators.patternValidator(new RegExp("(?=.*[$@^!%*?&_])"), {
           requiresSpecialChars: true
-        })      
+        })
       ]),
     ],
     confirmPassword: ['', [Validators.required]]
   }, {validators: PasswordValidators.matchValidator});
-  
+
+
+
   get currentPassword(): any {
     return this.passwordUpdateForm.get('currentPassword')
   }
@@ -70,16 +72,16 @@ export class UpdatePasswordComponent implements OnInit {
     return this.passwordUpdateForm.get('confirmPassword');
   }
 
-  get passwordValid() {  
+  get passwordValid() {
     return !this.newPasswordControl.valid;
   }
 
-  get requiredValid() {        
-    const result = !this.newPasswordControl.hasError('required')    
-    return result;    
+  get requiredValid() {
+    const result = !this.newPasswordControl.hasError('required')
+    return result;
   }
 
-  get minLengthValid() {    
+  get minLengthValid() {
     return !this.newPasswordControl.hasError('minlength');
   }
 
@@ -102,7 +104,6 @@ export class UpdatePasswordComponent implements OnInit {
   get passwordsMatchValid() {
     return !this.passwordUpdateForm.hasError('mismatch');
   }
-
 
   ngOnInit(): void {
   }
@@ -129,7 +130,7 @@ export class UpdatePasswordComponent implements OnInit {
       newPassword: this.newPassword.value,
     };
     this.accountService.changePassword(request).then(response => {
-      this.logger.debug(`UpdatePasswordComponent.onSubmit | response: ${JSON.stringify(response)}`);      
+      this.logger.debug(`UpdatePasswordComponent.onSubmit | response:`, response);
 
       if (response.isSuccess) {
         // SWAL confirmation
@@ -144,17 +145,25 @@ export class UpdatePasswordComponent implements OnInit {
         return;
       }
 
-      // Update failed      
+      // Update failed
       Swal.fire({
-          title: 'Password update failed',
-          text: 'Your password could not be updated',
-          icon: 'error',
-          heightAuto: false
-        });
-    })    
-    
-   }
+        title: 'Password update failed',
+        text: 'Your password could not be updated',
+        icon: 'error',
+        heightAuto: false
+      });
+    })
 
-   
+  }
+
+  public validateAreEqual(c: AbstractControl): { notSame: boolean } | null {
+    return c.value.newPassword === c.value.confirmPassword ? null : { notSame: true };
+  }
+
+  public passwordMismatch(): boolean {
+    return this.newPassword.touched
+      && this.confirmPassword.touched
+      && (this.passwordUpdateForm?.errors ? this.passwordUpdateForm.errors['notSame'] : false);
+  }
 
 }

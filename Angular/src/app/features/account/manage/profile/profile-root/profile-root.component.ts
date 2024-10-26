@@ -18,7 +18,7 @@ export class ProfileRootComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+
   }
 
 }

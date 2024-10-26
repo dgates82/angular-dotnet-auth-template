@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators, FormGroup, FormBuilder } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import { Validators, FormBuilder } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -17,15 +17,16 @@ import { IAuthRequest } from '@interfaces/account/auth-request';
 export class LoginComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService,
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly formBuilder: FormBuilder) { }
+              private readonly accountService: AccountService,
+              private readonly route: ActivatedRoute,
+              private readonly router: Router,
+              private readonly formBuilder: FormBuilder) { }
 
   private returnUrl: string = '';
 
-  allowSelfRegister = Constants.allowSelfRegister;
+  allowSelfRegister: boolean = Constants.allowSelfRegister;
 
+  isSubmitting: boolean = false;
   isInvalidLogin = false;
   errorMessage: string = '';
   subtitle: string = 'Enter your details to get started.'
@@ -36,7 +37,7 @@ export class LoginComponent implements OnInit {
   loginForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]]
-  });  
+  });
 
   get email(): any {
     return this.loginForm.get('email');
@@ -45,11 +46,6 @@ export class LoginComponent implements OnInit {
   get password(): any {
     return this.loginForm.get('password')
   }
-
-  get loginFormControls() {
-    return this.loginForm.controls;
-  }
-
   ngOnInit(): void {
     this.logger.debug(`login.component.ngOnInit`)
 
@@ -64,9 +60,11 @@ export class LoginComponent implements OnInit {
   login() {
     this.logger.info(`User logging in | email: ${this.email.value }`)
 
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid || this.isSubmitting) {
       return;
     }
+
+    this.isSubmitting = true;
 
     const authRequest: IAuthRequest = {
       email: this.email.value,
@@ -77,11 +75,12 @@ export class LoginComponent implements OnInit {
       this.logger.trace(`account.login | response:`, response)
 
       this.onLoginResponse(response);
-      
+
     }).catch(error => {
       // Display failed login message to user
       this.logger.debug('account.login error response: ', error);
       this.isInvalidLogin = true;
+      this.isSubmitting = false;
       this.accountService.sendAuthStateChangeNotification(false);
       this.errorMessage = 'Invalid login. Please try again';
 
@@ -98,23 +97,22 @@ export class LoginComponent implements OnInit {
         // Route user to configure 2fa
         this.router.navigate(['/enable2fa', this.email.value]);
         return;
-      }            
+      }
       this.isInvalidLogin = false;
-        
+
       // Set login token
-      // localStorage.setItem("token", response.token ?? "");
-      localStorage.setItem("authResponse", JSON.stringify(response));        
+      localStorage.setItem("authResponse", JSON.stringify(response));
       this.accountService.sendAuthStateChangeNotification(true);
 
       // Test secure endpoint
-      this.accountService.testSecure().then(secureRespose => {
-        this.logger.debug(`account.login | secureResponse: ${secureRespose}`);
+      this.accountService.testSecure().then(secureResponse => {
+        this.logger.debug(`account.login | secureResponse: ${secureResponse}`);
       });
 
       // Redirect to return url
       this.router.navigate([this.returnUrl]);
 
-    } else if (response.requiresTwoFactor) {        
+    } else if (response.requiresTwoFactor) {
       this.logger.debug(`account.login | 2fa required`);
       // Display 2fa auth form
       this.is2FaEnabled = true;
@@ -126,9 +124,10 @@ export class LoginComponent implements OnInit {
 
 
     } else {
+      // Display failed login message to user
       this.isInvalidLogin = true;
+      this.isSubmitting = false;
       this.accountService.sendAuthStateChangeNotification(false);
-      // this.errorMessage = 'Invalid login. Please try again';
       this.errorMessage = response.errorMessage ?? 'Invalid login. Please try again';
     }
   }

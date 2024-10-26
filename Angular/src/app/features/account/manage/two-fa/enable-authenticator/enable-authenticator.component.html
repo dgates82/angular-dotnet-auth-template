@@ -1,4 +1,4 @@
-<!-- TODO: Whey the screen is smaller some of the content is pushed off the top -->
+<!-- HACK: When the screen is smaller some of the content is pushed off the top -->
 <div *ngIf="is2FaRequired"
      class="container-fluid d-flex justify-content-center align-items-center vh-100">
   <div class="col-lg-8">
@@ -50,7 +50,7 @@
 
 <!-- For displaying on the profile page when 2fa is not required -->
 <!-- HACK: Use two separate components here? -->
-<div *ngIf="!is2FaRequired" class="mt-3 mb-4">
+<div *ngIf="!is2FaRequired" class="mt-3 mb-4" >
   <div *ngIf="!isVerified" [formGroup]="verifyAuthenticatorForm">
     <h3>Configure Authenticator App</h3>
     <p>To use an authenticator app complete the following steps:</p>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -14,14 +14,14 @@ import { IForgotPasswordRequest } from '@interfaces/account/forgot-password-requ
 export class ForgotPasswordComponent implements OnInit {
 
   constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService,
-    private readonly router: Router,
-    private readonly formBuilder: FormBuilder) { }
-
+              private readonly accountService: AccountService,
+              private readonly router: Router,
+              private readonly formBuilder: FormBuilder) { }
 
   forgotPasswordForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]]
   });
+
 
   get email(): any {
     return this.forgotPasswordForm.get('email');
