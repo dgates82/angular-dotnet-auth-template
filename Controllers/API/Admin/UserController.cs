@@ -1,20 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using AngularAndDotNetCoreAuthTemplate.Models.DataTransferObjects.Account;
-using AngularAndDotNetCoreAuthTemplate.Models.DataTransferObjects;
 using AngularAndDotNetCoreAuthTemplate.Models;
 using AngularAndDotNetCoreAuthTemplate.Data;
-using System.Text.Json;
 using System.Text;
+using SkillSpringApp.Controllers;
 
 namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
 {
     // [Route("api/admin/[controller]")]
     [Route("api/admin/user")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : CustomControllerBase
     {
         private readonly ILogger _logger;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -32,107 +29,112 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
             _userManager = userManager;
             _userRepository = userRepository;
         }
-
-
-        // TODO: Why does this not work without /get/?
+        
         [HttpGet]
-        [Route("get/{id?}")]
-        [Authorize]        
+        [Route("get/{id?}")]        
         public async Task<IActionResult> Get([FromQuery] string id)
         {
-            _logger.LogDebug($"Getting user by id: {id}");
-            
-            var user = await _userRepository.GetAsync(id);
-            
-            user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            try
+            {
+                _logger.LogDebug($"Getting user by id: {id}");
 
-            // var result = new ApplicationUserDto(user, await _userManager.IsInRoleAsync(user, "Admin"));
+                var user = await _userRepository.GetAsync(id);
 
-            // TODO: Do we need to include the created and updated user's info?
-            //result.CreatedByUser = new ApplicationUserDto(
-            //    await _userRepository.GetAsync(user.CreatedById), 
-            //    await _userManager.IsInRoleAsync(user, "Admin"));
-            //result.UpdatedByUser = new ApplicationUserDto(
-            //    await _userRepository.GetAsync(user.UpdatedById), 
-            //    await _userManager.IsInRoleAsync(user, "Admin"));
+                user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
-            return Ok(user);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Error retrieving user by id: {id}");
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> Get()
         {
-            _logger.LogDebug($"Getting all users");
-            
-            var users = await _userRepository.GetAsync();
-
-            foreach (var user in users)
+            try
             {
-                user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                _logger.LogDebug($"Getting all users");
+
+                var users = await _userRepository.GetAsync();
+
+                foreach (var user in users)
+                {
+                    user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                }
+                
+                return Ok(users);
             }
-
-            //var tasks = users.Select(async (u) => 
-            //    new ApplicationUserDto(u, await _userManager.IsInRoleAsync(u, "Admin")));
-
-            //var results = await Task.WhenAll(tasks);
-
-            return Ok(users);
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Error retrieving all users");
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post([FromBody] ApplicationUser newUser)
         {
-            _logger.LogInformation($"Creating new user | email: {newUser.Email}");
-
-            // Get update user to track who updated                                              
-            var currentUser = GetCurrentUser();
-
-            if (currentUser == null)
+            try
             {
-                return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                _logger.LogInformation($"Creating new user | email: {newUser.Email}");
+
+                // Get update user to track who updated                                              
+                var currentUser = GetCurrentUser();
+
+                if (currentUser == null)
+                {
+                    return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                }
+
+                var user = new ApplicationUser
+                {
+                    FirstName = newUser.FirstName,
+                    LastName = newUser.LastName,
+                    Email = newUser.Email,
+                    UserName = newUser.Email,
+                    PhoneNumber = newUser.PhoneNumber,
+                    StreetAddress = newUser.StreetAddress,
+                    City = newUser.City,
+                    ZipCode = newUser.ZipCode,
+                    State = newUser.State,
+                    CreatedById = currentUser.Id,
+                    CreatedAt = DateTime.Now,
+                    UpdatedById = currentUser.Id,
+                    UpdatedAt = DateTime.Now
+                };
+
+                // Generate random password 
+                var pwdBuilder = new StringBuilder();
+                pwdBuilder.Append(RandomString(4, true));
+                pwdBuilder.Append("_");
+                pwdBuilder.Append(RandomNumber(1000, 9999));
+                pwdBuilder.Append(RandomString(2, false));
+                var pwd = pwdBuilder.ToString();
+
+                var result = await _userManager.CreateAsync(user, pwd);
+
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
+
+                // Add admin role
+                if (newUser.IsAdmin)
+                {
+                    await _userManager.AddToRoleAsync(user, "Admin");
+                }
+
+                return Ok(user);
             }
-
-            var user = new ApplicationUser
+            catch (Exception e)
             {
-                FirstName = newUser.FirstName,
-                LastName = newUser.LastName,
-                Email = newUser.Email,
-                UserName = newUser.Email,
-                PhoneNumber = newUser.PhoneNumber,
-                StreetAddress = newUser.StreetAddress,
-                City = newUser.City,
-                ZipCode = newUser.ZipCode,
-                State = newUser.State,
-                CreatedById = currentUser.Id,
-                CreatedAt = DateTime.Now,
-                UpdatedById = currentUser.Id,
-                UpdatedAt = DateTime.Now
-            };
-
-            // Generate random password 
-            var pwdBuilder = new StringBuilder();
-            pwdBuilder.Append(RandomString(4, true));
-            pwdBuilder.Append("_");
-            pwdBuilder.Append(RandomNumber(1000, 9999));
-            pwdBuilder.Append(RandomString(2, false));
-            var pwd = pwdBuilder.ToString();
-
-            var result = await _userManager.CreateAsync(user, pwd);
-                        
-            if (!result.Succeeded)
-            {
-                return BadRequest(result.Errors);
+                _logger.LogError(e, $"Error creating new user | email: {newUser.Email}");
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
-
-            // Add admin role
-            if (newUser.IsAdmin)
-            {
-                await _userManager.AddToRoleAsync(user, "Admin");
-            }
-
-            return Ok(user);
 
         }
 
@@ -140,55 +142,63 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
         [Authorize]
         public async Task<IActionResult> Put([FromBody] ApplicationUser updateUser)
         {
-            _logger.LogInformation($"Updating user: {updateUser.Id}");
-
-            var user = await _userRepository.GetAsync(updateUser.Id);
-
-            if (user == null)
+            try
             {
-                return NotFound();
-            }
+                _logger.LogInformation($"Updating user: {updateUser.Id}");
 
-            // Get update user to track who updated                                              
-            var currentUser = GetCurrentUser();
+                var user = await _userRepository.GetAsync(updateUser.Id);
 
-            if (currentUser == null)
-            {
-                return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
-            }
-
-            user.FirstName = updateUser.FirstName;
-            user.LastName = updateUser.LastName;            
-            user.PhoneNumber = updateUser.PhoneNumber;
-            user.StreetAddress = updateUser.StreetAddress;
-            user.City = updateUser.City;
-            user.ZipCode = updateUser.ZipCode;
-            user.State = updateUser.State;  
-            
-            user.UpdatedById = currentUser.Id;
-            user.UpdatedAt = DateTime.Now;
-
-            var result = await _userManager.UpdateAsync(user);
-
-            // Update admin role
-            if (await _userManager.IsInRoleAsync(user, "Admin") != updateUser.IsAdmin)
-            {
-                if (updateUser.IsAdmin)
+                if (user == null)
                 {
-                    await _userManager.AddToRoleAsync(user, "Admin");
+                    return NotFound();
                 }
-                else
+
+                // Get update user to track who updated                                              
+                var currentUser = GetCurrentUser();
+
+                if (currentUser == null)
                 {
-                    await _userManager.RemoveFromRoleAsync(user, "Admin");
+                    return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
                 }
-            }
 
-            if (!result.Succeeded)
+                user.FirstName = updateUser.FirstName;
+                user.LastName = updateUser.LastName;
+                user.PhoneNumber = updateUser.PhoneNumber;
+                user.StreetAddress = updateUser.StreetAddress;
+                user.City = updateUser.City;
+                user.ZipCode = updateUser.ZipCode;
+                user.State = updateUser.State;
+
+                user.UpdatedById = currentUser.Id;
+                user.UpdatedAt = DateTime.Now;
+
+                var result = await _userManager.UpdateAsync(user);
+
+                // Update admin role
+                if (await _userManager.IsInRoleAsync(user, "Admin") != updateUser.IsAdmin)
+                {
+                    if (updateUser.IsAdmin)
+                    {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    }
+                    else
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, "Admin");
+                    }
+                }
+
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
+
+                return Ok(user);
+            }
+            catch (Exception e)
             {
-                return BadRequest(result.Errors);
+                _logger.LogError(e, $"Error updating user: {updateUser.Id}");
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
-
-            return Ok(user);
 
         }
 
@@ -196,27 +206,35 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
         [Authorize]
         [Route("deactivate/{id?}")]
         public async Task<IActionResult> Deactivate([FromQuery] string id)
-        {            
-            _logger.LogInformation($"Deactivating user: {id}");
-
-            // Get update user to track who updated                                              
-            var currentUser = GetCurrentUser();
-
-            if (currentUser == null)
+        {
+            try
             {
-                return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                _logger.LogInformation($"Deactivating user: {id}");
+
+                // Get update user to track who updated                                              
+                var currentUser = GetCurrentUser();
+
+                if (currentUser == null)
+                {
+                    return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                }
+
+                var user = await _userRepository.GetAsync(id);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                await _userRepository.DeactivateAsync(id, currentUser.Id);
+
+                return Ok();
             }
-
-            var user = await _userRepository.GetAsync(id);
-
-            if (user == null)
+            catch (Exception e)
             {
-                return NotFound();
+                _logger.LogError(e, $"Error deactivating user: {id}");
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
-
-            await _userRepository.DeactivateAsync(id, currentUser.Id);
-
-            return Ok();
         }
 
         [HttpPost]
@@ -224,26 +242,34 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
         [Route("activate/{id?}")]
         public async Task<IActionResult> Activate([FromQuery] string id)
         {
-            _logger.LogInformation($"Activating user: {id}");
-
-            // Get update user to track who updated                                              
-            var currentUser = GetCurrentUser();
-
-            if (currentUser == null)
+            try
             {
-                return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                _logger.LogInformation($"Activating user: {id}");
+
+                // Get update user to track who updated                                              
+                var currentUser = GetCurrentUser();
+
+                if (currentUser == null)
+                {
+                    return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                }
+
+                var user = await _userRepository.GetAsync(id);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                await _userRepository.ActivateAsync(id, currentUser.Id);
+
+                return Ok();
             }
-
-            var user = await _userRepository.GetAsync(id);
-
-            if (user == null)
+            catch (Exception e)
             {
-                return NotFound();
+                _logger.LogError(e, $"Error activating user: {id}");
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
-
-            await _userRepository.ActivateAsync(id, currentUser.Id);
-
-            return Ok();
         }
 
 
@@ -252,7 +278,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
             var builder = new StringBuilder();
             var random = new Random();
             char ch;
-            for (int i = 0; i < size; i++)
+            for (var i = 0; i < size; i++)
             {
                 ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
                 builder.Append(ch);
@@ -264,22 +290,8 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
 
         private int RandomNumber(int min, int max)
         {
-            Random random = new Random();
+            var random = new Random();
             return random.Next(min, max);
-        }
-
-        // TODO: Move this somewhere reusable 
-        private ApplicationUser? GetCurrentUser()
-        {
-            var user = User?.FindFirst("user")?.Value;
-            if (user == null)
-            {
-                return null;
-            }
-
-            var result = JsonSerializer.Deserialize<ApplicationUser>(user);
-
-            return result;
         }
 
     }

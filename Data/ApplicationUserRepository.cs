@@ -9,12 +9,12 @@ namespace AngularAndDotNetCoreAuthTemplate.Data
         {
         }
 
-        public async Task SetHasSetPassword(string id, bool hasSetPassword)
+        public async Task SetHasSetPassword(ApplicationUser user, bool hasSetPassword)
         {
-            Logger.LogDebug($"Repository - SetHasSetPassword - Id: {id} - HasSetPassword: {hasSetPassword}");
+            Logger.LogDebug($"Repository - SetHasSetPassword - user.Id: {user.Id} - HasSetPassword: {hasSetPassword}");
             try
             {
-                var user = await GetAsync(id);
+                // var user = await GetAsync(id);
                 user.HasSetPassword = hasSetPassword;
                 await UpdateAsync(user);
             }
