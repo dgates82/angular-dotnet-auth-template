@@ -73,9 +73,12 @@ namespace AngularAndDotNetCoreAuthTemplate
             // builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection(EmailOptions.ConfigSection));            
             // builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
 
-            builder.Services.Configure<SendGridEmailOptions>(builder.Configuration.GetSection(SendGridEmailOptions.ConfigSection));      
-            builder.Services.AddTransient<IEmailSender, SendGridEmailSender>();
-
+            // builder.Services.Configure<SendGridEmailOptions>(builder.Configuration.GetSection(SendGridEmailOptions.ConfigSection));      
+            // builder.Services.AddTransient<IEmailSender, SendGridEmailSender>();
+            
+            builder.Services.Configure<PostMarkEmailOptions>(builder.Configuration.GetSection(PostMarkEmailOptions.ConfigSection));
+            builder.Services.AddTransient<IEmailSender, PostMarkEmailSender>();
+            
             builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigSection));
             builder.Services.AddScoped<JwtHandler>();
 

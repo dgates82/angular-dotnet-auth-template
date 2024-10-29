@@ -4,11 +4,14 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
+import { ObfuscateEmailPipe } from './pipes/obfuscate-email.pipe';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    ObfuscateEmailPipe
+  ],
   imports: [
     CommonModule,
     HttpClientModule,
@@ -17,6 +20,8 @@ import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
       level: NgxLoggerLevel.TRACE,
       // serverLogLevel: NgxLoggerLevel.DEBUG
     })
+  ], exports: [
+    ObfuscateEmailPipe
   ]
 })
 export class CoreModule { }

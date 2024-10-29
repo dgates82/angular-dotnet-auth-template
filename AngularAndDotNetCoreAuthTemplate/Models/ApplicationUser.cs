@@ -17,6 +17,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Models
         public string? State { get; set; }
         [NotMapped]
         public bool IsAdmin { get; set; } = false;
+        public string? TwoFactorMethod { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 

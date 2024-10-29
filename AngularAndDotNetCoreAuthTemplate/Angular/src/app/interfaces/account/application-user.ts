@@ -15,6 +15,7 @@ export interface IApplicationUser {
   city?: string;
   state?: string;
   isAdmin: boolean;
+  twoFactorMethod?: string;
   createdAt?: Date;
   updatedAt?: Date;
   createdById?: string;
