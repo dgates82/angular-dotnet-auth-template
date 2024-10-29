@@ -69,6 +69,7 @@ export class EnableAuthenticatorComponent implements OnInit {
 
     const request: IVerifyAuthenticatorRequest = {
       email: this.email,
+      method: "Authenticator",
       code: this.code.value
     }
 

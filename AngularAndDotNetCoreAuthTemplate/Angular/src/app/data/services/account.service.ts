@@ -26,6 +26,7 @@ import { IVerifyAuthenticatorResponse } from '@interfaces/account/verify-authent
 import { IChangePasswordRequest } from '@interfaces/account/change-password-request';
 import { ISendEmailConfirmRequest } from '@interfaces/account/send-email-confirm-request';
 import {IRegisterRequest} from "@interfaces/account/register-request";
+import {ISendVerificationCodeRequest} from "@interfaces/account/send-verification-code-request";
 
 
 @Injectable({
@@ -189,6 +190,16 @@ export class AccountService {
       tap(response => this.logger.trace(`account.service.resetPassword | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
 
+  }
+
+  async sendTwoFaCode(request: ISendVerificationCodeRequest) : Promise<IResponse> {
+    this.logger.debug(`account.service.sendVerificationCode | email: ${request.email}`);
+
+    let url = `${this.apiUrl}/SendTwoFaCode`;
+
+    return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+      tap(response => this.logger.trace(`account.service.sendVerificationCode | response:`, response)),
+      catchError(err => this.errorService.handleError(err))).toPromise();
   }
 
   async enableAuthenticator(request: IEnableAuthenticatorRequest): Promise<IEnableAuthenticatorResponse> {

@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { IApplicationUser } from '@interfaces/account/application-user';
+import Swal from "sweetalert2";
 
 @Component({
   selector: 'app-two-fa-root',
@@ -46,6 +47,8 @@ export class TwoFaRootComponent implements OnInit {
     this.logger.debug(`two-fa-root.component.onEnabledChanged | value: ${event.checked}`);
     const isTwofaEnabled = event.checked;
 
+    // TODO: Why does this sometimes go back to disabled?
+
     if (isTwofaEnabled) {
       // Open component to enable 2fa
       this.isTwoFaEnabled = isTwofaEnabled;
@@ -54,7 +57,31 @@ export class TwoFaRootComponent implements OnInit {
     } else {
 
       if (this.user?.twoFactorEnabled) {
-        // TODO: SWAL confirmation to disable 2fa
+        // SWAL confirmation to disable 2fa
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'You are about to disable Two Factor Authentication. This will make your account less secure. Are you sure you want to do this?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, disable it!',
+          cancelButtonText: 'No, keep it'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.logger.debug(`two-fa-root.component.onEnabledChanged | Disabling 2fa`);
+            this.isTwoFaEnabled = false;
+            this.isTwoFaEnabling = false;
+            this.isTwoFaEnabledString = "Disabled";
+            const request = {
+              email: this.user.email
+            }
+            this.accountService.resetAuthenticator(request).then(() => {});
+          } else {
+            this.logger.debug(`two-fa-root.component.onEnabledChanged | Cancelled disabling 2fa`);
+            // TODO: Why doesn't this set the toggle back to true?
+            this.isTwoFaEnabled = true;
+          }
+        });
+
 
       } else {
         // User was enabling and cancelled
@@ -66,10 +93,10 @@ export class TwoFaRootComponent implements OnInit {
     }
   }
 
-  onAuthenticatorEnabled(event: boolean) {
+  onAuthenticatorEnabled(event: string) {
     this.logger.debug(`two-fa-root.component.onAuthenticatorEnabled | event: ${event}`);
     // this.isTwoFaEnabling = false;
-    this.isTwoFaEnabled = event;
+    this.isTwoFaEnabled = true;
     this.isTwoFaEnabledString = this.isTwoFaEnabled ? 'Enabled' : 'Disabled';
 
   }

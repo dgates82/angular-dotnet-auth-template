@@ -2,7 +2,7 @@ using System.Text.Json;
 using AngularAndDotNetCoreAuthTemplate.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SkillSpringApp.Controllers;
+namespace AngularAndDotNetCoreAuthTemplate.Controllers;
 
 public class CustomControllerBase : ControllerBase
 {

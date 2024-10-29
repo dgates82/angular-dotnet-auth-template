@@ -15,4 +15,7 @@ export class Constants {
 
   public static allowSelfRegister = true;
 
+  public static twoFaMethods = ["Email", "Sms", "Authenticator"];
+  // public static twoFaMethods = ["Email", "Sms"];
+
 }

@@ -16,3 +16,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-mdc-card.mat-elevation-z8 {
     @include mat.elevation(8);
 }
+
+
+.cursor-pointer {
+  cursor: pointer;
+}

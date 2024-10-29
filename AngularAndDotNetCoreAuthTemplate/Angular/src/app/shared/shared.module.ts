@@ -19,6 +19,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {MatIconModule} from "@angular/material/icon";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatRadioButton, MatRadioModule} from "@angular/material/radio";
 
 
 
@@ -43,6 +44,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     FontAwesomeModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    MatRadioModule
   ],
   exports: [
     RouterModule,
@@ -62,6 +64,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     FontAwesomeModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    MatRadioModule
   ]
 })
 export class SharedModule { }

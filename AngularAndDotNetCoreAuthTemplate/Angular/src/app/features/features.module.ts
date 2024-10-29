@@ -42,6 +42,10 @@ import { EditUserComponent } from './admin/user/edit-user/edit-user.component';
 import { AdminSecurityInfoComponent } from './admin/user/admin-security-info/admin-security-info.component';
 import { AdminPersonalInfoComponent } from './admin/user/admin-personal-info/admin-personal-info.component';
 import { RegisterComponent } from './account/register/register.component';
+import { EnableTwoFaEmailComponent } from './account/manage/two-fa/enable-two-fa-email/enable-two-fa-email.component';
+import { EnableTwoFaPhoneComponent } from './account/manage/two-fa/enable-two-fa-phone/enable-two-fa-phone.component';
+import { EnableTwoFaMethodsComponent } from './account/manage/two-fa/enable-two-fa-methods/enable-two-fa-methods.component';
+import { EnableTwoFaRootComponent } from './account/manage/two-fa/enable-two-fa-root/enable-two-fa-root.component';
 
 
 
@@ -71,7 +75,11 @@ import { RegisterComponent } from './account/register/register.component';
     EditUserComponent,
     AdminSecurityInfoComponent,
     AdminPersonalInfoComponent,
-    RegisterComponent
+    RegisterComponent,
+    EnableTwoFaEmailComponent,
+    EnableTwoFaPhoneComponent,
+    EnableTwoFaMethodsComponent,
+    EnableTwoFaRootComponent
     
   ],
   imports: [

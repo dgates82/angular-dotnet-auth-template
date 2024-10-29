@@ -13,7 +13,6 @@ using System.Globalization;
 using AngularAndDotNetCoreAuthTemplate.Models.DataTransferObjects.Account;
 using AngularAndDotNetCoreAuthTemplate.Models;
 using AngularAndDotNetCoreAuthTemplate.Data;
-using SkillSpringApp.Controllers;
 
 namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
 {
@@ -94,7 +93,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                 {
                     return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "User is not active" });
                 }
-
+                
                 var result = await _signInManager.PasswordSignInAsync(userForAuthentication.Email,
                     userForAuthentication.Password
                     , false, lockoutOnFailure: false);
@@ -153,7 +152,10 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                 }
 
                 var result = await _userManager.VerifyTwoFactorTokenAsync(user,
-                    _userManager.Options.Tokens.AuthenticatorTokenProvider, request.TwoFactorCode);
+                    // _userManager.Options.Tokens.AuthenticatorTokenProvider,
+                    // HACK: This should be validated
+                    request.TwoFactorProvider, 
+                    request.TwoFactorCode);
 
                 if (result)
                 {
@@ -189,6 +191,56 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
             }
 
         }
+        
+        [HttpPost]
+        [Route("SendTwoFaCode")]
+        public async Task<IActionResult> SendTwoFaCode([FromBody] SendVerificationCodeRequestDto request)
+        {
+            try
+            {
+                _logger.LogDebug($"Send2FaCodeEmail | email: {request.Email}");
+
+                var user = await _userManager.FindByEmailAsync(request.Email);
+                if (user == null)
+                {
+                    return Ok(new ResponseDto { IsSuccess = false });
+                }
+
+                var tokenProvider = GetTokenProvider(request.Method);
+                
+                if (string.IsNullOrEmpty(tokenProvider))
+                {
+                    return Ok(new ResponseDto { IsSuccess = false });
+                }
+
+                var code = await _userManager.GenerateTwoFactorTokenAsync(user, tokenProvider);
+                
+                switch (tokenProvider)
+                {
+                    case "Authenticator":
+                        // Authenticator cannot be used to send codes
+                        return Ok(new ResponseDto { IsSuccess = false });
+                    case "Email":
+                        await _emailSender.SendEmailAsync(
+                            request.Email,
+                            "[Application Name] 2FA Code", // TEMPLATE: Update email subject
+                            $"Your 2FA code is: {code}<br/><br/>This code is valid for 6 minutes.<br/><br/>If you did not request a 2FA code please ignore this email.");
+                        break;
+                    case "Phone":
+                        // Send SMS
+                        break;
+                }
+                
+                _logger.LogInformation($"2FA code sent to {request.Email}");
+
+                return Ok(new ResponseDto { IsSuccess = true });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Error sending 2FA code email to {request.Email}");
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
 
         [HttpPost]
         [Route("forgotpassword")]
@@ -215,7 +267,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
 
                 await _emailSender.SendEmailAsync(
                     forgotPasswordDto.Email,
-                    "SkillSpring Password Reset",
+                    "[Application Name] Password Reset", // TEMPLATE: Update email subject
                     $"Forgot your password?<br/>We received a request to reset the password for your account.<br/><br/>To reset your password <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>click here</a>.<br/><br/>If you did not request a password reset please ignore this email.");
 
                 _logger.LogInformation($"Password reset email sent to {forgotPasswordDto.Email}");
@@ -351,8 +403,8 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
 
                 await _emailSender.SendEmailAsync(
                     request.Email,
-                    "SkillSpring Email Confirmation",
-                    $"In order to start using SkillSpring, you need to verify your email.<br/><br/>Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.<br/><br/>If you did not request a login to SkillSpring, please ignore this email.");
+                    "[Application Name] Email Confirmation", // TEMPLATE: Update email subject
+                    $"In order to start using [Application Name], you need to verify your email.<br/><br/>Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.<br/><br/>If you did not request a login to SkillSpring, please ignore this email."); // TEMPLATE: Update email body
 
                 _logger.LogInformation($"Email confirmation sent to {request.Email}");
 
@@ -442,15 +494,22 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
         {
             try
             {
-                _logger.LogDebug($"VerifyAuthenticator | email: {request.Email} | code: {request.Code}");
+                _logger.LogDebug($"VerifyAuthenticator | email: {request.Email} | code: {request.Code} | method: {request.Method}");
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user == null)
                 {
                     return Ok(new ResponseDto { IsSuccess = false });
                 }
+                
+                var tokenProvider = GetTokenProvider(request.Method);
+                
+                if (string.IsNullOrEmpty(tokenProvider))
+                {
+                    return Ok(new ResponseDto { IsSuccess = false });
+                }
 
                 var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
-                    user, _userManager.Options.Tokens.AuthenticatorTokenProvider, request.Code);
+                    user, tokenProvider, request.Code);
 
                 if (!is2faTokenValid)
                 {
@@ -462,24 +521,33 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                 }
 
                 await _userManager.SetTwoFactorEnabledAsync(user, true);
+
+                // Set 2fa method on user
+                user.TwoFactorMethod = tokenProvider;
+                await _userManager.UpdateAsync(user);
+                
                 var userId = await _userManager.GetUserIdAsync(user);
-                _logger.LogInformation("User with ID '{UserId}' has enabled 2FA with an authenticator app.", userId);
+                _logger.LogInformation($"User with ID '{userId}' has enabled 2FA with {request.Method}.");
 
                 var response = new VerifyAuthenticatorResponseDto
                 {
                     IsVerified = true,
-                    Message = "Your authenticator app has been verified."
+                    Message = "Your 2FA authentication has been verified."
                 };
 
-                // HACK: Since we can't clear out existing recovery codes we are just generating new ones every time
-                var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-                response.Codes = recoveryCodes.ToArray();
+
+                if (tokenProvider == "Authenticator")
+                {
+                    // HACK: Since we can't clear out existing recovery codes we are just generating new ones every time
+                    var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+                    response.Codes = recoveryCodes.ToArray();
+                }
 
                 return Ok(response);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Error verifying authenticator for {request.Email}");
+                _logger.LogError(e, $"Error verifying 2FA for {request.Email}");
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
@@ -524,6 +592,20 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                 _logger.LogError(e, $"Error resetting authenticator for {request.Email}");
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
+        }
+
+        private string GetTokenProvider(string method)
+        {
+            _logger.LogDebug($"GetTokenProvider | method: {method}");
+            var tokenProvider = method switch
+            {
+                "Authenticator" => "Authenticator",
+                "Email" => "Email",
+                "Phone" or "Sms" => "Phone",
+                _ => null
+            };
+            _logger.LogDebug($"GetTokenProvider | tokenProvider: {tokenProvider}");
+            return tokenProvider ?? "";
         }
 
 

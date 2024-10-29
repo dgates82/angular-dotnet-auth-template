@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using AngularAndDotNetCoreAuthTemplate.Models;
 using AngularAndDotNetCoreAuthTemplate.Data;
 using System.Text;
-using SkillSpringApp.Controllers;
+
 
 namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
 {

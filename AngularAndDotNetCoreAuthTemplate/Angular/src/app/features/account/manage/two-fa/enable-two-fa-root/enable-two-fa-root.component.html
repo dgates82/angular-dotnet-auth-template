@@ -1,0 +1,21 @@
+<div *ngIf="user">
+  <div *ngIf="showMethods">
+    <app-enable-two-fa-methods (methodSelected)="onMethodSelected($event)"></app-enable-two-fa-methods>
+  </div>
+
+  <div *ngIf="showEnableTwoFaAuthenticator">
+    <app-enable-authenticator [email]="user.email"></app-enable-authenticator>
+  </div>
+
+  <div *ngIf="showEnableTwoFaEmail">
+    <app-enable-two-fa-email [email]="user.email"
+                             [showBack]="isMultipleMethods"
+                             (backClicked)="onBackClicked()" (twoFaEnabled)="onTwoFaEnabled($event)">
+    </app-enable-two-fa-email>
+  </div>
+
+  <div *ngIf="showEnableTwoFaSms">
+    <app-enable-two-fa-phone></app-enable-two-fa-phone>
+  </div>
+
+</div>
