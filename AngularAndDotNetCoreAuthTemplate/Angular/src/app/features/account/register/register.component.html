@@ -65,7 +65,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="mt-2">
+                <div class="mt-4">
                   <mat-form-field class="w-75">
                     <mat-label>Confirm Password</mat-label>
                     <input matInput formControlName="confirmPassword" required type="password" (keyup.enter)="onRegister()" />
@@ -86,7 +86,8 @@
               </div>
 
               <div *ngIf="isComplete">
-                <p>You've been registered!. Continue to <a [routerLink]="['/login']">login</a></p>
+<!--                <p>You've been registered!. Continue to <a [routerLink]="['/login']">login</a></p>-->
+                <p>You've been registered! You will receive an email shortly to verify your email address and login</p>
               </div>
 
             </div>

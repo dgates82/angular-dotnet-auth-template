@@ -16,6 +16,7 @@ export class EnableTwoFaPhoneComponent implements OnInit{
 
   @Input() email: string = '';
   @Input() showBack: boolean = false;
+  @Input() isRouted: boolean = false;
 
   @Output() backClicked: EventEmitter<void> = new EventEmitter<void>();
   @Output() twoFaEnabled: EventEmitter<string> = new EventEmitter<string>();
@@ -27,14 +28,17 @@ export class EnableTwoFaPhoneComponent implements OnInit{
   isCodeSent: boolean = false;
 
   ngOnInit() {
-    this.logger.debug(`enable-two-fa-phone.component.ngOnInit | email: ${this.email}`);
+    this.logger.debug(`enable-two-fa-phone.component.ngOnInit | email: ${this.email} | isRouted: ${this.isRouted}`);
 
-    this.accountService.getUserByEmail(this.email).then(response => {
-      this.logger.trace(`enable-two-fa-phone.component.ngOnInit | response:`, response)
-      this.user = response;
-      // set phone number
-      this.verifyPhoneForm.get('phoneNumber')?.setValue(response.phoneNumber ?? '');
-    });
+    // Only try to get user info if the user is already logged in
+    if (!this.isRouted) {
+      this.accountService.getUserByEmail(this.email).then(response => {
+        this.logger.trace(`enable-two-fa-phone.component.ngOnInit | response:`, response)
+        this.user = response;
+        // set phone number
+        this.verifyPhoneForm.get('phoneNumber')?.setValue(response.phoneNumber ?? '');
+      });
+    }
   }
 
   verifyPhoneForm = new FormGroup({
@@ -88,6 +92,8 @@ export class EnableTwoFaPhoneComponent implements OnInit{
         this.isVerified = true;
         this.twoFaEnabled.emit('Sms');
         // HACK: If the phone number is updated the authResponse will have stale information
+      } else {
+        // TODO: Set error?
       }
     });
   }

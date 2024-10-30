@@ -78,6 +78,54 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
+        
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto)
+        {
+            _logger.LogDebug($"Register | registerRequestDto: {registerRequestDto.ToJson()}");
+
+            try
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = registerRequestDto.Email,
+                    Email = registerRequestDto.Email,
+                    IsActive = true,
+                    HasSetPassword = true
+                };
+
+                var result = await _userManager.CreateAsync(user, registerRequestDto.Password);
+
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
+
+                // Generate a email confirmation token and send email            
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                var callbackUrl = Url.Action("ConfirmEmail", "Home", values: null, protocol: Request.Scheme);
+                callbackUrl = $"{callbackUrl}?userId={user.Id}";
+                callbackUrl = $"{callbackUrl}&emailAddress={registerRequestDto.Email}";
+                callbackUrl = $"{callbackUrl}&emailCode={code}";
+
+                await _emailSender.SendEmailAsync(
+                    registerRequestDto.Email,
+                    "[Application Name] Email Confirmation", // TEMPLATE: Update email subject
+                    $"In order to start using [Application Name], you need to verify your email.<br/><br/>Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.<br/><br/>If you did not request a login to [Application Name], please ignore this email."); // TEMPLATE: Update email body
+
+                _logger.LogInformation($"Register | User created a new account with password.");
+                
+                return Ok(new ResponseDto { IsSuccess = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Account.Register | Error registering user: {registerRequestDto.Email}");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
 
         [HttpPost]
         [Route("login")]

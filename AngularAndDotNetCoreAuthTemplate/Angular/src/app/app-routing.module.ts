@@ -20,6 +20,9 @@ import { ProfileRootComponent } from '@app/features/account/manage/profile/profi
 import { EnableAuthenticatorComponent } from '@features/account/manage/two-fa/enable-authenticator/enable-authenticator.component';
 import { EditUserComponent } from '@features/admin/user/edit-user/edit-user.component';
 import { RegisterUserComponent } from '@features/admin/user/register-user/register-user.component';
+import {
+  EnableTwoFaRootComponent
+} from "@features/account/manage/two-fa/enable-two-fa-root/enable-two-fa-root.component";
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -44,7 +47,7 @@ const routes: Routes = [
   { path: 'application-detail', component: ApplicationDetailComponent, canActivate: [AuthGuard] },
   /* Profile */
   { path: 'profile', component: ProfileRootComponent, canActivate: [AuthGuard]},
-  { path: 'enable2fa/:email', component: EnableAuthenticatorComponent },
+  { path: 'enable2fa/:email', component: EnableTwoFaRootComponent },
   /* Admin */
   { path: 'admin/users', component: ListUsersComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/edit-user/:id', component: EditUserComponent, canActivate: [AuthGuard, AdminGuard]},

@@ -139,13 +139,10 @@ export class PasswordResetComponent implements OnInit {
         this.isComplete = true;
         this.isSubmitting = false;
 
-        // HACK: Should I route to a new page?
-
-        // If 2fa is required and this is the user's first login, route to enable 2fa
-        if (this.isFirstLogin && Constants.is2FaRequired) {
+        // If this is the user's first login, route to enable 2fa
+        if (this.isFirstLogin) {
           // Route to enable 2fa
           this.router.navigate(['/enable2fa', this.email.value]);
-
         }
       }
       else {

@@ -20,7 +20,9 @@ export class EnableAuthenticatorComponent implements OnInit {
               private readonly route: ActivatedRoute) { }
 
   @Input() email: string = '';
-  @Output() authenticatorEnabled: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Input() showBack: boolean = false;
+  @Output() authenticatorEnabled: EventEmitter<string> = new EventEmitter<string>();
+  @Output() backClicked: EventEmitter<void> = new EventEmitter<void>();
 
   is2FaRequired = Constants.is2FaRequired;
 
@@ -80,7 +82,7 @@ export class EnableAuthenticatorComponent implements OnInit {
         // Display recovery
         this.isVerified = true;
         this.recoveryCodes = response.codes;
-        this.authenticatorEnabled.emit(true);
+        this.authenticatorEnabled.emit('Authenticator');
 
       } else {
         // Display error message
@@ -89,6 +91,11 @@ export class EnableAuthenticatorComponent implements OnInit {
 
     });
 
+  }
+
+  back() {
+    this.logger.debug(`enable-authenticator.component.back`);
+    this.backClicked.emit();
   }
 
 }
