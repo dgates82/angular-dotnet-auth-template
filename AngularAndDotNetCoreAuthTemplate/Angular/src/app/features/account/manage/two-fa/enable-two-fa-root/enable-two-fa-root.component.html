@@ -15,7 +15,11 @@
   </div>
 
   <div *ngIf="showEnableTwoFaSms">
-    <app-enable-two-fa-phone></app-enable-two-fa-phone>
+    <app-enable-two-fa-phone [email]="user.email"
+                             [showBack]="isMultipleMethods"
+                             (backClicked)="onBackClicked()"
+                             (twoFaEnabled)="onTwoFaEnabled($event)">
+    </app-enable-two-fa-phone>
   </div>
 
 </div>

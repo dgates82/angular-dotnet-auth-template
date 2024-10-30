@@ -1,8 +1,7 @@
-<script src="profile-personal-info.component.ts"></script>
 <mat-card appearance="outlined" class="ms-1 mb-3 mt-3 me-2 col-xl-8">
   <mat-card-title></mat-card-title>
   <mat-card-content>
-    <form [formGroup]="profileForm">
+    <form *ngIf="user" [formGroup]="profileForm">
       <div class="row mt-3">
         <mat-form-field class="col-md-6">
           <mat-label>Email</mat-label>

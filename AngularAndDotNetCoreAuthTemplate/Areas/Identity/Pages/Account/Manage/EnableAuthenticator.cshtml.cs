@@ -180,7 +180,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Areas.Identity.Pages.Account.Manage
             return string.Format(
                 CultureInfo.InvariantCulture,
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("Skill Spring"),
+                _urlEncoder.Encode("AngularAndDotNetCoreAuthTemplate"), // TEMPLATE: Change to your app's name
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

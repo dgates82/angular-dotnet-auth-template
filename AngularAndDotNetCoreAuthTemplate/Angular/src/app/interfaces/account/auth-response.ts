@@ -5,5 +5,7 @@ export interface IAuthResponse {
   errorMessage?: string,
   token?: string,
   requiresTwoFactor: boolean,
+  twoFactorMethod?: string,
+  phoneNumber?: string,
   user: IApplicationUser
 }

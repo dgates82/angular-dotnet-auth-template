@@ -6,7 +6,7 @@
   <div [formGroup]="verifyEmailForm">
     <mat-form-field class="w-100 mt-2">
       <mat-label>Verification Code</mat-label>
-      <input matInput formControlName="code" required mask="000-000" (keyup.enter)="verifyCode()">
+      <input matInput formControlName="code" required mask="000 000" (keyup.enter)="verifyCode()">
       <mat-error *ngIf="code.invalid && (code.dirty || code.touched)" class="mb-2">
         Invalid verification code
       </mat-error>
@@ -27,5 +27,5 @@
 </div>
 
 <div *ngIf="isVerified" class="mt-3">
-  <h2>Your email has been verified.</h2>
+  <h2>Your email has been verified and 2FA is now enabled.</h2>
 </div>

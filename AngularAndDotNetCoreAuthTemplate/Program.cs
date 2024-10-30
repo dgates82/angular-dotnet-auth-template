@@ -79,6 +79,9 @@ namespace AngularAndDotNetCoreAuthTemplate
             builder.Services.Configure<PostMarkEmailOptions>(builder.Configuration.GetSection(PostMarkEmailOptions.ConfigSection));
             builder.Services.AddTransient<IEmailSender, PostMarkEmailSender>();
             
+            builder.Services.Configure<TwilioSmsOptions>(builder.Configuration.GetSection(TwilioSmsOptions.ConfigSection));
+            builder.Services.AddTransient<ISmsSender, TwilioSmsSender>();
+            
             builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigSection));
             builder.Services.AddScoped<JwtHandler>();
 

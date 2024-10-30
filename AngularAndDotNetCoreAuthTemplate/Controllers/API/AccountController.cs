@@ -27,7 +27,10 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
         private readonly ApplicationUserRepository _userRepository;
         private readonly JwtHandler _jwtHandler;
         private readonly IEmailSender _emailSender;
+        private readonly ISmsSender _smsSender;
         private readonly UrlEncoder _urlEncoder;
+        
+        private const int VerificationCodeExpiryMinutes = 6;
 
         private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
@@ -37,6 +40,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
             ApplicationUserRepository userRepository,
             JwtHandler jwtHandler,
             IEmailSender emailSender,
+            ISmsSender smsSender,
             UrlEncoder urlEncoder)
         {
             _logger = logger;
@@ -45,6 +49,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
             _userRepository = userRepository;
             _jwtHandler = jwtHandler;
             _emailSender = emailSender;
+            _smsSender = smsSender;
             _urlEncoder = urlEncoder;
         }
         
@@ -122,7 +127,9 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                     return Ok(new AuthResponseDto
                     {
                         IsAuthSuccessful = false,
-                        RequiresTwoFactor = true
+                        RequiresTwoFactor = true,
+                        TwoFactorMethod = user.TwoFactorMethod ?? "",
+                        PhoneNumber = user.TwoFactorMethod == "Phone" ? user.PhoneNumber ?? "" : ""
                     });
                 }
                 
@@ -150,38 +157,36 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                     // Don't reveal that the user does not exist
                     return Ok(new AuthResponseDto { IsAuthSuccessful = false });
                 }
+                
+                var tokenProvider = GetTokenProvider(request.TwoFactorProvider);
 
                 var result = await _userManager.VerifyTwoFactorTokenAsync(user,
-                    // _userManager.Options.Tokens.AuthenticatorTokenProvider,
-                    // HACK: This should be validated
-                    request.TwoFactorProvider, 
+                    tokenProvider,
                     request.TwoFactorCode);
 
-                if (result)
+                if (!result)
                 {
-
-                    user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
-
-                    var signingCredentials = _jwtHandler.GetSigningCredentials();
-
-                    // var userDto = new ApplicationUserDto(user, roles.Contains("Admin"));
-
-                    var claims = _jwtHandler.GetClaims(user);
-                    var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
-                    var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-
                     return Ok(new AuthResponseDto
-                    {
-                        IsAuthSuccessful = true,
-                        Token = token,
-                        RequiresTwoFactor = true,
-                        User = user
-                    });
+                        { IsAuthSuccessful = false, ErrorMessage = "Invalid Authentication Code" });
                 }
                 
-                // return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid Authentication" });
+                user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+                var signingCredentials = _jwtHandler.GetSigningCredentials();
+
+                // var userDto = new ApplicationUserDto(user, roles.Contains("Admin"));
+
+                var claims = _jwtHandler.GetClaims(user);
+                var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
+                var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
                 return Ok(new AuthResponseDto
-                    { IsAuthSuccessful = false, ErrorMessage = "Invalid Authentication Code" });
+                {
+                    IsAuthSuccessful = true,
+                    Token = token,
+                    RequiresTwoFactor = true,
+                    User = user
+                });
                 
             }
             catch (Exception e)
@@ -198,7 +203,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
         {
             try
             {
-                _logger.LogDebug($"Send2FaCodeEmail | email: {request.Email}");
+                _logger.LogDebug($"Send2FaCode | email: {request.Email}");
 
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user == null)
@@ -224,10 +229,16 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                         await _emailSender.SendEmailAsync(
                             request.Email,
                             "[Application Name] 2FA Code", // TEMPLATE: Update email subject
-                            $"Your 2FA code is: {code}<br/><br/>This code is valid for 6 minutes.<br/><br/>If you did not request a 2FA code please ignore this email.");
+                            $"Your 2FA code is: {code}<br/><br/>This code is valid for {VerificationCodeExpiryMinutes} minutes.<br/><br/>If you did not request a 2FA code please ignore this email.");
                         break;
                     case "Phone":
+                        // Use user phone number if 2fa is already enabled
+                        var phoneNumber = user.TwoFactorEnabled ? user.PhoneNumber : request.PhoneNumber;
+                        _logger.LogDebug($"SendTwoFaCode | Sending 2FA code to {phoneNumber}");
+                        
                         // Send SMS
+                        // TODO: Enable SMS sending
+                        // await _smsSender.SendSmsAsync(phoneNumber, $"Your 2FA code for [Application Name] is: {code}. This code is valid for {VerificationCodeExpiryMinutes}. DO NOT share it with anyone."); // TEMPLATE: Update SMS message
                         break;
                 }
                 
@@ -524,6 +535,13 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
 
                 // Set 2fa method on user
                 user.TwoFactorMethod = tokenProvider;
+                
+                // If using sms, set phone number
+                if (tokenProvider == "Phone")
+                {
+                    user.PhoneNumber = request.PhoneNumber;
+                }
+                
                 await _userManager.UpdateAsync(user);
                 
                 var userId = await _userManager.GetUserIdAsync(user);
@@ -577,6 +595,11 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
 
                 await _userManager.SetTwoFactorEnabledAsync(user, false);
                 await _userManager.ResetAuthenticatorKeyAsync(user);
+                
+                // Set 2fa method on user to null
+                user.TwoFactorMethod = "";
+                await _userManager.UpdateAsync(user);
+                
                 _logger.LogInformation(
                     $"Authentication app key for user with ID '{user.Id}' has been reset by '{adminUser.Id}'");
 
@@ -662,7 +685,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
             return string.Format(
                 CultureInfo.InvariantCulture,
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("Skill Spring"),
+                _urlEncoder.Encode("AngularAndDotNetCoreAuthTemplate"), // TEMPLATE: Change to your app's name
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

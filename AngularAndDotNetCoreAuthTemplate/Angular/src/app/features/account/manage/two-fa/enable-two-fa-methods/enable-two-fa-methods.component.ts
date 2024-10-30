@@ -21,7 +21,7 @@ export class EnableTwoFaMethodsComponent implements OnInit{
 
   @Output() methodSelected: EventEmitter<string> = new EventEmitter<string>();
 
-  selectedMethod: string = 'authenticator';
+  selectedMethod: string = 'Authenticator';
 
   allowedMethods: string[] = Constants.twoFaMethods;
 

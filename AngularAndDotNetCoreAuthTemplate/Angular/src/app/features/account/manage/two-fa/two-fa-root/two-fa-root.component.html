@@ -9,7 +9,7 @@
       <span class="ms-2">{{ isTwoFaEnabledString }}</span>
     </mat-slide-toggle>
 
-    <span *ngIf="isTwoFaEnabled" class="ms-3">Method: {{ user.twoFactorMethod }}</span>
+    <span *ngIf="isTwoFaEnabled && !isTwoFaEnabling" class="ms-3">Method: {{ user.twoFactorMethod }}</span>
 
     <div *ngIf="isTwoFaEnabling">
 <!--      <app-enable-authenticator [email]="user.email" (authenticatorEnabled)="onAuthenticatorEnabled($event)"></app-enable-authenticator>-->

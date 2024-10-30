@@ -51,7 +51,6 @@ export class EnableTwoFaEmailComponent implements OnInit{
   verifyCode() {
     this.logger.debug(`enable-two-fa-email.component.verifyCode | code: ${this.code?.value}`);
 
-    // TODO: Need to specify the authentication method
     const request: IVerifyAuthenticatorRequest = {
       email: this.email,
       method: 'Email',
@@ -80,7 +79,7 @@ export class EnableTwoFaEmailComponent implements OnInit{
   resendCode() {
     this.logger.debug(`enable-two-fa-email.component.resendCode`);
 
-    this.sendCode();
+    this.sendCode().then(() => {});
 
   }
 }
