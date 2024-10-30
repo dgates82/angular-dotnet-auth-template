@@ -8,11 +8,14 @@ import { Constants } from '@core/constants';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IAuthResponse } from '@interfaces/account/auth-response';
 import { IAuthRequest } from '@interfaces/account/auth-request';
+import {ObfuscateEmailPipe} from "@core/pipes/obfuscate-email.pipe";
+import {ObfuscatePhonePipe} from "@core/pipes/obfuscate-phone.pipe";
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  providers: [ObfuscateEmailPipe, ObfuscatePhonePipe]
 })
 export class LoginComponent implements OnInit {
 
@@ -20,7 +23,9 @@ export class LoginComponent implements OnInit {
               private readonly accountService: AccountService,
               private readonly route: ActivatedRoute,
               private readonly router: Router,
-              private readonly formBuilder: FormBuilder) { }
+              private readonly formBuilder: FormBuilder,
+              private readonly obfuscateEmailPipe: ObfuscateEmailPipe,
+              private readonly obfuscatePhonePipe: ObfuscatePhonePipe) { }
 
   private returnUrl: string = '';
 
@@ -33,6 +38,7 @@ export class LoginComponent implements OnInit {
 
   is2FaRequired: boolean = Constants.is2FaRequired;
   is2FaEnabled: boolean = false;
+  twoFactorMethod: string = '';
 
   loginForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
@@ -74,7 +80,7 @@ export class LoginComponent implements OnInit {
     this.accountService.login(authRequest).then(response => {
       this.logger.trace(`account.login | response:`, response)
 
-      this.onLoginResponse(response);
+      this.onLoginResponse(response).then(() => {});
 
     }).catch(error => {
       // Display failed login message to user
@@ -87,7 +93,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  onLoginResponse(response: IAuthResponse) {
+  async onLoginResponse(response: IAuthResponse) {
     this.logger.debug(`account.onLoginResponse | response:`, response)
 
     if (response.isAuthSuccessful) {
@@ -114,9 +120,36 @@ export class LoginComponent implements OnInit {
 
     } else if (response.requiresTwoFactor) {
       this.logger.debug(`account.login | 2fa required`);
+
+      // Set 2fa method
+      this.logger.debug(`account.login | 2fa method: ${response.twoFactorMethod}`);
+      this.twoFactorMethod = response.twoFactorMethod ?? '';
+
+      if (response.twoFactorMethod === 'Email') {
+        this.logger.debug(`account.login | send verification code to email`);
+        // Send code to email
+        await this.accountService.sendTwoFaCode({email: this.email.value, method: 'Email'});
+
+        // Set subtitle
+        this.subtitle = `A code has been sent to your email ${this.obfuscateEmailPipe.transform(this.email.value)}. Enter the code to continue.`
+
+      } else if (response.twoFactorMethod === 'Phone') {
+        this.logger.debug(`account.login | send verification code to sms`);
+        await this.accountService.sendTwoFaCode({email: this.email.value,
+          phoneNumber: response.phoneNumber,
+          method: 'Sms'});
+
+        // Set subtitle
+        this.subtitle = `A code has been sent to your phone number ${this.obfuscatePhonePipe.transform(response.phoneNumber ?? '')}. Enter the code to continue.`
+
+      } else if (response.twoFactorMethod === 'Authenticator') {
+        this.logger.debug(`account.login | using authenticator app`);
+        // Set subtitle
+        this.subtitle = "Enter code from authenticator app to continue."
+      }
+
       // Display 2fa auth form
       this.is2FaEnabled = true;
-      this.subtitle = "Enter code from authenticator app to continue."
 
       // Clear any errors
       this.isInvalidLogin = false;

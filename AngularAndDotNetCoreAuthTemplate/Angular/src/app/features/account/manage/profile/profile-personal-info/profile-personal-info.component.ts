@@ -70,20 +70,31 @@ export class ProfilePersonalInfoComponent implements OnInit {
     });
 
     // Get current user info
-    this.user = this.accountService.getLoggedInUser();
+    const authUser = this.accountService.getLoggedInUser();
+    this.accountService.getUserByEmail(authUser?.email ?? '').then(response => {
+      this.user = response;
 
-    this.handleFormState(false);
+      this.logger.trace(`profile-personal-info.component.ngOnInit | user:`, this.user)
 
-    if (!this.user) {
-      return;
-    }
+      this.handleFormState(false);
 
-    this.setFormValues();
+      if (!this.user) {
+        this.logger.debug(`profile-personal-info.component.ngOnInit | user is null`);
+        return;
+      }
+
+      this.setFormValues();
+
+    });
+
   }
 
   setFormValues(): void {
+    this.logger.debug(`profile-personal-info.component.setFormValues`)
 
     if (!this.user) {return;}
+
+    this.logger.trace(`profile-personal-info.component.setFormValues | user:`, this.user)
 
     this.profileForm.patchValue({
       firstName: this.user.firstName,
@@ -112,12 +123,37 @@ export class ProfilePersonalInfoComponent implements OnInit {
     this.setFormValues();
   }
 
-  onSaveClick() {
+  async onSaveClick() {
     this.logger.trace(`profile-personal-info.component.onSaveClick`)
 
     if (this.profileForm.invalid || !this.user) {
       this.logger.debug(`profile-personal-info.component.onSaveClick | profileForm is invalid`);
       return;
+    }
+
+    this.logger.trace(`profile-personal-info.component.onSaveClick | form-phone: ${this.phoneNumber?.value} | user-phone: ${this.user.phoneNumber}`);
+    // If the phone number has been edited and two factor method is sms prompt user to confirm and disable 2fa
+    if (this.user?.phoneNumber !== this.phoneNumber?.value && this.user?.twoFactorMethod === 'Phone') {
+      const result = await Swal.fire({
+        title: 'Disable Two Factor Authentication',
+        text: 'You have changed your phone number. This will disable two factor authentication. Are you sure you want to continue?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+        heightAuto: false
+      });
+
+      if (result.isConfirmed) {
+        const request = {
+          email: this.user.email,
+        }
+        await this.accountService.resetAuthenticator(request);
+        this.logger.trace(`profile-personal-info.component.onSaveClick | 2fa disabled`);
+      } else {
+        this.logger.trace(`profile-personal-info.component.onSaveClick | 2fa not disabled`);
+        return;
+      }
     }
 
     this.isEditMode = false;

@@ -1,40 +1,42 @@
 <mat-card appearance="outlined" class="mat-elevation-z8 ms-2 mb-3 mt-3 me-2 col-xl-8">
   <mat-card-title class="m-3">
-    <div class="row fs-5">
-      <div class="col-md-4 mt-3">Confirmed Email?</div>
-      <div class="col-md-3 mt-3">{{ user.emailConfirmed ? 'Yes' : 'No' }}</div>
-      <div class="col-md-4 mt-3">
+    <div class="row align-items-center">
+      <div class="col-md-4">Confirmed Email?</div>
+      <div class="col-md-3">{{ user.emailConfirmed ? 'Yes' : 'No' }}</div>
+      <div class="col-md-5 text-end">
         <button *ngIf="!user.emailConfirmed"
                 mat-raised-button
                 color="primary"
-                class="w-75"
+                class="w-50"
                 (click)="onResendEmailConfirmationClick()">
-          Resend
+          <mat-icon>email</mat-icon> Resend
         </button>
       </div>
     </div>
   </mat-card-title>
 </mat-card>
+
 <mat-card appearance="outlined" class="mat-elevation-z8 ms-2 mb-3 me-2 col-xl-8">
   <mat-card-title class="m-3">
-    <div class="row fs-5">
-      <div class="col-md-4 mt-3">Password Set?</div>
-      <div class="col-md-3 mt-3">{{ user.hasSetPassword ? 'Yes' : 'No' }}</div>
+    <div class="row align-items-center">
+      <div class="col-md-4">Password Set?</div>
+      <div class="col-md-3">{{ user.hasSetPassword ? 'Yes' : 'No' }}</div>
     </div>
   </mat-card-title>
 </mat-card>
+
 <mat-card appearance="outlined" class="mat-elevation-z8 ms-2 mb-3 me-2 col-xl-8">
   <mat-card-title class="m-3">
-    <div class="row fs-5">
-      <div class="col-md-4 mt-3">2 FA Enabled?</div>
-      <div class="col-md-3 mt-3">{{ user.twoFactorEnabled ? 'Yes' : 'No' }}</div>
-      <div class="col-md-4 mt-3">
+    <div class="row align-items-center">
+      <div class="col-md-4">2 FA Enabled?</div>
+      <div class="col-md-3">{{ user.twoFactorEnabled ? 'Yes - ' + user.twoFactorMethod : 'No' }}</div>
+      <div class="col-md-5 text-end">
         <button *ngIf="user.twoFactorEnabled"
                 mat-raised-button
                 color="warn"
-                class="w-75"
+                class="w-50"
                 (click)="onResetAuthenticatorClick()">
-          Reset 2 FA
+          <mat-icon>security</mat-icon> Reset 2 FA
         </button>
       </div>
     </div>

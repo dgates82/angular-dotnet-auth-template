@@ -5,12 +5,14 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 import { ObfuscateEmailPipe } from './pipes/obfuscate-email.pipe';
+import { ObfuscatePhonePipe } from './pipes/obfuscate-phone.pipe';
 
 
 
 @NgModule({
   declarations: [
-    ObfuscateEmailPipe
+    ObfuscateEmailPipe,
+    ObfuscatePhonePipe
   ],
   imports: [
     CommonModule,

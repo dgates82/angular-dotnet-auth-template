@@ -18,6 +18,7 @@ export class LoginTwoFactorComponent implements OnInit {
               private readonly formBuilder: FormBuilder) { }
 
   @Input() email: string = '';
+  @Input() twoFactorMethod: string = '';
 
   @Output() loginResponse: EventEmitter<IAuthResponse> = new EventEmitter<IAuthResponse>();
 
@@ -44,7 +45,7 @@ export class LoginTwoFactorComponent implements OnInit {
   }
 
   login2Fa() {
-    this.logger.info(`User logging in with 2fa | email: ${this.email}`)
+    this.logger.info(`User logging in with 2fa | email: ${this.email} | method: ${this.twoFactorMethod}`);
 
     if (this.login2FaForm.invalid) {
       this.logger.trace(`login-two-factor.component.login2Fa | Invalid form`);
@@ -53,6 +54,7 @@ export class LoginTwoFactorComponent implements OnInit {
 
     const authRequest: ITwoFaAuthRequest = {
       email: this.email,
+      twoFactorProvider: this.twoFactorMethod,
       twoFactorCode: this.twoFaCode.value
     }
 
@@ -63,7 +65,18 @@ export class LoginTwoFactorComponent implements OnInit {
 
       }
     );
-
   }
+
+  async resendCode() {
+    this.logger.debug(`login-two-factor.component.resendCode | email: ${this.email}`);
+
+    const request = {
+      email: this.email,
+      method: this.twoFactorMethod
+    }
+
+    await this.accountService.sendTwoFaCode(request);
+  }
+
 }
 

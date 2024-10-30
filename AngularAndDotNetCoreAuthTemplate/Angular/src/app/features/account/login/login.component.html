@@ -53,7 +53,9 @@
                 </div>
               </div>
               <div *ngIf="is2FaEnabled">
-                <app-login-two-factor [email]="email.value" (loginResponse)="onLoginResponse($event)"></app-login-two-factor>
+                <app-login-two-factor [email]="email.value"
+                                      [twoFactorMethod]="twoFactorMethod"
+                                      (loginResponse)="onLoginResponse($event)"></app-login-two-factor>
               </div>
             </div>
           </div>
