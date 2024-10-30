@@ -4,6 +4,7 @@ import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { IApplicationUser } from '@interfaces/account/application-user';
 import Swal from "sweetalert2";
+import {Constants} from "@core/constants";
 
 @Component({
   selector: 'app-two-fa-root',
@@ -22,6 +23,8 @@ export class TwoFaRootComponent implements OnInit {
   isTwoFaEnabledString: string = "";
 
   isTwoFaEnabling: boolean = false;
+
+  isTwoFaRequired: boolean = Constants.is2FaRequired;
 
   ngOnInit(): void {
 
@@ -45,13 +48,11 @@ export class TwoFaRootComponent implements OnInit {
 
   onEnabledChanged(event: any) {
     this.logger.debug(`two-fa-root.component.onEnabledChanged | value: ${event.checked}`);
-    const isTwofaEnabled = event.checked;
+    const isTwoFaEnabled = event.checked;
 
-    // TODO: Why does this sometimes go back to disabled?
-
-    if (isTwofaEnabled) {
+    if (isTwoFaEnabled) {
       // Open component to enable 2fa
-      this.isTwoFaEnabled = isTwofaEnabled;
+      this.isTwoFaEnabled = isTwoFaEnabled;
       this.isTwoFaEnabledString = "Enabling..."
       this.isTwoFaEnabling = true;
     } else {
@@ -77,7 +78,6 @@ export class TwoFaRootComponent implements OnInit {
             this.accountService.resetAuthenticator(request).then(() => {});
           } else {
             this.logger.debug(`two-fa-root.component.onEnabledChanged | Cancelled disabling 2fa`);
-            // TODO: Why doesn't this set the toggle back to true?
             this.isTwoFaEnabled = true;
           }
         });
@@ -86,7 +86,7 @@ export class TwoFaRootComponent implements OnInit {
       } else {
         // User was enabling and cancelled
         this.isTwoFaEnabling = false;
-        this.isTwoFaEnabled = isTwofaEnabled;
+        this.isTwoFaEnabled = isTwoFaEnabled;
         this.isTwoFaEnabledString = "Disabled";
       }
 
@@ -101,5 +101,10 @@ export class TwoFaRootComponent implements OnInit {
 
   }
 
+  onChangeTwoFaMethodClick() {
+    this.logger.debug(`two-fa-root.component.onChangeTwoFaMethodClick`);
+    this.isTwoFaEnabledString = "Updating..."
+    this.isTwoFaEnabling = true;
+  }
 }
 

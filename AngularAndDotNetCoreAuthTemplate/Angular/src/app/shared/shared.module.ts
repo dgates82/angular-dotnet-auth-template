@@ -20,6 +20,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {MatIconModule} from "@angular/material/icon";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatRadioButton, MatRadioModule} from "@angular/material/radio";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 
 
@@ -44,7 +45,8 @@ import {MatRadioButton, MatRadioModule} from "@angular/material/radio";
     FontAwesomeModule,
     MatProgressSpinnerModule,
     MatIconModule,
-    MatRadioModule
+    MatRadioModule,
+    MatTooltipModule
   ],
   exports: [
     RouterModule,
@@ -64,7 +66,8 @@ import {MatRadioButton, MatRadioModule} from "@angular/material/radio";
     FontAwesomeModule,
     MatProgressSpinnerModule,
     MatIconModule,
-    MatRadioModule
+    MatRadioModule,
+    MatTooltipModule
   ]
 })
 export class SharedModule { }

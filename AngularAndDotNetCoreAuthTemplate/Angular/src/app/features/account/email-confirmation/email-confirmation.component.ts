@@ -18,6 +18,7 @@ export class EmailConfirmationComponent implements OnInit {
               private readonly route: ActivatedRoute) { }
 
   isConfirmed: boolean = false;
+  emailAddress: string = '';
 
   ngOnInit(): void {
     this.logger.debug(`email-confirmation.component.ngOnInit`);
@@ -26,6 +27,7 @@ export class EmailConfirmationComponent implements OnInit {
       const userId = params['userId'];
       const emailCode = params['emailCode'];
       const isFirstLogin = params['isFirstLogin']
+      this.emailAddress = params['emailAddress'];
 
       this.logger.trace(`email-confirmation.component.ngOnInit | emailCode: ${emailCode} | isFirstLogin: ${isFirstLogin}`);
 
@@ -38,6 +40,7 @@ export class EmailConfirmationComponent implements OnInit {
         this.logger.trace(`email-confirmation.component.ngOnInit | response:`, response);
 
         // If this is the user's first login, route to password reset
+        // first login is only set if an admin created the user with a random password
         if (isFirstLogin) {
           // Include password reset token in query params
           this.router.navigate(['/email-confirmation/reset'], { queryParamsHandling: 'preserve' });
