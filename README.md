@@ -66,9 +66,9 @@ dotnet ef database update
 
 ### Frontend Setup
 
-1. Navigate to the `frontend` folder and install dependencies:  
+1. Navigate to the `Angular` folder and install dependencies:  
 ```bash
-cd frontend  
+cd Angular
 npm install  
 ```
 
