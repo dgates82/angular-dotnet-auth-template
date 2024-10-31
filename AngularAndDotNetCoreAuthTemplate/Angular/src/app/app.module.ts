@@ -10,7 +10,7 @@ import { CoreModule} from '@core/core.module';
 import { APP_BASE_HREF } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { JwtModule } from "@auth0/angular-jwt";
 
 import { NgxMaskModule } from 'ngx-mask';
@@ -34,38 +34,27 @@ export function tokenGetter() {
 
 }
 
-@NgModule({
-  declarations: [
-    AppComponent
-    
-  ],
-  imports: [    
-    BrowserModule,
-    AppRoutingModule,    
-    RouterModule,
-
-    HttpClientModule,
-    JwtModule.forRoot({
-      config: {
-        tokenGetter: tokenGetter,
-        allowedDomains: ["localhost:44359"],
-      }
-    }),
-    
-    NgxMaskModule.forRoot(),
-    SweetAlert2Module.forRoot(),
-
-    SharedModule,
-    FeaturesModule,
-    InterfacesModule,
-    DataModule,
-    CoreModule
-    
-  ],
-  providers: [
-    { provide: APP_BASE_HREF, useValue: '/'},
-    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' }}
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        RouterModule,
+        JwtModule.forRoot({
+            config: {
+                tokenGetter: tokenGetter,
+                allowedDomains: ["localhost:44359"],
+            }
+        }),
+        NgxMaskModule.forRoot(),
+        SweetAlert2Module.forRoot(),
+        SharedModule,
+        FeaturesModule,
+        InterfacesModule,
+        DataModule,
+        CoreModule], providers: [
+        { provide: APP_BASE_HREF, useValue: '/' },
+        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule { }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { LoggerService } from '@core/services/logger.service';
 import { throwError } from 'rxjs';
 
