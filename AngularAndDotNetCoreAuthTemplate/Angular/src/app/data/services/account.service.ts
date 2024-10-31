@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { LocationStrategy } from '@angular/common';
 
 import { LoggerService } from '@core/services/logger.service';

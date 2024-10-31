@@ -24,19 +24,19 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers
         [Route("~/admin/register-user")]
         public IActionResult Index()
         {
-            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp", "index.html"), "text/HTML");
+            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp/browser", "index.html"), "text/HTML");
         }
 
         [Route("~/login")]
         public IActionResult Login()
         {
-            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp", "index.html"), "text/HTML");
+            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp/browser", "index.html"), "text/HTML");
         }
 
         [Route("~/forgot-password/reset/{code?}")]        
         public IActionResult ForgotPassword(string? code = null)
         {
-            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp", "index.html"), "text/HTML");
+            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp/browser", "index.html"), "text/HTML");
         }
 
         [Route("~/email-confirmation/{code?}")]
