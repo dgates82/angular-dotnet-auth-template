@@ -30,31 +30,31 @@ export function tokenGetter() {
   } else {
     return "";
   }
-  
-
 }
 
 @NgModule({ declarations: [
-        AppComponent
-    ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
-        AppRoutingModule,
-        RouterModule,
-        JwtModule.forRoot({
-            config: {
-                tokenGetter: tokenGetter,
-                allowedDomains: ["localhost:44359"],
-            }
-        }),
-        NgxMaskModule.forRoot(),
-        SweetAlert2Module.forRoot(),
-        SharedModule,
-        FeaturesModule,
-        InterfacesModule,
-        DataModule,
-        CoreModule], providers: [
-        { provide: APP_BASE_HREF, useValue: '/' },
-        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } },
-        provideHttpClient(withInterceptorsFromDi())
-    ] })
+  AppComponent
+  ],
+  bootstrap: [AppComponent],
+  imports: [BrowserModule,
+    AppRoutingModule,
+    RouterModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,
+        allowedDomains: ["localhost:44359"],
+      }
+    }),
+    NgxMaskModule.forRoot(),
+    SweetAlert2Module.forRoot(),
+    SharedModule,
+    FeaturesModule,
+    InterfacesModule,
+    DataModule,
+    CoreModule], providers: [
+    { provide: APP_BASE_HREF, useValue: '/' },
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } },
+    provideHttpClient(withInterceptorsFromDi())
+  ]
+})
 export class AppModule { }
