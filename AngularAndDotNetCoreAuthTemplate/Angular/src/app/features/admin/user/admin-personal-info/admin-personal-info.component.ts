@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AddressService } from '@core/services/address.service';
@@ -24,6 +24,10 @@ export class AdminPersonalInfoComponent implements OnInit {
 
   @Input() user!: IApplicationUser;
 
+  // TODO: pull this from the api
+  // Define available roles
+  availableRoles: string[] = ['Admin', 'Tech', 'Manager'];
+
   isEditMode: boolean = false;
 
   states!: IState[];
@@ -45,7 +49,8 @@ export class AdminPersonalInfoComponent implements OnInit {
     city: ['', [Validators.required]],
     zipCode: ['', [Validators.required]],
     state: ['', [Validators.required]],
-    isAdmin: false
+    roles: this.formBuilder.array([], [Validators.required]),
+    addRoleControl: ['']
   });
 
   get firstName() { return this.profileForm.get('firstName'); }
@@ -56,7 +61,10 @@ export class AdminPersonalInfoComponent implements OnInit {
   get city() {return this.profileForm.get('city'); }
   get zipCode() {return this.profileForm.get('zipCode'); }
   get state() {return this.profileForm.get('state'); }
-  get isAdmin() {return this.profileForm.get('isAdmin'); }
+  get roles(): FormArray {
+    return this.profileForm.get('roles') as FormArray;
+  }
+  get addRoleControl() {return this.profileForm.get('addRoleControl')}
 
   ngOnInit(): void {
     this.logger.trace(`admin-personal-info.component.ngOnInit | user:`, this.user)
@@ -80,8 +88,19 @@ export class AdminPersonalInfoComponent implements OnInit {
       city: this.user.city,
       zipCode: this.user.zipCode,
       state: this.user.state,
-      isAdmin: this.user.isAdmin
+
     });
+
+    // Clear existing roles and add new ones
+    if (this.user.roles) {
+      this.roles.clear();
+      this.user.roles.forEach(role => {
+        const control = new FormControl(role, Validators.required);
+        control.disable(); // Disable the control
+        this.roles.push(control);
+      });
+      this.logger.trace(`admin-personal-info.component.setFormValues | roles:`, this.roles.value);
+    }
   }
 
   onEditClick() {
@@ -117,7 +136,7 @@ export class AdminPersonalInfoComponent implements OnInit {
     this.user.city = this.city?.value ?? '';
     this.user.zipCode = this.zipCode?.value ?? '';
     this.user.state = this.state?.value ?? '';
-    this.user.isAdmin = this.isAdmin?.value ?? false;
+    this.user.roles = this.roles.value;
 
     this.userService.update(this.user).then(response => {
       this.logger.trace(`admin-personal-info.component.onSaveClick | response:`, response)
@@ -130,6 +149,16 @@ export class AdminPersonalInfoComponent implements OnInit {
       });
 
     });
+  }
+
+  // Method to add a role
+  addRole(role: string): void {
+    this.roles.push(new FormControl(role, Validators.required));
+  }
+
+  // Method to remove a role
+  removeRole(index: number): void {
+    this.roles.removeAt(index);
   }
 
   onDeactivateClick() {
@@ -237,6 +266,12 @@ export class AdminPersonalInfoComponent implements OnInit {
         this.profileForm.disable();
         break;
     }
+
+    // Enable/disable the Add Role field
+    enableForm ? this.addRoleControl?.enable() : this.addRoleControl?.disable();
+
+    // Ensure roles are always disabled
+    this.roles.controls.forEach(control => control.disable());
 
     this.email?.disable();
   }

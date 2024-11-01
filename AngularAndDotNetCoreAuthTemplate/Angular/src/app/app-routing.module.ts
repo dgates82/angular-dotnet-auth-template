@@ -9,7 +9,6 @@ import { AuthGuard } from '@core/guards/auth.guard';
 import { LoginGuard } from '@core/guards/login.guard';
 import { RegisterComponent } from '@features/account/register/register.component';
 import { ListUsersComponent } from '@features/admin/user/list-users/list-users.component';
-import { AdminGuard } from '@core/guards/admin.guard';
 import { ForbiddenComponent } from '@features/account/forbidden/forbidden.component';
 import { ForgotPasswordComponent } from '@features/account/forgot-password/forgot-password/forgot-password.component';
 import { ForgotPasswordConfirmComponent } from '@features/account/forgot-password/forgot-password-confirm/forgot-password-confirm.component';
@@ -23,6 +22,7 @@ import { RegisterUserComponent } from '@features/admin/user/register-user/regist
 import {
   EnableTwoFaRootComponent
 } from "@features/account/manage/two-fa/enable-two-fa-root/enable-two-fa-root.component";
+import {roleGuard} from "@core/guards/role.guard";
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -49,9 +49,9 @@ const routes: Routes = [
   { path: 'profile', component: ProfileRootComponent, canActivate: [AuthGuard], title: "Profile - [App Name]" },
   { path: 'enable2fa/:email', component: EnableTwoFaRootComponent },
   /* Admin */
-  { path: 'admin/users', component: ListUsersComponent, canActivate: [AuthGuard, AdminGuard], title: "Users - [App Name]" },
-  { path: 'admin/edit-user/:id', component: EditUserComponent, canActivate: [AuthGuard, AdminGuard]},
-  { path: 'admin/register-user', component: RegisterUserComponent, canActivate: [AuthGuard, AdminGuard]}
+  { path: 'admin/users', component: ListUsersComponent, canActivate: [AuthGuard, roleGuard(["Admin"])], title: "Users - [App Name]" },
+  { path: 'admin/edit-user/:id', component: EditUserComponent, canActivate: [AuthGuard, roleGuard(["Admin"])]},
+  { path: 'admin/register-user', component: RegisterUserComponent, canActivate: [AuthGuard, roleGuard(["Admin"])]}
 
   // { path: '**', component: ApplicationRootComponent, pathMatch: 'full' }
 ];

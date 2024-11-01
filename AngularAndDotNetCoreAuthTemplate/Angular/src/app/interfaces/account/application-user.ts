@@ -14,7 +14,7 @@ export interface IApplicationUser {
   zipCode?: string;
   city?: string;
   state?: string;
-  isAdmin: boolean;
+  roles?: string[];
   twoFactorMethod?: string;
   createdAt?: Date;
   updatedAt?: Date;

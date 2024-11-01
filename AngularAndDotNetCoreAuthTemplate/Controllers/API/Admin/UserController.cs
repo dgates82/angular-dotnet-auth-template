@@ -39,8 +39,9 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
                 _logger.LogDebug($"Getting user by id: {id}");
 
                 var user = await _userRepository.GetAsync(id);
-
-                user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                
+                var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+                user.Roles = roles.ToList();
 
                 return Ok(user);
             }
@@ -59,10 +60,12 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
                 _logger.LogDebug($"Getting all users");
 
                 var users = await _userRepository.GetAsync();
-
+                
+                // add roles to user
                 foreach (var user in users)
                 {
-                    user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                    var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+                    user.Roles = roles.ToList();
                 }
                 
                 return Ok(users);
@@ -121,11 +124,14 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
                 {
                     return BadRequest(result.Errors);
                 }
-
-                // Add admin role
-                if (newUser.IsAdmin)
+                
+                // Add user roles
+                if (newUser.Roles?.Count > 0)
                 {
-                    await _userManager.AddToRoleAsync(user, "Admin");
+                    foreach (var role in newUser.Roles)
+                    {
+                        await _userManager.AddToRoleAsync(user, role);
+                    }
                 }
 
                 return Ok(user);
@@ -173,18 +179,20 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
                 user.UpdatedAt = DateTime.Now;
 
                 var result = await _userManager.UpdateAsync(user);
+                
+                // Update user roles
+                var currentRoles = await _userManager.GetRolesAsync(user);
+                var rolesToRemove = currentRoles.Except(updateUser.Roles).ToList();
+                var rolesToAdd = updateUser.Roles.Except(currentRoles).ToList();
 
-                // Update admin role
-                if (await _userManager.IsInRoleAsync(user, "Admin") != updateUser.IsAdmin)
+                foreach (var role in rolesToRemove)
                 {
-                    if (updateUser.IsAdmin)
-                    {
-                        await _userManager.AddToRoleAsync(user, "Admin");
-                    }
-                    else
-                    {
-                        await _userManager.RemoveFromRoleAsync(user, "Admin");
-                    }
+                    await _userManager.RemoveFromRoleAsync(user, role);
+                }
+
+                foreach (var role in rolesToAdd)
+                {
+                    await _userManager.AddToRoleAsync(user, role);
                 }
 
                 if (!result.Succeeded)
