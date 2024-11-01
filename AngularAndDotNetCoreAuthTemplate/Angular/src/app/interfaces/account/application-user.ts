@@ -16,6 +16,7 @@ export interface IApplicationUser {
   state?: string;
   roles?: string[];
   twoFactorMethod?: string;
+  lockoutEnd?: Date;
   createdAt?: Date;
   updatedAt?: Date;
   createdById?: string;

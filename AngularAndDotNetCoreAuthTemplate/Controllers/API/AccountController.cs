@@ -185,7 +185,11 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                     });
                 }
                 
-                // Otherwise, return unauthorized
+                
+                // Otherwise increment failed login attempts
+                await _userManager.AccessFailedAsync(user).ConfigureAwait(false);
+                
+                // return unauthorized
                 return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid Authentication" });
                 
             }

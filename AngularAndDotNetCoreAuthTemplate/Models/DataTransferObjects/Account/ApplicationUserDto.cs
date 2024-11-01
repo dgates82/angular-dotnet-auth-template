@@ -5,6 +5,7 @@
         public string Email { get; set; }
         public bool IsTwoFaEnabled { get; set; }
         public bool HasSetPassword { get; set; } = false;
+        public bool IsLockedOut { get; set; } = false;
         public bool IsActive { get; set; } = true;
         public string FirstName { get; set; }
         public string LastName { get; set; }

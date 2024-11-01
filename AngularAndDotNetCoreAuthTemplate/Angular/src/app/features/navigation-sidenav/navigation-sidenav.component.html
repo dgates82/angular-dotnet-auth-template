@@ -1,0 +1,74 @@
+<mat-sidenav-container  class="mat-sidenav-container">
+  <mat-sidenav #sidenav mode="side"
+               [opened]="isLoggedIn"
+               [disableClose]="true"
+               class="bg-light"
+               [ngClass]="isExpanded ? 'sidenav-expanded' : 'sidenav-collapsed'">
+    <mat-nav-list class="">
+      <div *ngIf="isExpanded" class="d-flex justify-content-center mt-3 mb-2">
+        <img src="/assets/images/logo-small.png" width="80" class="img-fluid" alt="Logo"/>
+      </div>
+      <mat-list-item routerLink="profile" class="">
+        <div class="icon-container">
+          <fa-icon [icon]="icons.profile"></fa-icon>
+          <span *ngIf="isExpanded">Profile</span>
+        </div>
+      </mat-list-item>
+      <span *ngIf="isExpanded" class="fw-medium fst-italic">{{ authResponse?.user?.fullName }}</span>
+      <mat-list-item routerLink="logout" class="">
+        <div class="icon-container">
+          <fa-icon [icon]="icons.logout"></fa-icon>
+          <span *ngIf="isExpanded">Logout</span>
+        </div>
+      </mat-list-item>
+      <mat-divider class="w-100 mt-2 mb-2"></mat-divider>
+      <mat-list-item routerLink="home">
+        <div class="icon-container">
+          <fa-icon [icon]="icons.home"></fa-icon>
+          <span *ngIf="isExpanded">Home</span>
+        </div>
+      </mat-list-item>
+      <mat-list-item routerLink="/home" [disabled]="true" class="disabled-item">
+        <div class="icon-container">
+          <fa-icon [icon]="icons.partners"></fa-icon>
+          <span *ngIf="isExpanded">Section 1</span>
+        </div>
+      </mat-list-item>
+      <mat-list-item routerLink="/home" [disabled]="true" class="disabled-item">
+        <div class="icon-container">
+          <fa-icon [icon]="icons.reports"></fa-icon>
+          <span *ngIf="isExpanded">Section 2</span>
+        </div>
+      </mat-list-item>
+      <mat-list-item routerLink="/home" [disabled]="true" class="disabled-item">
+        <div class="icon-container">
+          <fa-icon [icon]="icons.search"></fa-icon>
+          <span *ngIf="isExpanded">Section 3</span>
+        </div>
+      </mat-list-item>
+      <mat-divider class="w-100 mb-2 mt-3"></mat-divider>
+      <h2 *ngIf="isExpanded && isAdmin" class="mt-1 mb-0 p-0">Admin</h2>
+      <mat-list-item *ngIf="isAdmin" routerLink="admin/users">
+        <div class="icon-container">
+          <fa-icon [icon]="icons.users"></fa-icon>
+          <span *ngIf="isExpanded">Users</span>
+        </div>
+      </mat-list-item>
+    </mat-nav-list>
+    <button mat-stroked-button color="primary" class="expand-button" (click)="toggleSidebar()">
+      <fa-icon *ngIf="isExpanded" [icon]="icons.left"></fa-icon>
+      <fa-icon *ngIf="isExpanded" [icon]="icons.left"></fa-icon>
+      <fa-icon *ngIf="!isExpanded" [icon]="icons.right"></fa-icon>
+      <fa-icon *ngIf="!isExpanded" [icon]="icons.right"></fa-icon>
+    </button>
+  </mat-sidenav>
+
+  <mat-sidenav-content [ngClass]="!isLoggedIn ? 'content-closed'
+                       : !sidenav.opened ? 'content-closed'
+                       : isExpanded ? 'content-expanded'
+                       : 'content-collpased'">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
