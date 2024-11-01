@@ -8,6 +8,7 @@ import { HttpErrorService } from '@core/services/http-error.service';
 import { catchError, tap } from 'rxjs/operators';
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { Constants } from '@core/constants';
+import {IResponse} from "@interfaces/response";
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +81,16 @@ export class UserService {
       tap(response => this.logger.trace(`user.service.activate | response:`, response)),
       catchError(err => this.errorService.handleError(err))).toPromise();
 
+  }
+
+  public unlock(id: string): Promise<IResponse> {
+    this.logger.debug(`user.service.unlock | id: ${id}`);
+
+    const url = `${this.apiUrl}/unlock?id=${id}`;
+
+    return this.httpClient.post<IResponse>(url, null).pipe(
+      tap(response => this.logger.trace(`user.service.unlock | response:`, response)),
+      catchError(err => this.errorService.handleError(err))).toPromise();
   }
 
 }

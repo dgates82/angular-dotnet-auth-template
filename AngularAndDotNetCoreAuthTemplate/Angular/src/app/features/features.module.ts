@@ -19,10 +19,6 @@ import { LogoutComponent } from '@features/account/logout/logout.component';
 
 import { ListUsersComponent } from '@features/admin/user/list-users/list-users.component';
 import { RegisterUserComponent } from '@features/admin/user/register-user/register-user.component';
-import { NewApplicationComponent } from '@features/applications/new-application/new-application.component';
-import { ApplicationDetailComponent } from '@features/applications/application-detail/application-detail.component';
-import { ApplicationListComponent } from '@features/applications/application-list/application-list.component';
-import { ApplicationRootComponent } from '@features/applications/application-root/application-root.component';
 import { ForbiddenComponent } from '@features/account/forbidden/forbidden.component';
 import { ForgotPasswordComponent } from '@features/account/forgot-password/forgot-password/forgot-password.component';
 import { ForgotPasswordConfirmComponent } from '@features/account/forgot-password/forgot-password-confirm/forgot-password-confirm.component';
@@ -46,6 +42,8 @@ import { EnableTwoFaEmailComponent } from './account/manage/two-fa/enable-two-fa
 import { EnableTwoFaPhoneComponent } from './account/manage/two-fa/enable-two-fa-phone/enable-two-fa-phone.component';
 import { EnableTwoFaMethodsComponent } from './account/manage/two-fa/enable-two-fa-methods/enable-two-fa-methods.component';
 import { EnableTwoFaRootComponent } from './account/manage/two-fa/enable-two-fa-root/enable-two-fa-root.component';
+import {NavigationSidenavComponent} from "@features/navigation-sidenav/navigation-sidenav.component";
+import {HomeComponent} from "@features/home/home.component";
 
 
 
@@ -56,16 +54,13 @@ import { EnableTwoFaRootComponent } from './account/manage/two-fa/enable-two-fa-
     ProfileRootComponent,
     EnableAuthenticatorComponent,
     ListUsersComponent,
-    RegisterUserComponent,    
-    NewApplicationComponent,
-    ApplicationDetailComponent,
-    ApplicationListComponent,
-    ApplicationRootComponent,
+    RegisterUserComponent,
+
     ForbiddenComponent,
     ForgotPasswordComponent,
     ForgotPasswordConfirmComponent,
     PasswordResetComponent,
-    EmailConfirmationComponent,    
+    EmailConfirmationComponent,
     LoginTwoFactorComponent,
     ProfilePersonalInfoComponent,
     ProfileSecurityInfoComponent,
@@ -79,8 +74,10 @@ import { EnableTwoFaRootComponent } from './account/manage/two-fa/enable-two-fa-
     EnableTwoFaEmailComponent,
     EnableTwoFaPhoneComponent,
     EnableTwoFaMethodsComponent,
-    EnableTwoFaRootComponent
-    
+    EnableTwoFaRootComponent,
+    NavigationSidenavComponent,
+    HomeComponent
+
   ],
   imports: [
     CommonModule,
@@ -98,7 +95,10 @@ import { EnableTwoFaRootComponent } from './account/manage/two-fa/enable-two-fa-
     DataTablesModule,
     NgxMaskModule.forChild(),
     SweetAlert2Module.forChild()
-    
+
+  ],
+  exports: [
+    NavigationSidenavComponent
   ]
 })
 export class FeaturesModule { }

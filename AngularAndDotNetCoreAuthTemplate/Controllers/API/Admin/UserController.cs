@@ -42,7 +42,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
                 
                 var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
                 user.Roles = roles.ToList();
-
+                
                 return Ok(user);
             }
             catch (Exception e)
@@ -276,6 +276,43 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API.Admin
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error activating user: {id}");
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+        
+        // Unlock user
+        [HttpPost]
+        [Authorize]
+        [Route("unlock/{id?}")]
+        public async Task<IActionResult> Unlock([FromQuery] string id)
+        {
+            try
+            {
+                _logger.LogInformation($"Unlocking user: {id}");
+
+                // Get update user to track who updated                                              
+                var currentUser = GetCurrentUser();
+
+                if (currentUser == null)
+                {
+                    return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                }
+
+                var user = await _userRepository.GetAsync(id);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                // Set lockout end date to now
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Error unlocking user: {id}");
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
