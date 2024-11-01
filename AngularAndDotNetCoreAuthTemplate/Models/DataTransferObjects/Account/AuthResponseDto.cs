@@ -11,11 +11,5 @@
         public ApplicationUser User { get; set; }
 
     }
-
-    //public class UserForAuthDto
-    //{
-    //    public string Email { get; set; }
-    //    public string Name { get; set; }
-    //    public bool IsAdmin { get; set; }
-    //}
+   
 }

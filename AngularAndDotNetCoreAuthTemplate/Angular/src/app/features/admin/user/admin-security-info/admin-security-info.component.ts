@@ -21,8 +21,19 @@ export class AdminSecurityInfoComponent implements OnInit {
 
   @Input() user!: IApplicationUser;
 
+  isLockedOut: boolean = false;
+
   ngOnInit(): void {
     this.logger.debug(`admin-security-info.component.ngOnInit | email: ${this.user?.email}`)
+
+    // Check if user is locked out
+    if (this.user) {
+      const lockoutEnd = this.user.lockoutEnd;
+      this.logger.trace(`admin-security-info.component.ngOnInit | lockoutEnd: ${lockoutEnd}`);
+      const isLockedOut = lockoutEnd && new Date(lockoutEnd) > new Date();
+      this.logger.trace(`admin-security-info.component.ngOnInit | isLockedOut: ${isLockedOut}`);
+      this.isLockedOut = isLockedOut ?? false;
+    }
 
   }
 
@@ -98,6 +109,47 @@ export class AdminSecurityInfoComponent implements OnInit {
 
     });
 
+  }
+
+  onUnlockClick() {
+    this.logger.debug(`admin-security-info.component.onUnlockClick`);
+
+    // Confirm unlock
+    Swal.fire({
+      title: 'Unlock User',
+      text: 'Are you sure you want to unlock this user?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, unlock it!',
+      cancelButtonText: 'No, cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.logger.debug(`admin-security-info.component.onUnlockClick: confirmed`);
+
+        // Unlock user
+        this.userService.unlock(this.user.id).then(response => {
+          this.logger.trace(`admin-security-info.component.onUnlockClick: response:`, response);
+
+          // Confirm success
+          Swal.fire({
+            title: 'User Unlocked',
+            icon: 'success'
+          });
+
+          this.isLockedOut = false;
+
+        }).catch(err => {
+          this.logger.error(`admin-security-info.component.onUnlockClick: error:`, err);
+
+          Swal.fire({
+            title: 'Error',
+            text: 'There was an error unlocking the user. Please try again.',
+            icon: 'error'
+          });
+
+        });
+      }
+    });
   }
 
 }

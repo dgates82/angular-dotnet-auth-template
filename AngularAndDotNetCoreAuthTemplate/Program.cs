@@ -19,7 +19,7 @@ namespace AngularAndDotNetCoreAuthTemplate
             var builder = WebApplication.CreateBuilder(new WebApplicationOptions
             {
                 Args = args,
-                WebRootPath = "ClientApp"
+                WebRootPath = "ClientApp/browser"
             });                     
 
             Console.WriteLine($"WebRoot Path: {builder.Environment.WebRootPath}");

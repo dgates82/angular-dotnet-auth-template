@@ -18,4 +18,8 @@ export class Constants {
   public static twoFaMethods = ["Email", "Sms", "Authenticator"];
   // public static twoFaMethods = ["Email", "Sms"];
 
+  public static LocalStorageKeys = {
+    sideNavExpanded: 'sideNavExpanded',
+  }
+
 }

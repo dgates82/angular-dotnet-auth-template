@@ -71,8 +71,29 @@
         </div>
 
         <div class="row mt-2">
-          <div class="col-md-6">
-            <mat-checkbox class="" formControlName="isAdmin">Is Admin</mat-checkbox>
+          <div formArrayName="roles" class="col-md-12">
+            <div *ngFor="let role of roles.controls; let i = index" class="d-flex align-items-center col-md-6">
+              <mat-form-field class="flex-grow-1">
+                <mat-label>Role</mat-label>
+                <mat-select [formControlName]="i">
+                  <mat-option *ngFor="let role of availableRoles" [value]="role">{{ role }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeRole(i)" class="align-self-center">
+                <mat-icon>remove_circle</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-2">
+          <div class="d-flex align-items-center col-md-6">
+            <mat-form-field class="flex-grow-1">
+              <mat-label>Add Role</mat-label>
+              <mat-select formControlName="addRoleControl" (selectionChange)="addRole($event.value)">
+                <mat-option *ngFor="let role of availableRoles" [value]="role">{{ role }}</mat-option>
+              </mat-select>
+            </mat-form-field>
           </div>
         </div>
       </div>

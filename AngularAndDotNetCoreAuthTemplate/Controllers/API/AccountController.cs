@@ -67,8 +67,10 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                 {
                     return Ok(new ResponseDto { IsSuccess = false });
                 }
-
-                user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                
+                // Add roles to user dto object for client side
+                var roles = await _userManager.GetRolesAsync(user);
+                user.Roles = roles.ToList();
 
                 return Ok(user);
             }
@@ -155,8 +157,10 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                 {
                     var signingCredentials = _jwtHandler.GetSigningCredentials();
 
-                    user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
-
+                    // Add roles to user dto object for client side
+                    var roles = await _userManager.GetRolesAsync(user);
+                    user.Roles = roles.ToList();
+                    
                     var claims = _jwtHandler.GetClaims(user);
                     var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
                     var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
@@ -181,7 +185,11 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                     });
                 }
                 
-                // Otherwise, return unauthorized
+                
+                // Otherwise increment failed login attempts
+                await _userManager.AccessFailedAsync(user).ConfigureAwait(false);
+                
+                // return unauthorized
                 return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid Authentication" });
                 
             }
@@ -218,8 +226,10 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                         { IsAuthSuccessful = false, ErrorMessage = "Invalid Authentication Code" });
                 }
                 
-                user.IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
-
+                // Add roles to user dto object for client side
+                var roles = await _userManager.GetRolesAsync(user);
+                user.Roles = roles.ToList();
+                
                 var signingCredentials = _jwtHandler.GetSigningCredentials();
 
                 // var userDto = new ApplicationUserDto(user, roles.Contains("Admin"));
@@ -227,7 +237,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                 var claims = _jwtHandler.GetClaims(user);
                 var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
                 var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-
+                
                 return Ok(new AuthResponseDto
                 {
                     IsAuthSuccessful = true,
@@ -636,7 +646,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers.API
                 var adminUser = GetCurrentUser();
 
                 // Validate admin user before resetting authenticator
-                if (adminUser == null || !adminUser.IsAdmin)
+                if (adminUser == null || await _userManager.IsInRoleAsync(adminUser, "Admin") == false)
                 {
                     return BadRequest("Admin user is required to reset authenticator.");
                 }

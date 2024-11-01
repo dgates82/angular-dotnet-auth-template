@@ -28,6 +28,24 @@
 <mat-card appearance="outlined" class="mat-elevation-z8 ms-2 mb-3 me-2 col-xl-8">
   <mat-card-title class="m-3">
     <div class="row align-items-center">
+      <div class="col-md-4">Locked Out?</div>
+      <div class="col-md-3">{{ isLockedOut ? 'Yes' : 'No' }}</div>
+      <div class="col-md-5 text-end">
+        <button *ngIf="isLockedOut"
+                mat-raised-button
+                color="warn"
+                class="w-50"
+                (click)="onUnlockClick()">
+          <mat-icon>lock_open</mat-icon> Unlock
+        </button>
+      </div>
+    </div>
+  </mat-card-title>
+</mat-card>
+
+<mat-card appearance="outlined" class="mat-elevation-z8 ms-2 mb-3 me-2 col-xl-8">
+  <mat-card-title class="m-3">
+    <div class="row align-items-center">
       <div class="col-md-4">2 FA Enabled?</div>
       <div class="col-md-3">{{ user.twoFactorEnabled ? 'Yes - ' + user.twoFactorMethod : 'No' }}</div>
       <div class="col-md-5 text-end">
@@ -42,3 +60,5 @@
     </div>
   </mat-card-title>
 </mat-card>
+
+

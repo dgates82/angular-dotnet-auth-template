@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, Validators } from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AddressService } from '@core/services/address.service';
@@ -28,6 +28,10 @@ export class RegisterUserComponent implements OnInit {
               private readonly formBuilder: FormBuilder,
               private readonly router: Router) { }
 
+  // TODO: pull this from the api
+  // Define available roles
+  availableRoles: string[] = ['Admin', 'Tech', 'Manager'];
+
   states!: IState[];
 
   icons = {
@@ -44,7 +48,8 @@ export class RegisterUserComponent implements OnInit {
     city: ['', [Validators.required]],
     zipCode: ['', [Validators.required]],
     state: ['', [Validators.required]],
-    isAdmin: false
+    roles: this.formBuilder.array([]),
+    addRoleControl: ['']
   });
 
   get firstName() { return this.newUserForm.get('firstName'); }
@@ -55,7 +60,10 @@ export class RegisterUserComponent implements OnInit {
   get city() {return this.newUserForm.get('city'); }
   get zipCode() {return this.newUserForm.get('zipCode'); }
   get state() {return this.newUserForm.get('state'); }
-  get isAdmin() {return this.newUserForm.get('isAdmin'); }
+  get roles(): FormArray {
+    return this.newUserForm.get('roles') as FormArray;
+  }
+  get addRoleControl() {return this.newUserForm.get('addRoleControl')}
 
   ngOnInit(): void {
     this.logger.debug(`register-user.component.ngOnInit`);
@@ -101,6 +109,7 @@ export class RegisterUserComponent implements OnInit {
     this.logger.debug(`register-user.component.onSaveClick`);
 
     if (this.newUserForm.invalid) {
+      this.logger.debug(`register-user.component.onSaveClick | form invalid`);
       return;
     }
 
@@ -114,7 +123,7 @@ export class RegisterUserComponent implements OnInit {
       city: this.city?.value ?? '',
       zipCode: this.zipCode?.value ?? '',
       state: this.state?.value ?? '',
-      isAdmin: this.isAdmin?.value ?? false,
+      roles: this.roles.value,
 
       // Unused properties
       id: '',
@@ -142,6 +151,16 @@ export class RegisterUserComponent implements OnInit {
       });
     });
 
+  }
+
+  // Method to add a role
+  addRole(role: string): void {
+    this.roles.push(new FormControl(role, Validators.required));
+  }
+
+  // Method to remove a role
+  removeRole(index: number): void {
+    this.roles.removeAt(index);
   }
 
   onUserCreatedSuccess(response: IApplicationUser): void {

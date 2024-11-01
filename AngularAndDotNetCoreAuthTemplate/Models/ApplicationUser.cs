@@ -16,11 +16,10 @@ namespace AngularAndDotNetCoreAuthTemplate.Models
         public string? City { get; set; }
         public string? State { get; set; }
         [NotMapped]
-        public bool IsAdmin { get; set; } = false;
+        public List<string> Roles { get; set; } = new List<string>();
         public string? TwoFactorMethod { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
-
 
         // HACK I don't like this, but the first user can't be inserted unless this is nullable
         [ForeignKey("CreatedByUser")]
