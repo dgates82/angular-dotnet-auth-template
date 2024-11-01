@@ -22,22 +22,16 @@ export class AuthGuard  {
 
     if (this.accountService.isUserAuthenticated()) {
 
-      const authResponse = this.accountService.getAuthResponse();
-
-      if (route.data.expectedRole === "Admin" && !authResponse?.user.isAdmin) {
-        // TODO: Redirect to unauthorized page
-      }
-
       return true;
     }
 
     this.logger.trace(`auth.guard.canActivate | User is not authenticated`);
 
     this.logger.trace(`auth.guard.canActivate | returnUrl: ${state.url}`)
-    
+
     this.router.navigate(['login'], { queryParams: { returnUrl: state.url } });
 
     return false;
   }
-  
+
 }

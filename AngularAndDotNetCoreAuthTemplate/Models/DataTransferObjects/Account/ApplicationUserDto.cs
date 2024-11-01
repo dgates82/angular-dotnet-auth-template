@@ -9,7 +9,6 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string FullName { get; set; }
-        public bool IsAdmin { get; set; }
         public string? StreetAddress { get; set; }
         public string? ZipCode { get; set; }
         public string? City { get; set; }
@@ -24,9 +23,8 @@
         {
             // Empty on purpose
         }
-
-        // HACK: Should pass in list of roles instaed of isAdmin?
-        public ApplicationUserDto(ApplicationUser user, bool isAdmin)
+        
+        public ApplicationUserDto(ApplicationUser user)
         {
             Email = user.Email;
             IsTwoFaEnabled = user.TwoFactorEnabled;
@@ -35,7 +33,6 @@
             FirstName = user.FirstName;
             LastName = user.LastName;
             FullName = user.FullName;
-            IsAdmin = isAdmin;         
             StreetAddress = user.StreetAddress;
             ZipCode = user.ZipCode;
             City = user.City;

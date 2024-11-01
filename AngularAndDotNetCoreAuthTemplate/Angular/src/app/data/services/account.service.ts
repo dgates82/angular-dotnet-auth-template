@@ -27,6 +27,7 @@ import { IChangePasswordRequest } from '@interfaces/account/change-password-requ
 import { ISendEmailConfirmRequest } from '@interfaces/account/send-email-confirm-request';
 import {IRegisterRequest} from "@interfaces/account/register-request";
 import {ISendVerificationCodeRequest} from "@interfaces/account/send-verification-code-request";
+import {CanActivateFn} from "@angular/router";
 
 
 @Injectable({
@@ -82,10 +83,13 @@ export class AccountService {
     return user;
   }
 
-  public isUserAdmin = (): boolean => {
+  // IsInRole method that takes a role as a parameter and returns a boolean
+  public isInRole = (role: string): boolean => {
+    this.logger.trace(`account.service.isInRole | role: ${role}`);
     const authResponse = this.getAuthResponse();
 
-    return authResponse?.user?.isAdmin ?? false;
+    this.logger.trace(`account.service.isInRole | user.Roles: `, authResponse?.user?.roles);
+    return authResponse?.user?.roles?.includes(role) ?? false;
   }
 
   public isUserAuthenticated = (): boolean => {
@@ -234,7 +238,6 @@ export class AccountService {
       catchError(err => this.errorService.handleError(err))).toPromise();
 
   }
-
 
 
   /**

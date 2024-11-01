@@ -47,8 +47,7 @@ export class ProfilePersonalInfoComponent implements OnInit {
     streetAddress: ['', [Validators.required]],
     city: ['', [Validators.required]],
     zipCode: ['', [Validators.required]],
-    state: ['', [Validators.required]],
-    isAdmin: false
+    state: ['', [Validators.required]]
   });
 
   get firstName() { return this.profileForm.get('firstName'); }
@@ -59,7 +58,6 @@ export class ProfilePersonalInfoComponent implements OnInit {
   get city() {return this.profileForm.get('city'); }
   get zipCode() {return this.profileForm.get('zipCode'); }
   get state() {return this.profileForm.get('state'); }
-  get isAdmin() {return this.profileForm.get('isAdmin'); }
 
   ngOnInit(): void {
     this.logger.debug(`profile-personal-info.component.ngOnInit`);
@@ -104,8 +102,7 @@ export class ProfilePersonalInfoComponent implements OnInit {
       streetAddress: this.user.streetAddress,
       city: this.user.city,
       zipCode: this.user.zipCode,
-      state: this.user.state,
-      isAdmin: this.user.isAdmin
+      state: this.user.state
     });
   }
 
@@ -167,7 +164,6 @@ export class ProfilePersonalInfoComponent implements OnInit {
     this.user.city = this.city?.value;
     this.user.zipCode = this.zipCode?.value;
     this.user.state = this.state?.value;
-    this.user.isAdmin = this.isAdmin?.value;
 
     this.userService.update(this.user).then(response => {
       this.logger.trace(`profile-personal-info.component.onSaveClick | response:`, response)
@@ -205,7 +201,6 @@ export class ProfilePersonalInfoComponent implements OnInit {
     }
 
     this.email?.disable();
-    this.isAdmin?.disable();
   }
 
 }

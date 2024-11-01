@@ -28,7 +28,7 @@ export class AppComponent {
 
   toggleSidebar() {
     this.isExpanded = !this.isExpanded;
-    
+
   }
 
   icons = {
@@ -50,7 +50,7 @@ export class AppComponent {
 
   ngOnInit(): void {
     // Check for auth on page load
-    // this.checkLogin();    
+    // this.checkLogin();
 
     this.onAuthChanged();
 
@@ -83,7 +83,7 @@ export class AppComponent {
 
       if (authResponse) {
         this.authResponse = authResponse;
-        this.isAdmin = authResponse.user.isAdmin;
+        this.isAdmin = this.accountService.isInRole('Admin');
       }
     } else {
       this.authResponse = undefined;
@@ -91,8 +91,8 @@ export class AppComponent {
       // Make sure the sidenav is closed if user is not authenticated
       if (this.sidenav) {
         this.sidenav.close();
-      }            
-        
-    }          
+      }
+
+    }
   }
 }
