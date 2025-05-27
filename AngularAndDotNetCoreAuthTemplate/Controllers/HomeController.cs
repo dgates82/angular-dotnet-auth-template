@@ -42,7 +42,7 @@ namespace AngularAndDotNetCoreAuthTemplate.Controllers
         [Route("~/email-confirmation/{code?}")]
         public IActionResult ConfirmEmail(string? code = null)
         {
-            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp", "index.html"), "text/HTML");
+            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp/browser", "index.html"), "text/HTML");
         }
 
         [Authorize(Roles = "Admin")]
