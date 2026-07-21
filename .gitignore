@@ -12,6 +12,10 @@ ClientApp/
 *.userosscache
 *.sln.docstates
 
+# Claude Code local context
+CLAUDE.md
+.claudeignore
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
