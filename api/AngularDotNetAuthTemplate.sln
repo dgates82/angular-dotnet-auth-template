@@ -18,6 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{0E4FE63A-0
 		..\docs\LOCAL_DEV.md = ..\docs\LOCAL_DEV.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{48B8397B-0ADA-47A6-A098-B1EF46267F71}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\ci.yml = ..\.github\workflows\ci.yml
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularDotNetAuthTemplate.Api.Tests", "AngularDotNetAuthTemplate.Api.Tests\AngularDotNetAuthTemplate.Api.Tests.csproj", "{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}"
 EndProject
 Global
@@ -60,6 +65,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0E4FE63A-0448-46C7-AA68-CB8B39B5CCAC} = {A03C3A50-1DF1-4EAC-B6F5-6A6C478E55FC}
+		{48B8397B-0ADA-47A6-A098-B1EF46267F71} = {A03C3A50-1DF1-4EAC-B6F5-6A6C478E55FC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {790FCD90-B836-47AE-9B60-883BFD6510A2}
