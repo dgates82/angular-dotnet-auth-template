@@ -36,7 +36,8 @@ namespace AngularDotNetAuthTemplate.Api.Data
             {
                 UserName = email,
                 Email = email,
-                EmailConfirmed = true, // bootstrap account: skip the confirmation-email step entirely
+                EmailConfirmed = true, // bootstrap account: skip the confirmation-email/first-login flow entirely
+                HasSetPassword = true,
                 FirstName = "Admin",
                 LastName = "User"
             };

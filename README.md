@@ -46,8 +46,9 @@ cd ..
 dotnet run --project api/AngularDotNetAuthTemplate.Api
 ```
 
-Browse to `https://localhost:7249`. Sent emails (confirmation, password
-reset) land in Mailpit at `http://localhost:8025` instead of a real inbox.
+**Available at:**
+- App: https://localhost:7249
+- Mailpit (dev inbox — confirmation/reset emails land here instead of a real inbox): http://localhost:8025
 
 Follow these steps to set up and run the project locally.
 
@@ -160,6 +161,14 @@ docker run -p 8080:8080 \
 ```
 The app listens on HTTP only inside the container (port 8080, matching the
 .NET base image's default).
+
+## Troubleshooting
+
+**Port already in use.** A previous run may still be alive in the
+background (e.g. a terminal or IDE session that got closed without
+stopping the process cleanly) and still holding the port. Find and stop
+it: `lsof -i :<port>` then `kill <pid>` (Linux/macOS), or on Windows
+`Get-Process -Id (Get-NetTCPConnection -LocalPort <port>).OwningProcess | Stop-Process`.
 
 ## Options
 
