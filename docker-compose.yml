@@ -1,0 +1,47 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: auth-template-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: AuthTemplate
+      MYSQL_USER: webapp
+      MYSQL_PASSWORD: mypass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: auth-template-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # web UI
+
+  api:
+    build:
+      context: .
+      dockerfile: api/AngularDotNetAuthTemplate.Api/Dockerfile
+    container_name: auth-template-api
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=AuthTemplate;User=webapp;Password=mypass"
+      SmtpEmailConfigs__Host: mailpit
+    ports:
+      - "8080:8080"
+
+volumes:
+  mysql_data:
