@@ -18,24 +18,50 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{0E4FE63A-0
 		..\docs\LOCAL_DEV.md = ..\docs\LOCAL_DEV.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularDotNetAuthTemplate.Api.Tests", "AngularDotNetAuthTemplate.Api.Tests\AngularDotNetAuthTemplate.Api.Tests.csproj", "{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Debug|x64.Build.0 = Debug|Any CPU
+		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Debug|x86.Build.0 = Debug|Any CPU
 		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Release|x64.ActiveCfg = Release|Any CPU
+		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Release|x64.Build.0 = Release|Any CPU
+		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Release|x86.ActiveCfg = Release|Any CPU
+		{5211C61A-0678-40E8-879B-52B2CC0BA413}.Release|x86.Build.0 = Release|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Debug|x64.Build.0 = Debug|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Debug|x86.Build.0 = Debug|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Release|x64.ActiveCfg = Release|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Release|x64.Build.0 = Release|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Release|x86.ActiveCfg = Release|Any CPU
+		{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {790FCD90-B836-47AE-9B60-883BFD6510A2}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0E4FE63A-0448-46C7-AA68-CB8B39B5CCAC} = {A03C3A50-1DF1-4EAC-B6F5-6A6C478E55FC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {790FCD90-B836-47AE-9B60-883BFD6510A2}
 	EndGlobalSection
 EndGlobal
