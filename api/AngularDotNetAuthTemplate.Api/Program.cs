@@ -132,6 +132,29 @@ namespace AngularDotNetAuthTemplate.Api
 
             app.MapRazorPages();
 
+            // SPA fallback: any GET request that doesn't match a controller or
+            // Razor route falls through to the Angular app's index.html, so
+            // client-side routes (e.g. a hard refresh on /profile) load the SPA
+            // shell instead of a raw 404. Real /api/* 404s are preserved.
+            //
+            // Uses an explicit "{**path}" pattern rather than the parameterless
+            // MapFallback(handler) overload: that overload applies an implicit
+            // ":nonfile" constraint that excludes any path whose last segment
+            // contains a dot (to avoid swallowing missing-static-file 404s), but
+            // this app has real client routes with a dotted last segment (e.g.
+            // /enable2fa/:email), which that constraint would incorrectly 404.
+            app.MapFallback("/{**path}", async context =>
+            {
+                if (context.Request.Path.StartsWithSegments("/api"))
+                {
+                    context.Response.StatusCode = StatusCodes.Status404NotFound;
+                    return;
+                }
+
+                context.Response.ContentType = "text/html";
+                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "index.html"));
+            });
+
             app.Run();
         }
     }
