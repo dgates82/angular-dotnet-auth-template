@@ -8,6 +8,11 @@ using System.Text;
 
 namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
 {
+    /// <summary>
+    /// Admin-facing user management: create, update, list, deactivate/activate,
+    /// and unlock accounts. Distinct from the self-service endpoints on
+    /// <see cref="AngularDotNetAuthTemplate.Api.Controllers.API.AccountController"/>.
+    /// </summary>
     // [Route("api/admin/[controller]")]
     [Route("api/admin/user")]
     [ApiController]
@@ -18,7 +23,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationUserRepository _userRepository;
 
-        public UserController(ILogger<UserController> logger, 
+        /// <summary>Creates the controller with its injected Identity and repository dependencies.</summary>
+        public UserController(ILogger<UserController> logger,
             SignInManager<ApplicationUser> signInManager, 
             UserManager<ApplicationUser> userManager,
             ApplicationUserRepository userRepository            
@@ -30,8 +36,10 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             _userRepository = userRepository;
         }
         
+        /// <summary>Gets a single user by ID, including their assigned roles.</summary>
+        /// <param name="id">The user's ID.</param>
         [HttpGet]
-        [Route("get/{id?}")]        
+        [Route("get/{id?}")]
         public async Task<IActionResult> Get([FromQuery] string id)
         {
             try
@@ -52,6 +60,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             }
         }
 
+        /// <summary>Lists all users, including each user's assigned roles.</summary>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -77,6 +86,13 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             }
         }
 
+        /// <summary>
+        /// Creates a new user with a randomly generated password and assigns the
+        /// requested roles. Intended for admin-initiated account creation, where
+        /// the user sets their own password later via the email confirmation flow.
+        /// </summary>
+        /// <param name="newUser">The new user's profile fields and requested roles.</param>
+        /// <returns>The created <see cref="ApplicationUser"/>, or 400 with Identity's validation errors.</returns>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post([FromBody] ApplicationUser newUser)
@@ -144,6 +160,9 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
 
         }
 
+        /// <summary>Updates a user's profile fields and role assignments.</summary>
+        /// <param name="updateUser">The user's ID plus the new profile field values and role list.</param>
+        /// <returns>The updated <see cref="ApplicationUser"/>, 404 if not found, or 400 with Identity's validation errors.</returns>
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> Put([FromBody] ApplicationUser updateUser)
@@ -210,6 +229,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
 
         }
 
+        /// <summary>Deactivates a user account, preventing further login.</summary>
+        /// <param name="id">The ID of the user to deactivate.</param>
         [HttpPost]
         [Authorize]
         [Route("deactivate/{id?}")]
@@ -245,6 +266,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             }
         }
 
+        /// <summary>Reactivates a previously deactivated user account.</summary>
+        /// <param name="id">The ID of the user to activate.</param>
         [HttpPost]
         [Authorize]
         [Route("activate/{id?}")]
@@ -280,7 +303,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             }
         }
         
-        // Unlock user
+        /// <summary>Clears a user's lockout, ending any active lockout from failed login attempts immediately.</summary>
+        /// <param name="id">The ID of the user to unlock.</param>
         [HttpPost]
         [Authorize]
         [Route("unlock/{id?}")]
@@ -318,6 +342,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
         }
 
 
+        /// <summary>Generates a random string of uppercase (or lowercase) letters, used to build a random initial password.</summary>
         private string RandomString(int size, bool lowerCase)
         {
             var builder = new StringBuilder();
@@ -333,6 +358,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             return builder.ToString();
         }
 
+        /// <summary>Generates a random number in <c>[min, max)</c>, used to build a random initial password.</summary>
         private int RandomNumber(int min, int max)
         {
             var random = new Random();

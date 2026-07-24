@@ -1,5 +1,11 @@
 ﻿namespace AngularDotNetAuthTemplate.Api.Models.DataTransferObjects.Account
 {
+    /// <summary>
+    /// A trimmed-down user projection, omitting Identity internals like password
+    /// hashes and security stamps. Currently unused — controllers return
+    /// <see cref="Models.ApplicationUser"/> directly (see the commented-out
+    /// reference in <c>AccountController.Login2Fa</c>).
+    /// </summary>
     public class ApplicationUserDto
     {
         public string Email { get; set; }
@@ -20,11 +26,13 @@
         public ApplicationUserDto CreatedByUser { get; set; }
         public ApplicationUserDto UpdatedByUser { get; set; }
 
+        /// <summary>Creates an empty DTO for the caller to populate manually.</summary>
         public ApplicationUserDto()
         {
             // Empty on purpose
         }
-        
+
+        /// <summary>Projects an <see cref="Models.ApplicationUser"/> down to this DTO's fields.</summary>
         public ApplicationUserDto(ApplicationUser user)
         {
             Email = user.Email;

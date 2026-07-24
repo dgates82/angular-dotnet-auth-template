@@ -8,6 +8,12 @@ using System.Net.Mail;
 
 namespace AngularDotNetAuthTemplate.Api.Services
 {
+    /// <summary>
+    /// Default <see cref="IEmailSender"/> implementation, sending mail over SMTP.
+    /// Configured out of the box to point at the Mailpit container from
+    /// <c>docker-compose.yml</c>, so a fresh clone has a working email path with
+    /// no external account or API key.
+    /// </summary>
     public class SmtpEmailSender : IEmailSender
     {
         private readonly ILogger _logger;
@@ -17,15 +23,22 @@ namespace AngularDotNetAuthTemplate.Api.Services
 
         readonly IOptions<SmtpEmailOptions> _options;
 
-                
+
+        /// <summary>Creates the sender with its injected logger and SMTP configuration options.</summary>
         public SmtpEmailSender(ILogger<SmtpEmailSender> logger, IOptions<SmtpEmailOptions> options)
-        {            
+        {
             _logger = logger;
             _options = options;
 
         }
 
 
+        /// <summary>
+        /// Sends an HTML email via SMTP. If <see cref="SmtpEmailOptions.OverrideRecipient"/>
+        /// is configured, the email is redirected there instead, with the
+        /// original recipient appended to the subject line — useful for testing
+        /// against a real inbox without emailing real users.
+        /// </summary>
         public async Task SendEmailAsync(string toEmail, string subject, string message)
         {
             _logger.LogDebug($"SendMailAsync | toEmail: {toEmail} | subject: {subject} | message: {message}");

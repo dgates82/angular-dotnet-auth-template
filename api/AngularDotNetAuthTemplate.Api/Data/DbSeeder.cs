@@ -3,14 +3,18 @@ using AngularDotNetAuthTemplate.Api.Models;
 
 namespace AngularDotNetAuthTemplate.Api.Data
 {
+    /// <summary>Seeds the database with baseline data (the admin role, and optionally a bootstrap admin user) on startup.</summary>
     public static class DbSeeder
     {
+        /// <summary>The Identity role name used for admin users.</summary>
         public const string AdminRoleName = "Admin";
 
-        // Runs on every startup; safe to call repeatedly. The admin role always
-        // gets created. The admin user only gets created if SeedAdmin:Email and
-        // SeedAdmin:Password are configured (appsettings.Development.json or
-        // env vars/user-secrets) and no user with that email already exists.
+        /// <summary>
+        /// Runs on every startup; safe to call repeatedly. The admin role always
+        /// gets created. The admin user only gets created if <c>SeedAdmin:Email</c> and
+        /// <c>SeedAdmin:Password</c> are configured (appsettings.Development.json or
+        /// env vars/user-secrets) and no user with that email already exists.
+        /// </summary>
         public static async Task SeedAsync(IServiceProvider services, IConfiguration configuration)
         {
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
