@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API build & test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      # AngularDotNetAuthTemplate.Api.Tests' integration tests exercise the
+      # real auth/2FA/JWT controller flows over HTTP against these
+      # containers rather than mocks - same docker-compose.yml used locally.
+      - name: Start MySQL & Mailpit
+        run: docker compose up -d mysql mailpit
+
+      - name: Wait for MySQL to be healthy
+        run: |
+          for i in $(seq 1 40); do
+            status=$(docker inspect --format='{{.State.Health.Status}}' auth-template-mysql 2>/dev/null || echo "starting")
+            if [ "$status" = "healthy" ]; then
+              echo "MySQL is healthy"
+              exit 0
+            fi
+            echo "Waiting for MySQL... ($i/40)"
+            sleep 3
+          done
+          echo "MySQL did not become healthy in time"
+          docker logs auth-template-mysql
+          exit 1
+
+      - name: Restore
+        working-directory: api
+        run: dotnet restore AngularDotNetAuthTemplate.sln
+
+      - name: Build
+        working-directory: api
+        run: dotnet build AngularDotNetAuthTemplate.sln --no-restore --configuration Release
+
+      - name: Test
+        working-directory: api
+        run: >
+          dotnet test AngularDotNetAuthTemplate.sln --no-build --configuration Release
+          --logger "trx" --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-results
+          path: api/**/TestResults/*.trx
+
+  client:
+    name: Client build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Build
+        working-directory: client
+        run: npm run build
+
+      - name: Test
+        working-directory: client
+        run: npm test

@@ -1,0 +1,25 @@
+<div class="mt-3">
+  <mat-card appearance="outlined" class="mt-3 mb-4 col-xl-8">
+    <!--mat-elevation-z8-->
+    <mat-card-title class="m-3">Password</mat-card-title>
+    <mat-card-content>
+      @if (!isUpdatingPassword) {
+        <div>
+          <button mat-stroked-button color="primary" class="col-12 col-md-3 mt-3"
+          (click)="updatePassword()">Update Password</button>
+        </div>
+      }
+      @if (isUpdatingPassword) {
+        <div>
+          <app-update-password (passwordUpdated)="onPasswordUpdated($event)" (passwordUpdateCancelled)="onPasswordUpdateCancelled($event)"></app-update-password>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
+
+
+<div class="mt-3 col-xl-8">
+  <app-two-fa-root></app-two-fa-root>
+</div>
+

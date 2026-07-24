@@ -1,0 +1,137 @@
+<mat-card appearance="outlined" class="m-2 col-md-9 mat-elevation-z8">
+  <mat-card-title class="m-3">Register New User</mat-card-title>
+  <mat-card-content >
+    <form [formGroup]="newUserForm">
+      <div class="row mt-3">
+        <mat-form-field class="col-md-6">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" required>
+        </mat-form-field>
+        <div class="row mt-2">
+          <mat-form-field class="col-md-6">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="firstName" required>
+            @if (firstName?.invalid && (firstName?.dirty || firstName?.touched)) {
+              <mat-error>
+                A valid first name is required
+              </mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field class="col-md-6">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="lastName" required>
+            @if (lastName?.invalid && (lastName?.dirty || lastName?.touched)) {
+              <mat-error class="mb-2">
+                A valid last name is required
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="row mt-2">
+          <mat-form-field class="col-md-6">
+            <mat-label>Phone Number</mat-label>
+            <input matInput formControlName="phoneNumber" required mask="(000) 000-0000">
+            @if (phoneNumber?.invalid && (phoneNumber?.dirty || phoneNumber?.touched)) {
+              <mat-error class="mb-2">
+                A valid phone number is required
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="row mt-2">
+          <mat-form-field class="col-md-6">
+            <mat-label>Street Address</mat-label>
+            <input matInput formControlName="streetAddress" required>
+            @if (streetAddress?.invalid && (streetAddress?.dirty || streetAddress?.touched)) {
+              <mat-error class="mb-2">
+                A valid street address is required
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="row mt-2">
+          <mat-form-field class="col-md-6">
+            <mat-label>Zip Code</mat-label>
+            <input matInput formControlName="zipCode" required (blur)="onZipCodeChange($event)">
+            @if (zipCode?.invalid && (zipCode?.dirty || zipCode?.touched)) {
+              <mat-error>
+                A valid zip code is required
+              </mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field class="col-md-6">
+            <mat-label>City</mat-label>
+            <input matInput formControlName="city" required>
+            @if (city?.invalid && (city?.dirty || city?.touched)) {
+              <mat-error class="mb-2">
+                A valid city is required
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="row mt-2">
+          <mat-form-field class="col-md-6">
+            <mat-label>State</mat-label>
+            <mat-select formControlName="state">
+              @for (state of states; track state) {
+                <mat-option [value]="state.abbreviation">{{ state.name}}</mat-option>
+              }
+            </mat-select>
+            @if (state?.invalid && (state?.dirty || state?.touched)) {
+              <mat-error class="mb-2">
+                A valid state is required
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="row mt-2">
+          <div formArrayName="roles" class="col-md-12">
+            @for (role of roles.controls; track role; let i = $index) {
+              <div class="d-flex align-items-center col-md-6">
+                <mat-form-field class="flex-grow-1">
+                  <mat-label>Role</mat-label>
+                  <mat-select [formControlName]="i">
+                    @for (role of availableRoles; track role) {
+                      <mat-option [value]="role">{{ role }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <button mat-icon-button color="warn" (click)="removeRole(i)" class="align-self-center">
+                  <mat-icon>remove_circle</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="row mt-2">
+          <div class="d-flex align-items-center col-md-6">
+            <mat-form-field class="flex-grow-1">
+              <mat-label>Add Role</mat-label>
+              <mat-select formControlName="addRoleControl" (selectionChange)="addRole($event.value)">
+                @for (role of availableRoles; track role) {
+                  <mat-option [value]="role">{{ role }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="">
+          <button mat-stroked-button class="col-6 col-md-4 mt-3" (click)="onCancelClick()">
+            <fa-icon [icon]="icons.cancel"></fa-icon>
+            Cancel
+          </button>
+          <button mat-stroked-button color="primary" class="col-6 col-md-4 mt-3" (click)="onSaveClick()">
+            <fa-icon [icon]="icons.save"></fa-icon>
+            Save
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,138 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using AngularDotNetAuthTemplate.Api.Data;
+using AngularDotNetAuthTemplate.Api.Models;
+using AngularDotNetAuthTemplate.Api.Models.Options;
+using AngularDotNetAuthTemplate.Api.Services;
+using System.Text;
+
+namespace AngularDotNetAuthTemplate.Api
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+            {
+                Args = args,
+                WebRootPath = "../../client/dist/browser"
+            });
+
+            Console.WriteLine($"WebRoot Path: {builder.Environment.WebRootPath}");
+
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
+            
+
+            // Add services to the container.
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<ApplicationUserRepository, ApplicationUserRepository>();
+
+            var jwtSettings = builder.Configuration.GetSection(JwtOptions.ConfigSection);
+
+            /* TODO: Enable for JWT authentication */
+            builder.Services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["validIssuer"],
+                    ValidAudience = jwtSettings["validAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+                    .GetBytes(jwtSettings.GetSection("securityKey").Value))
+                };
+            });
+
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;                
+            })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => 
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+
+            // Default sender: SMTP pointed at the Mailpit container from docker-compose.yml,
+            // so a fresh clone has a working email path with no external account/API key.
+            // Swap to SendGrid/PostMark below (and supply your own key via
+            // appsettings.Development.json or user-secrets) for a real provider.
+            builder.Services.Configure<SmtpEmailOptions>(builder.Configuration.GetSection(SmtpEmailOptions.ConfigSection));
+            builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
+
+            // builder.Services.Configure<SendGridEmailOptions>(builder.Configuration.GetSection(SendGridEmailOptions.ConfigSection));
+            // builder.Services.AddTransient<IEmailSender, SendGridEmailSender>();
+
+            // builder.Services.Configure<PostMarkEmailOptions>(builder.Configuration.GetSection(PostMarkEmailOptions.ConfigSection));
+            // builder.Services.AddTransient<IEmailSender, PostMarkEmailSender>();
+            
+            builder.Services.Configure<TwilioSmsOptions>(builder.Configuration.GetSection(TwilioSmsOptions.ConfigSection));
+            builder.Services.AddTransient<ISmsSender, TwilioSmsSender>();
+            
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigSection));
+            builder.Services.AddScoped<JwtHandler>();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                // TODO: Redirect to custom login
+                // options.LoginPath = "/Home/Privacy";
+            });
+            
+            var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                DbSeeder.SeedAsync(scope.ServiceProvider, app.Configuration).GetAwaiter().GetResult();
+            }
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseMigrationsEndPoint();
+                app.UseSwaggerUI();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapControllers();
+
+            app.MapRazorPages();
+
+            app.Run();
+        }
+    }
+}

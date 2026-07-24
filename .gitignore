@@ -5,12 +5,28 @@
 
 # User-specific files
 appsettings.Development.json
-ClientApp/
 *.rsuser
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
+
+# Claude Code local context
+CLAUDE.md
+.claudeignore
+
+# Angular (client/)
+node_modules/
+client/dist/
+client/.angular/
+chrome-profiler-events*.json
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -398,3 +414,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+.idea/
+
+# Local NuGet Config
+NuGet.config
+

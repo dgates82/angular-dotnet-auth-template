@@ -1,0 +1,92 @@
+@if (isRouted) {
+  <div
+    class="container-fluid d-flex justify-content-center align-items-center vh-100">
+    <div class="col-lg-8">
+      <mat-card appearance="outlined" class="text-center">
+        <div class="row pt-2 pb-5 align-items-center">
+          <div class="col-lg-4">
+            <img src="assets/images/logo-small.png" alt="Logo" class="logo">
+          </div>
+          <div class="col-lg-8 text-start">
+            @if (showMethods) {
+              <div>
+                <app-enable-two-fa-methods (methodSelected)="onMethodSelected($event)"></app-enable-two-fa-methods>
+              </div>
+            }
+            @if (showEnableTwoFaAuthenticator) {
+              <div>
+                <app-enable-authenticator [email]="email"
+                  [showBack]="isMultipleMethods"
+                  (backClicked)="onBackClicked()"
+                  (authenticatorEnabled)="onTwoFaEnabled($event)">
+                </app-enable-authenticator>
+              </div>
+            }
+            @if (showEnableTwoFaEmail) {
+              <div>
+                <app-enable-two-fa-email [email]="email"
+                  [showBack]="isMultipleMethods"
+                  (backClicked)="onBackClicked()" (twoFaEnabled)="onTwoFaEnabled($event)">
+                </app-enable-two-fa-email>
+              </div>
+            }
+            @if (showEnableTwoFaSms) {
+              <div>
+                <app-enable-two-fa-phone [email]="email"
+                  [showBack]="isMultipleMethods"
+                  [isRouted]="isRouted"
+                  (backClicked)="onBackClicked()"
+                  (twoFaEnabled)="onTwoFaEnabled($event)">
+                </app-enable-two-fa-phone>
+              </div>
+            }
+            <!-- link to login again -->
+            @if (isTwoFaEnabled) {
+              <div>
+                <h3>Click here to <a [routerLink]="['/login']">login</a></h3>
+              </div>
+            }
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+}
+
+@if (!isRouted) {
+  <div>
+    @if (showMethods) {
+      <div>
+        <app-enable-two-fa-methods (methodSelected)="onMethodSelected($event)"></app-enable-two-fa-methods>
+      </div>
+    }
+    @if (showEnableTwoFaAuthenticator) {
+      <div>
+        <app-enable-authenticator [email]="email"
+          [showBack]="isMultipleMethods"
+          (backClicked)="onBackClicked()"
+          (authenticatorEnabled)="onTwoFaEnabled($event)">
+        </app-enable-authenticator>
+      </div>
+    }
+    @if (showEnableTwoFaEmail) {
+      <div>
+        <app-enable-two-fa-email [email]="email"
+          [showBack]="isMultipleMethods"
+          (backClicked)="onBackClicked()"
+          (twoFaEnabled)="onTwoFaEnabled($event)">
+        </app-enable-two-fa-email>
+      </div>
+    }
+    @if (showEnableTwoFaSms) {
+      <div>
+        <app-enable-two-fa-phone [email]="email"
+          [showBack]="isMultipleMethods"
+          [isRouted]="isRouted"
+          (backClicked)="onBackClicked()"
+          (twoFaEnabled)="onTwoFaEnabled($event)">
+        </app-enable-two-fa-phone>
+      </div>
+    }
+  </div>
+}
