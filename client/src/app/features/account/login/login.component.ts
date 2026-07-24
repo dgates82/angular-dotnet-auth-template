@@ -4,6 +4,7 @@ import { Validators, FormBuilder, FormsModule, ReactiveFormsModule } from '@angu
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { Constants } from '@core/constants';
+import { writeAuthResponse } from '@core/auth-storage';
 
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IAuthResponse } from '@interfaces/account/auth-response';
@@ -115,7 +116,7 @@ export class LoginComponent implements OnInit {
       this.isInvalidLogin = false;
 
       // Set login token
-      localStorage.setItem("authResponse", JSON.stringify(response));
+      writeAuthResponse(response);
       this.accountService.sendAuthStateChangeNotification(true);
 
       // Test secure endpoint

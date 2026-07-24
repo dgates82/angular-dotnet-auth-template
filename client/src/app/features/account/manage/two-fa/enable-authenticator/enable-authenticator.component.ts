@@ -3,7 +3,7 @@ import { UntypedFormControl, UntypedFormGroup, Validators, FormsModule, Reactive
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
-import { IEnableAuthenticatorRequest } from '@interfaces/account/enable-authenticator-request';
+import { IEmailOnlyRequest } from '@interfaces/account/email-only-request';
 import { IVerifyAuthenticatorRequest } from '@interfaces/account/verify-authenticator-request';
 import { Constants } from '@core/constants';
 import { ActivatedRoute } from '@angular/router';
@@ -59,7 +59,7 @@ export class EnableAuthenticatorComponent implements OnInit {
       this.email = this.route.snapshot.paramMap.get('email') ?? '';
     }
 
-    var enableAuthenticatorRequest: IEnableAuthenticatorRequest = {
+    var enableAuthenticatorRequest: IEmailOnlyRequest = {
       email: this.email
     };
 

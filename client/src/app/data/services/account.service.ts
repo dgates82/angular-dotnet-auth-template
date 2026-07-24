@@ -13,6 +13,7 @@ import { IAuthRequest } from '@interfaces/account/auth-request';
 import { IAuthResponse } from '@interfaces/account/auth-response';
 
 import { Constants } from '@core/constants';
+import { readAuthResponse, writeAuthResponse } from '@core/auth-storage';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { IForgotPasswordRequest } from '@interfaces/account/forgot-password-request';
 import { IResetPasswordRequest } from '@interfaces/account/reset-password-request';
@@ -20,11 +21,10 @@ import { IResponse } from '@interfaces/response';
 import { IConfirmEmailRequest } from '@interfaces/account/confirm-email-request';
 import { ITwoFaAuthRequest } from '@interfaces/account/two-fa-auth-request';
 import { IEnableAuthenticatorResponse } from '@interfaces/account/enable-authenticator-response';
-import { IEnableAuthenticatorRequest } from '@interfaces/account/enable-authenticator-request';
+import { IEmailOnlyRequest } from '@interfaces/account/email-only-request';
 import { IVerifyAuthenticatorRequest } from '@interfaces/account/verify-authenticator-request';
 import { IVerifyAuthenticatorResponse } from '@interfaces/account/verify-authenticator-response';
 import { IChangePasswordRequest } from '@interfaces/account/change-password-request';
-import { ISendEmailConfirmRequest } from '@interfaces/account/send-email-confirm-request';
 import {IRegisterRequest} from "@interfaces/account/register-request";
 import {ISendVerificationCodeRequest} from "@interfaces/account/send-verification-code-request";
 import {CanActivateFn} from "@angular/router";
@@ -52,14 +52,13 @@ export class AccountService {
   }
 
   public getAuthResponse = (): IAuthResponse | null => {
-    const response = localStorage.getItem('authResponse');
-    if (!response) {
+    const authResponse = readAuthResponse();
+    if (!authResponse) {
       this.logger.trace(`account.service.getAuthResponse | No authResponse found in local storage`)
       return null;
     }
 
-    this.logger.trace(`account.service.getAuthResponse | authResponse: ${response}`)
-    const authResponse = JSON.parse(response) as IAuthResponse;
+    this.logger.trace(`account.service.getAuthResponse | authResponse:`, authResponse)
 
     // HACK: Finish decoding user from token and remove user from authResponse so it is not stored in plain text in local storage
     /*
@@ -71,6 +70,20 @@ export class AccountService {
 
     return authResponse
 
+  }
+
+  // Merges a partial user update (e.g. a phone number set while enabling SMS 2FA)
+  // into the cached authResponse, so getAuthResponse()/getLoggedInUser() reflect
+  // it immediately instead of only after the next login.
+  public updateStoredUser(partialUser: Partial<IApplicationUser>): void {
+    const authResponse = this.getAuthResponse();
+    if (!authResponse) {
+      this.logger.trace(`account.service.updateStoredUser | No authResponse found in local storage`)
+      return;
+    }
+
+    authResponse.user = { ...authResponse.user, ...partialUser };
+    writeAuthResponse(authResponse);
   }
 
   public getLoggedInUser(): IApplicationUser | null{
@@ -174,7 +187,7 @@ export class AccountService {
 
   }
 
-  async sendConfirmEmail(request: ISendEmailConfirmRequest): Promise<IResponse> {
+  async sendConfirmEmail(request: IEmailOnlyRequest): Promise<IResponse> {
     this.logger.debug(`account.service.sendConfirmEmail | email: ${request.email}`);
 
     let url = `${this.apiUrl}/sendemailconfirmation`;
@@ -206,7 +219,7 @@ export class AccountService {
       catchError(err => this.errorService.handleError(err))));
   }
 
-  async enableAuthenticator(request: IEnableAuthenticatorRequest): Promise<IEnableAuthenticatorResponse> {
+  async enableAuthenticator(request: IEmailOnlyRequest): Promise<IEnableAuthenticatorResponse> {
     this.logger.debug(`account.service.enableAuthenticator | email: ${request.email}`);
 
     let url = `${this.apiUrl}/enableauthenticator`;
@@ -228,7 +241,7 @@ export class AccountService {
 
   }
 
-  async resetAuthenticator(request: IEnableAuthenticatorRequest): Promise<IResponse> {
+  async resetAuthenticator(request: IEmailOnlyRequest): Promise<IResponse> {
     this.logger.debug(`account.service.resetAuthenticator | email: ${request.email}`);
 
     let url = `${this.apiUrl}/resetauthenticator`;

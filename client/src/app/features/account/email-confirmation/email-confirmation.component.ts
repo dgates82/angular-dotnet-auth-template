@@ -48,7 +48,6 @@ export class EmailConfirmationComponent implements OnInit {
           this.router.navigate(['/email-confirmation/reset'], { queryParamsHandling: 'preserve' });
         }
         else {
-          // HACK: There is no current use case for this
           this.isConfirmed = true;
         }
 
