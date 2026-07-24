@@ -1,102 +1,117 @@
 <mat-card appearance="outlined" class="ms-1 mb-3 mt-3 me-2 col-xl-8">
   <mat-card-title></mat-card-title>
   <mat-card-content>
-    <form *ngIf="user" [formGroup]="profileForm">
-      <div class="row mt-3">
-        <mat-form-field class="col-md-6">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email">
-        </mat-form-field>
-        <div class="row mt-2">
+    @if (user) {
+      <form [formGroup]="profileForm">
+        <div class="row mt-3">
           <mat-form-field class="col-md-6">
-            <mat-label>First Name</mat-label>
-            <input matInput formControlName="firstName" required>
-            <mat-error *ngIf="firstName?.invalid && (firstName?.dirty || firstName?.touched)">
-              A valid first name is required
-            </mat-error>
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email">
           </mat-form-field>
-          <mat-form-field class="col-md-6">
-            <mat-label>Last Name</mat-label>
-            <input matInput formControlName="lastName" required>
-            <mat-error *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)" class="mb-2">
-              A valid last name is required
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <div class="row mt-2">
-          <mat-form-field class="col-md-6">
-            <mat-label>Phone Number</mat-label>
-            <input matInput formControlName="phoneNumber" required mask="(000) 000-0000">
-            <mat-error *ngIf="phoneNumber?.invalid && (phoneNumber?.dirty || phoneNumber?.touched)" class="mb-2">
-              A valid phone number is required
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <div class="row mt-2">
-          <mat-form-field class="col-md-6">
-            <mat-label>Street Address</mat-label>
-            <input matInput formControlName="streetAddress" required>
-            <mat-error *ngIf="streetAddress?.invalid && (streetAddress?.dirty || streetAddress?.touched)" class="mb-2">
-              A valid street address is required
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <div class="row mt-2">
-          <mat-form-field class="col-md-6">
-            <mat-label>Zip Code</mat-label>
-            <input matInput formControlName="zipCode" required (blur)="onZipCodeChange($event)">
-            <mat-error *ngIf="zipCode?.invalid && (zipCode?.dirty || zipCode?.touched)">
-              A valid zip code is required
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-md-6">
-            <mat-label>City</mat-label>
-            <input matInput formControlName="city" required>
-            <mat-error *ngIf="city?.invalid && (city?.dirty || city?.touched)" class="mb-2">
-              A valid city is required
-            </mat-error>
-          </mat-form-field>
-        </div>
-
-        <div class="row mt-2">
-          <mat-form-field class="col-md-6">
-            <mat-label>State</mat-label>
-            <!--<input matInput formControlName="state" required>-->
-            <mat-select matInput formControlName="state">
-              <mat-option *ngFor="let state of states" [value]="state.abbreviation">{{ state.name}}</mat-option>
-            </mat-select>
-            <mat-error *ngIf="state?.invalid && (state?.dirty || state?.touched)" class="mb-2">
-              A valid state is required
-            </mat-error>
-          </mat-form-field>
-        </div>
-
-        <div class="row mt-2">
-          <div class="col-md-6">
-            <mat-checkbox class="" formControlName="isAdmin">Is Admin</mat-checkbox>
+          <div class="row mt-2">
+            <mat-form-field class="col-md-6">
+              <mat-label>First Name</mat-label>
+              <input matInput formControlName="firstName" required>
+              @if (firstName?.invalid && (firstName?.dirty || firstName?.touched)) {
+                <mat-error>
+                  A valid first name is required
+                </mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field class="col-md-6">
+              <mat-label>Last Name</mat-label>
+              <input matInput formControlName="lastName" required>
+              @if (lastName?.invalid && (lastName?.dirty || lastName?.touched)) {
+                <mat-error class="mb-2">
+                  A valid last name is required
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="row mt-2">
+            <mat-form-field class="col-md-6">
+              <mat-label>Phone Number</mat-label>
+              <input matInput formControlName="phoneNumber" required mask="(000) 000-0000">
+              @if (phoneNumber?.invalid && (phoneNumber?.dirty || phoneNumber?.touched)) {
+                <mat-error class="mb-2">
+                  A valid phone number is required
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="row mt-2">
+            <mat-form-field class="col-md-6">
+              <mat-label>Street Address</mat-label>
+              <input matInput formControlName="streetAddress" required>
+              @if (streetAddress?.invalid && (streetAddress?.dirty || streetAddress?.touched)) {
+                <mat-error class="mb-2">
+                  A valid street address is required
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="row mt-2">
+            <mat-form-field class="col-md-6">
+              <mat-label>Zip Code</mat-label>
+              <input matInput formControlName="zipCode" required (blur)="onZipCodeChange($event)">
+              @if (zipCode?.invalid && (zipCode?.dirty || zipCode?.touched)) {
+                <mat-error>
+                  A valid zip code is required
+                </mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field class="col-md-6">
+              <mat-label>City</mat-label>
+              <input matInput formControlName="city" required>
+              @if (city?.invalid && (city?.dirty || city?.touched)) {
+                <mat-error class="mb-2">
+                  A valid city is required
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="row mt-2">
+            <mat-form-field class="col-md-6">
+              <mat-label>State</mat-label>
+              <!--<input matInput formControlName="state" required>-->
+              <mat-select formControlName="state">
+                @for (state of states; track state) {
+                  <mat-option [value]="state.abbreviation">{{ state.name}}</mat-option>
+                }
+              </mat-select>
+              @if (state?.invalid && (state?.dirty || state?.touched)) {
+                <mat-error class="mb-2">
+                  A valid state is required
+                </mat-error>
+              }
+            </mat-form-field>
           </div>
         </div>
-      </div>
-
-      <div class="row mt-3">
-        <div *ngIf="!isEditMode" class="">
-          <button *ngIf="allowEdit" mat-stroked-button color="primary" class="col-6 col-md-4 mt-3" (click)="onEditClick()">
-            <fa-icon [icon]="icons.edit"></fa-icon>
-            Edit
-          </button>
+        <div class="row mt-3">
+          @if (!isEditMode) {
+            <div class="">
+              @if (allowEdit) {
+                <button mat-stroked-button color="primary" class="col-6 col-md-4 mt-3" (click)="onEditClick()">
+                  <fa-icon [icon]="icons.edit"></fa-icon>
+                  Edit
+                </button>
+              }
+            </div>
+          }
+          @if (isEditMode) {
+            <div class="">
+              <button mat-stroked-button class="col-6 col-md-4 mt-3" (click)="onCancelClick()">
+                <fa-icon [icon]="icons.cancel"></fa-icon>
+                Cancel
+              </button>
+              <button mat-stroked-button color="primary" class="col-6 col-md-4 mt-3" (click)="onSaveClick()">
+                <fa-icon [icon]="icons.save"></fa-icon>
+                Save
+              </button>
+            </div>
+          }
         </div>
-
-        <div *ngIf="isEditMode" class="">
-          <button mat-stroked-button class="col-6 col-md-4 mt-3" (click)="onCancelClick()">
-            <fa-icon [icon]="icons.cancel"></fa-icon>
-            Cancel
-          </button>
-          <button mat-stroked-button color="primary" class="col-6 col-md-4 mt-3" (click)="onSaveClick()">
-            <fa-icon [icon]="icons.save"></fa-icon>
-            Save
-          </button>
-        </div>
-      </div>
-    </form>
+      </form>
+    }
   </mat-card-content>
 </mat-card>

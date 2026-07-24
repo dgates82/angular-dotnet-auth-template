@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AddressService } from '@core/services/address.service';
@@ -9,11 +9,20 @@ import { faCancel, faEdit, faSave, faUserPlus, faUserTimes } from '@fortawesome/
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { IState } from '@interfaces/address/state';
 import Swal from 'sweetalert2';
+import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgxMaskDirective } from 'ngx-mask';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'app-admin-personal-info',
-  templateUrl: './admin-personal-info.component.html',
-  styleUrls: ['./admin-personal-info.component.scss']
+    selector: 'app-admin-personal-info',
+    templateUrl: './admin-personal-info.component.html',
+    styleUrls: ['./admin-personal-info.component.scss'],
+    imports: [MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgxMaskDirective, MatSelect, MatOption, MatIconButton, MatIcon, MatButton, FaIconComponent]
 })
 export class AdminPersonalInfoComponent implements OnInit {
 

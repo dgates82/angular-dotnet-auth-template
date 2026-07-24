@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AddressService } from '@core/services/address.service';
@@ -11,11 +11,19 @@ import { faCancel, faEdit, faSave, faUserPlus, faUserTimes } from '@fortawesome/
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { IState } from '@interfaces/address/state';
 import Swal from 'sweetalert2';
+import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgxMaskDirective } from 'ngx-mask';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatButton } from '@angular/material/button';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'app-profile-personal-info',
-  templateUrl: './profile-personal-info.component.html',
-  styleUrls: ['./profile-personal-info.component.scss']
+    selector: 'app-profile-personal-info',
+    templateUrl: './profile-personal-info.component.html',
+    styleUrls: ['./profile-personal-info.component.scss'],
+    imports: [MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgxMaskDirective, MatSelect, MatOption, MatButton, FaIconComponent]
 })
 export class ProfilePersonalInfoComponent implements OnInit {
 
@@ -82,7 +90,6 @@ export class ProfilePersonalInfoComponent implements OnInit {
       }
 
       this.setFormValues();
-
     });
 
   }

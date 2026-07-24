@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AccountService} from "@data/services/account.service";
 import {LoggerService} from "@core/services/logger.service";
-import {NavigationEnd, Router} from "@angular/router";
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from "@angular/router";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {filter} from "rxjs/operators";
 import {IAuthResponse} from "@interfaces/account/auth-response";
@@ -15,11 +15,17 @@ import {
   faTable, faUsers,
   faUserTie
 } from "@fortawesome/free-solid-svg-icons";
+import { MatSidenavContainer, MatSidenav, MatSidenavContent } from '@angular/material/sidenav';
+import { NgClass } from '@angular/common';
+import { MatNavList, MatListItem, MatDivider } from '@angular/material/list';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { MatButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-navigation-sidenav',
-  templateUrl: './navigation-sidenav.component.html',
-  styleUrl: './navigation-sidenav.component.scss'
+    selector: 'app-navigation-sidenav',
+    templateUrl: './navigation-sidenav.component.html',
+    styleUrl: './navigation-sidenav.component.scss',
+    imports: [MatSidenavContainer, MatSidenav, NgClass, MatNavList, MatListItem, RouterLink, FaIconComponent, MatDivider, MatButton, MatSidenavContent, RouterOutlet]
 })
 export class NavigationSidenavComponent implements OnInit{
 

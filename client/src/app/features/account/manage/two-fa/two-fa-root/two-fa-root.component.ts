@@ -5,11 +5,19 @@ import { AccountService } from '@data/services/account.service';
 import { IApplicationUser } from '@interfaces/account/application-user';
 import Swal from "sweetalert2";
 import {Constants} from "@core/constants";
+import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { FormsModule } from '@angular/forms';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { MatButton } from '@angular/material/button';
+import { EnableTwoFaRootComponent } from '../enable-two-fa-root/enable-two-fa-root.component';
 
 @Component({
-  selector: 'app-two-fa-root',
-  templateUrl: './two-fa-root.component.html',
-  styleUrls: ['./two-fa-root.component.scss']
+    selector: 'app-two-fa-root',
+    templateUrl: './two-fa-root.component.html',
+    styleUrls: ['./two-fa-root.component.scss'],
+    imports: [MatCard, MatCardTitle, MatCardContent, MatSlideToggle, FormsModule, MatTooltip, MatIcon, MatButton, EnableTwoFaRootComponent]
 })
 export class TwoFaRootComponent implements OnInit {
 
@@ -39,6 +47,7 @@ export class TwoFaRootComponent implements OnInit {
     if (applicationUser) {
       this.accountService.getUserByEmail(applicationUser?.email).then(response => {
         this.logger.trace(`two-fa-root.component.ngOnInit | response:`, response)
+
         this.user = response;
         this.isTwoFaEnabled = response.twoFactorEnabled;
         this.isTwoFaEnabledString = this.isTwoFaEnabled ? 'Enabled' : 'Disabled';

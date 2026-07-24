@@ -1,8 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({
-  name: 'obfuscatePhone'
-})
+@Pipe({ name: 'obfuscatePhone' })
 export class ObfuscatePhonePipe implements PipeTransform {
 
   transform(phoneNumber: string): string {

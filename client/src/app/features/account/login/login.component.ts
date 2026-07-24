@@ -1,21 +1,29 @@
 import {Component, OnInit} from '@angular/core';
-import { Validators, FormBuilder } from '@angular/forms';
+import { Validators, FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { Constants } from '@core/constants';
 
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IAuthResponse } from '@interfaces/account/auth-response';
 import { IAuthRequest } from '@interfaces/account/auth-request';
 import {ObfuscateEmailPipe} from "@core/pipes/obfuscate-email.pipe";
 import {ObfuscatePhonePipe} from "@core/pipes/obfuscate-phone.pipe";
+import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { LoginTwoFactorComponent } from './login-two-factor/login-two-factor.component';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
-  providers: [ObfuscateEmailPipe, ObfuscatePhonePipe]
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    providers: [ObfuscateEmailPipe, ObfuscatePhonePipe],
+    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatInput, MatButton, MatIcon, MatProgressSpinner, RouterLink, LoginTwoFactorComponent]
 })
 export class LoginComponent implements OnInit {
 

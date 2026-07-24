@@ -6,6 +6,7 @@ import { LocationStrategy } from '@angular/common';
 import { LoggerService } from '@core/services/logger.service';
 import { HttpErrorService } from '@core/services/http-error.service';
 import { catchError, tap } from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { Constants } from '@core/constants';
 import {IResponse} from "@interfaces/response";
@@ -25,9 +26,9 @@ export class UserService {
   public get(): Promise<IApplicationUser[]> {
     this.logger.debug(`user.service.get`);
 
-    return this.httpClient.get<IApplicationUser[]>(`${this.apiUrl}`).pipe(
+    return lastValueFrom(this.httpClient.get<IApplicationUser[]>(`${this.apiUrl}`).pipe(
       tap(response => this.logger.trace(`user.service.get | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -38,26 +39,26 @@ export class UserService {
 
     this.logger.debug(`user.service.getbyId | url: ${url}`);
 
-    return this.httpClient.get<IApplicationUser>(url).pipe(
+    return lastValueFrom(this.httpClient.get<IApplicationUser>(url).pipe(
       tap(response => this.logger.trace(`user.service.getById | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
   public createUser(request: IApplicationUser): Promise<IApplicationUser> {
     this.logger.debug(`user.service.createUser | request: ${JSON.stringify(request)}`);
 
-    return this.httpClient.post<IApplicationUser>(this.apiUrl, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IApplicationUser>(this.apiUrl, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`user.service.createUser | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
   }
 
   public update(user: IApplicationUser): Promise<IApplicationUser> {
     this.logger.debug(`user.service.update | user: ${JSON.stringify(user)}`);
 
-    return this.httpClient.put<IApplicationUser>(`${this.apiUrl}`, user).pipe(
+    return lastValueFrom(this.httpClient.put<IApplicationUser>(`${this.apiUrl}`, user).pipe(
       tap(response => this.logger.trace(`user.service.update | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -66,9 +67,9 @@ export class UserService {
 
     const url = `${this.apiUrl}/deactivate?id=${id}`;
 
-    return this.httpClient.post<IApplicationUser>(url, null).pipe(
+    return lastValueFrom(this.httpClient.post<IApplicationUser>(url, null).pipe(
       tap(response => this.logger.trace(`user.service.deactivate | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -77,9 +78,9 @@ export class UserService {
 
     const url = `${this.apiUrl}/activate?id=${id}`;
 
-    return this.httpClient.post<IApplicationUser>(url, null).pipe(
+    return lastValueFrom(this.httpClient.post<IApplicationUser>(url, null).pipe(
       tap(response => this.logger.trace(`user.service.activate | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -88,9 +89,9 @@ export class UserService {
 
     const url = `${this.apiUrl}/unlock?id=${id}`;
 
-    return this.httpClient.post<IResponse>(url, null).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, null).pipe(
       tap(response => this.logger.trace(`user.service.unlock | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
   }
 
 }

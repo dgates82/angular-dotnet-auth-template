@@ -5,7 +5,7 @@ import { LocationStrategy } from '@angular/common';
 import { LoggerService } from '@core/services/logger.service';
 import { HttpErrorService } from '@core/services/http-error.service';
 import { catchError, tap } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, lastValueFrom } from 'rxjs';
 
 
 import { IApplicationUser } from '@interfaces/account/application-user';
@@ -106,9 +106,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/register`;
 
-    return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.register | response: `, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -117,9 +117,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/getuserbyemail?email=${email}`;
 
-    return this.httpClient.get<IApplicationUser>(url).pipe(
+    return lastValueFrom(this.httpClient.get<IApplicationUser>(url).pipe(
       tap(response => this.logger.trace(`account.service.getUserByEmail | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
   }
 
   async login(authRequest: IAuthRequest): Promise<IAuthResponse> {
@@ -127,9 +127,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/login`;
 
-    return this.httpClient.post<IAuthResponse>(url, authRequest, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IAuthResponse>(url, authRequest, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.login | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
   }
 
   async login2fa(authRequest: ITwoFaAuthRequest): Promise<IAuthResponse> {
@@ -137,9 +137,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/login2fa`;
 
-    return this.httpClient.post<IAuthResponse>(url, authRequest, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IAuthResponse>(url, authRequest, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.login2fa | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -148,9 +148,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/forgotpassword`;
 
-    return this.httpClient.post<IResponse>(url, forgotPasswordRequest, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, forgotPasswordRequest, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.sendForgotPassword | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -158,9 +158,9 @@ export class AccountService {
     this.logger.debug(`account.service.resetPassword | email: ${request.email}`);
 
     let url = `${this.apiUrl}/resetpassword`;
-    return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.resetPassword | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
   }
 
   async changePassword(request: IChangePasswordRequest): Promise<IResponse> {
@@ -168,9 +168,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/changepassword`;
 
-    return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.changePassword | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -179,9 +179,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/sendemailconfirmation`;
 
-    return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.sendConfirmEmail | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -190,9 +190,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/confirmemail`;
 
-    return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.resetPassword | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -201,9 +201,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/SendTwoFaCode`;
 
-    return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.sendVerificationCode | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
   }
 
   async enableAuthenticator(request: IEnableAuthenticatorRequest): Promise<IEnableAuthenticatorResponse> {
@@ -211,9 +211,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/enableauthenticator`;
 
-    return this.httpClient.post<IEnableAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IEnableAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.enableAuthenticator | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -222,9 +222,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/verifyauthenticator`;
 
-    return this.httpClient.post<IVerifyAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IVerifyAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.verifyAuthenticator | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -233,9 +233,9 @@ export class AccountService {
 
     let url = `${this.apiUrl}/resetauthenticator`;
 
-    return this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.resetAuthenticator | response:`, response)),
-      catchError(err => this.errorService.handleError(err))).toPromise();
+      catchError(err => this.errorService.handleError(err))));
 
   }
 
@@ -247,8 +247,8 @@ export class AccountService {
   async testSecure() : Promise<any> {
     this.logger.debug(`account.service.testSecure`);
     let url = `${this.apiUrl}/secure`;
-    // return this.httpClient.get(url, {responseType: 'text'}).toPromise();
-    return this.httpClient.get(url, {responseType: 'text'}).toPromise();
+    // return lastValueFrom(this.httpClient.get(url, {responseType: 'text'}));
+    return lastValueFrom(this.httpClient.get(url, {responseType: 'text'}));
   }
 
 }

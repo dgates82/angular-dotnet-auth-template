@@ -6,14 +6,23 @@ import { AccountService } from '@data/services/account.service';
 
 import { faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
 import { PasswordValidators } from '@core/validators/password-validators';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IResponse } from '@interfaces/response';
 import { IRegisterRequest } from '../../../interfaces/account/register-request';
+import { MatCard, MatCardContent, MatCardTitle } from '@angular/material/card';
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgClass } from '@angular/common';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.scss'],
+    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatError, MatFormField, MatLabel, MatInput, NgClass, FaIconComponent, MatButton, MatIcon, MatProgressSpinner]
 })
 export class RegisterComponent implements OnInit {
 

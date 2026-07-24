@@ -90,3 +90,7 @@ jobs:
       - name: Build
         working-directory: client
         run: npm run build
+
+      - name: Test
+        working-directory: client
+        run: npm test

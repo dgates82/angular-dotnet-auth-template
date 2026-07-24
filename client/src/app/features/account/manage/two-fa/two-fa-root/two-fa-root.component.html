@@ -1,37 +1,47 @@
 <mat-card appearance="outlined" class="mt-3 mb-4">
-    <mat-card-title class="m-3">Two-factor Authentication (2FA)</mat-card-title>
-  <mat-card-content *ngIf="user">
-    <mat-slide-toggle class="mt-2"
-                      [(ngModel)]="isTwoFaEnabled"
-                      color="primary"
-                      [disabled]="isTwoFaRequired"
-                      [matTooltip]="isTwoFaRequired ? '2FA is required for this site' : ''"
-                      (change)="onEnabledChanged($event)">
-      <span class="ms-2">{{ isTwoFaEnabledString }}</span>
-    </mat-slide-toggle>
-
-    <div *ngIf="isTwoFaEnabled && !isTwoFaEnabling" class="mt-4 d-flex align-items-center">
-      <h2 class="d-flex align-items-center">
-        Method:
-        <mat-icon class="ms-2 me-2" *ngIf="user.twoFactorMethod === 'Phone'">sms</mat-icon>
-        <mat-icon class="ms-2 me-2" *ngIf="user.twoFactorMethod === 'Email'">email</mat-icon>
-        <mat-icon class="ms-2 me-2" *ngIf="user.twoFactorMethod === 'Authenticator'">security</mat-icon>
-        {{ user.twoFactorMethod === 'Phone' ? 'Sms' : user.twoFactorMethod }}
-      </h2>
-    </div>
-
-    <div *ngIf="isTwoFaEnabled && !isTwoFaEnabling" class="mt-4">
-      <button mat-raised-button color="accent" (click)="onChangeTwoFaMethodClick()">
-        <mat-icon>security</mat-icon>
-        Change 2FA Method
-      </button>
-    </div>
-
-    <div *ngIf="isTwoFaEnabling">
-      <app-enable-two-fa-root [email]="user.email"
-                              (twoFaEnabled)="onAuthenticatorEnabled($event)">
-      </app-enable-two-fa-root>
-    </div>
-
-  </mat-card-content>
+  <mat-card-title class="m-3">Two-factor Authentication (2FA)</mat-card-title>
+  @if (user) {
+    <mat-card-content>
+      <mat-slide-toggle class="mt-2"
+        [(ngModel)]="isTwoFaEnabled"
+        color="primary"
+        [disabled]="isTwoFaRequired"
+        [matTooltip]="isTwoFaRequired ? '2FA is required for this site' : ''"
+        (change)="onEnabledChanged($event)">
+        <span class="ms-2">{{ isTwoFaEnabledString }}</span>
+      </mat-slide-toggle>
+      @if (isTwoFaEnabled && !isTwoFaEnabling) {
+        <div class="mt-4 d-flex align-items-center">
+          <h2 class="d-flex align-items-center">
+            Method:
+            @if (user.twoFactorMethod === 'Phone') {
+              <mat-icon class="ms-2 me-2">sms</mat-icon>
+            }
+            @if (user.twoFactorMethod === 'Email') {
+              <mat-icon class="ms-2 me-2">email</mat-icon>
+            }
+            @if (user.twoFactorMethod === 'Authenticator') {
+              <mat-icon class="ms-2 me-2">security</mat-icon>
+            }
+            {{ user.twoFactorMethod === 'Phone' ? 'Sms' : user.twoFactorMethod }}
+          </h2>
+        </div>
+      }
+      @if (isTwoFaEnabled && !isTwoFaEnabling) {
+        <div class="mt-4">
+          <button mat-raised-button color="accent" (click)="onChangeTwoFaMethodClick()">
+            <mat-icon>security</mat-icon>
+            Change 2FA Method
+          </button>
+        </div>
+      }
+      @if (isTwoFaEnabling) {
+        <div>
+          <app-enable-two-fa-root [email]="user.email"
+            (twoFaEnabled)="onAuthenticatorEnabled($event)">
+          </app-enable-two-fa-root>
+        </div>
+      }
+    </mat-card-content>
+  }
 </mat-card>

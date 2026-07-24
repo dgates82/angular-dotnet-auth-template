@@ -3,13 +3,19 @@ import {LoggerService} from "@core/services/logger.service";
 import {Constants} from "@core/constants";
 import {AccountService} from "@data/services/account.service";
 import {IApplicationUser} from "@interfaces/account/application-user";
-import {ActivatedRoute} from "@angular/router";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import {TWO} from "@angular/cdk/keycodes";
+import { MatCard } from '@angular/material/card';
+import { EnableTwoFaMethodsComponent } from '../enable-two-fa-methods/enable-two-fa-methods.component';
+import { EnableAuthenticatorComponent } from '../enable-authenticator/enable-authenticator.component';
+import { EnableTwoFaEmailComponent } from '../enable-two-fa-email/enable-two-fa-email.component';
+import { EnableTwoFaPhoneComponent } from '../enable-two-fa-phone/enable-two-fa-phone.component';
 
 @Component({
-  selector: 'app-enable-two-fa-root',
-  templateUrl: './enable-two-fa-root.component.html',
-  styleUrls: ['./enable-two-fa-root.component.scss']
+    selector: 'app-enable-two-fa-root',
+    templateUrl: './enable-two-fa-root.component.html',
+    styleUrls: ['./enable-two-fa-root.component.scss'],
+    imports: [MatCard, EnableTwoFaMethodsComponent, EnableAuthenticatorComponent, EnableTwoFaEmailComponent, EnableTwoFaPhoneComponent, RouterLink]
 })
 export class EnableTwoFaRootComponent implements OnInit {
 

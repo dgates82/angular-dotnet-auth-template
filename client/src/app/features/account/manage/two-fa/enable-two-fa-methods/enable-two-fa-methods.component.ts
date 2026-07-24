@@ -1,6 +1,10 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {LoggerService} from "@core/services/logger.service";
 import {Constants} from "@core/constants";
+import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
+import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
+import { MatButton } from '@angular/material/button';
 
 interface AuthMethod {
   label: string;
@@ -10,9 +14,10 @@ interface AuthMethod {
 }
 
 @Component({
-  selector: 'app-enable-two-fa-methods',
-  templateUrl: './enable-two-fa-methods.component.html',
-  styleUrls: ['./enable-two-fa-methods.component.scss']
+    selector: 'app-enable-two-fa-methods',
+    templateUrl: './enable-two-fa-methods.component.html',
+    styleUrls: ['./enable-two-fa-methods.component.scss'],
+    imports: [MatRadioGroup, FormsModule, NgClass, MatRadioButton, MatButton]
 })
 export class EnableTwoFaMethodsComponent implements OnInit{
 

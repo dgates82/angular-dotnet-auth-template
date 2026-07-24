@@ -10,37 +10,39 @@
           <fa-icon [icon]="icons.userAdd"></fa-icon> Add User
         </button>
         <mat-slide-toggle class="ms-4"
-                          [checked]="includeInactiveUsers"
-                          color="primary"
-                          (change)="onIncludeInactiveUsersChanged($event)">
+          [checked]="includeInactiveUsers"
+          color="primary"
+          (change)="onIncludeInactiveUsersChanged($event)">
           <span class="ms-2">Include Inactive Users</span>
         </mat-slide-toggle>
       </div>
       <table class="table table-hover"
-             datatable
-             [dtOptions]="dtOptions"
-             [dtTrigger]="dtTrigger">
+        datatable
+        [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
         <thead>
-        <tr>
-          <th>Email</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Status</th>
-          <th></th>
-        </tr>
+          <tr>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let user of users">
-          <td>{{ user.email }}</td>
-          <td>{{ user.firstName }}</td>
-          <td>{{ user.lastName }}</td>
-          <td>{{ user.isActive ? 'Active' : 'Inactive' }}</td>
-          <td class="text-center text-nowrap align-middle">
-            <button type="button" class="me-2" mat-mini-fab color="primary" (click)="onDetails(user.id)">
-              <fa-icon [icon]="icons.edit"></fa-icon>
-            </button>
-          </td>
-        </tr>
+          @for (user of users; track user) {
+            <tr>
+              <td>{{ user.email }}</td>
+              <td>{{ user.firstName }}</td>
+              <td>{{ user.lastName }}</td>
+              <td>{{ user.isActive ? 'Active' : 'Inactive' }}</td>
+              <td class="text-center text-nowrap align-middle">
+                <button type="button" class="me-2" mat-mini-fab color="primary" (click)="onDetails(user.id)">
+                  <fa-icon [icon]="icons.edit"></fa-icon>
+                </button>
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
     </mat-card-content>

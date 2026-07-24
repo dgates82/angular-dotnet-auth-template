@@ -4,9 +4,11 @@
     <mat-form-field class="w-75">
       <mat-label>Verification Code</mat-label>
       <input matInput #twoFaCodeInput formControlName="twoFaCode" required mask="000 000" (keyup.enter)="login2Fa()">
-      <mat-error *ngIf="twoFaCode.invalid && (twoFaCode.dirty || twoFaCode.touched)" class="mb-2">
-        Invalid 2FA code
-      </mat-error>
+      @if (twoFaCode.invalid && (twoFaCode.dirty || twoFaCode.touched)) {
+        <mat-error class="mb-2">
+          Invalid 2FA code
+        </mat-error>
+      }
     </mat-form-field>
   </form>
 

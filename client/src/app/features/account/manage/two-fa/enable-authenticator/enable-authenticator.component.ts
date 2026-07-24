@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -7,11 +7,18 @@ import { IEnableAuthenticatorRequest } from '@interfaces/account/enable-authenti
 import { IVerifyAuthenticatorRequest } from '@interfaces/account/verify-authenticator-request';
 import { Constants } from '@core/constants';
 import { ActivatedRoute } from '@angular/router';
+import { QRCodeComponent } from 'angularx-qrcode';
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgxMaskDirective } from 'ngx-mask';
+import { MatButton } from '@angular/material/button';
+import { RecoveryCodesListComponent } from '../recovery-codes-list/recovery-codes-list.component';
 
 @Component({
-  selector: 'app-enable-authenticator',
-  templateUrl: './enable-authenticator.component.html',
-  styleUrls: ['./enable-authenticator.component.scss']
+    selector: 'app-enable-authenticator',
+    templateUrl: './enable-authenticator.component.html',
+    styleUrls: ['./enable-authenticator.component.scss'],
+    imports: [FormsModule, ReactiveFormsModule, QRCodeComponent, MatError, MatFormField, MatLabel, MatInput, NgxMaskDirective, MatButton, RecoveryCodesListComponent]
 })
 export class EnableAuthenticatorComponent implements OnInit {
 

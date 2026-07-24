@@ -1,5 +1,4 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { LoginComponent } from "@features/account/login/login.component";
 import { LogoutComponent } from '@features/account/logout/logout.component';
 import { AuthGuard } from '@core/guards/auth.guard';
@@ -19,10 +18,10 @@ import { RegisterUserComponent } from '@features/admin/user/register-user/regist
 import {
   EnableTwoFaRootComponent
 } from "@features/account/manage/two-fa/enable-two-fa-root/enable-two-fa-root.component";
-import {roleGuard} from "@core/guards/role.guard";
-import {HomeComponent} from "@features/home/home.component";
+import { roleGuard } from "@core/guards/role.guard";
+import { HomeComponent } from "@features/home/home.component";
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   /* Authentication */
   { path: 'login/:returnUrl', component: LoginComponent, canActivate: [LoginGuard], title: "Login - [App Name]" },
@@ -51,9 +50,3 @@ const routes: Routes = [
 
   // { path: '**', component: ApplicationRootComponent, pathMatch: 'full' }
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }

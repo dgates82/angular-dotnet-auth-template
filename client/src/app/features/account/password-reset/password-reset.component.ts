@@ -1,17 +1,26 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { AbstractControl, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { IResetPasswordRequest } from '@interfaces/account/reset-password-request';
 import { Constants } from '@core/constants';
 import { PasswordValidators } from '@core/validators/password-validators';
 import { faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
+import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgClass } from '@angular/common';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-password-reset',
-  templateUrl: './password-reset.component.html',
-  styleUrls: ['./password-reset.component.scss']
+    selector: 'app-password-reset',
+    templateUrl: './password-reset.component.html',
+    styleUrls: ['./password-reset.component.scss'],
+    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatInput, NgClass, FaIconComponent, MatButton, MatIcon, MatProgressSpinner, RouterLink]
 })
 export class PasswordResetComponent implements OnInit {
 

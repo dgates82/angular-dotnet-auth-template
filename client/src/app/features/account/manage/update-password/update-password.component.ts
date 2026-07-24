@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -8,11 +8,17 @@ import { IChangePasswordRequest } from '@interfaces/account/change-password-requ
 import { PasswordValidators } from '@core/validators/password-validators';
 
 import Swal from 'sweetalert2';
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgClass } from '@angular/common';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { MatButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-update-password',
-  templateUrl: './update-password.component.html',
-  styleUrls: ['./update-password.component.scss']
+    selector: 'app-update-password',
+    templateUrl: './update-password.component.html',
+    styleUrls: ['./update-password.component.scss'],
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgClass, FaIconComponent, MatButton]
 })
 export class UpdatePasswordComponent implements OnInit {
 

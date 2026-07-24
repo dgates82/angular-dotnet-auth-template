@@ -3,13 +3,18 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild }
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { ITwoFaAuthRequest } from '@interfaces/account/two-fa-auth-request';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IAuthResponse } from '@interfaces/account/auth-response';
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgxMaskDirective } from 'ngx-mask';
+import { MatButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-login-two-factor',
-  templateUrl: './login-two-factor.component.html',
-  styleUrls: ['./login-two-factor.component.scss']
+    selector: 'app-login-two-factor',
+    templateUrl: './login-two-factor.component.html',
+    styleUrls: ['./login-two-factor.component.scss'],
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgxMaskDirective, MatError, MatButton]
 })
 export class LoginTwoFactorComponent implements OnInit {
 

@@ -3,13 +3,17 @@
     <!--mat-elevation-z8-->
     <mat-card-title class="m-3">Password</mat-card-title>
     <mat-card-content>
-      <div *ngIf="!isUpdatingPassword">
-        <button mat-stroked-button color="primary" class="col-12 col-md-3 mt-3"
-                (click)="updatePassword()">Update Password</button>
-      </div>
-      <div *ngIf="isUpdatingPassword">
-        <app-update-password (passwordUpdated)="onPasswordUpdated($event)" (passwordUpdateCancelled)="onPasswordUpdateCancelled($event)"></app-update-password>
-      </div>
+      @if (!isUpdatingPassword) {
+        <div>
+          <button mat-stroked-button color="primary" class="col-12 col-md-3 mt-3"
+          (click)="updatePassword()">Update Password</button>
+        </div>
+      }
+      @if (isUpdatingPassword) {
+        <div>
+          <app-update-password (passwordUpdated)="onPasswordUpdated($event)" (passwordUpdateCancelled)="onPasswordUpdateCancelled($event)"></app-update-password>
+        </div>
+      }
     </mat-card-content>
   </mat-card>
 </div>

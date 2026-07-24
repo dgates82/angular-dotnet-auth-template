@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AddressService } from '@core/services/address.service';
@@ -13,11 +13,20 @@ import Swal from 'sweetalert2';
 import { faCancel, faEdit, faSave, faUserPlus, faUserTimes } from '@fortawesome/free-solid-svg-icons';
 import { ISendEmailConfirmRequest } from '@interfaces/account/send-email-confirm-request';
 import { AccountService } from '@data/services/account.service';
+import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgxMaskDirective } from 'ngx-mask';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'app-register-user',
-  templateUrl: './register-user.component.html',
-  styleUrls: ['./register-user.component.scss']
+    selector: 'app-register-user',
+    templateUrl: './register-user.component.html',
+    styleUrls: ['./register-user.component.scss'],
+    imports: [MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgxMaskDirective, MatSelect, MatOption, MatIconButton, MatIcon, MatButton, FaIconComponent]
 })
 export class RegisterUserComponent implements OnInit {
 

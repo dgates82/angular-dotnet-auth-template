@@ -1,13 +1,18 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {LoggerService} from "@core/services/logger.service";
 import {AccountService} from "@data/services/account.service";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {IApplicationUser} from "@interfaces/account/application-user";
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgxMaskDirective } from 'ngx-mask';
+import { MatButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-enable-two-fa-phone',
-  templateUrl: './enable-two-fa-phone.component.html',
-  styleUrls: ['./enable-two-fa-phone.component.scss']
+    selector: 'app-enable-two-fa-phone',
+    templateUrl: './enable-two-fa-phone.component.html',
+    styleUrls: ['./enable-two-fa-phone.component.scss'],
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgxMaskDirective, MatError, MatButton]
 })
 export class EnableTwoFaPhoneComponent implements OnInit{
 

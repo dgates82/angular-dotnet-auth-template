@@ -7,11 +7,15 @@ import { IApplicationUser } from '@interfaces/account/application-user';
 import Swal from 'sweetalert2';
 import { IEnableAuthenticatorRequest } from '@interfaces/account/enable-authenticator-request';
 import { ISendEmailConfirmRequest } from '@interfaces/account/send-email-confirm-request';
+import { MatCard, MatCardTitle } from '@angular/material/card';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-admin-security-info',
-  templateUrl: './admin-security-info.component.html',
-  styleUrls: ['./admin-security-info.component.scss']
+    selector: 'app-admin-security-info',
+    templateUrl: './admin-security-info.component.html',
+    styleUrls: ['./admin-security-info.component.scss'],
+    imports: [MatCard, MatCardTitle, MatButton, MatIcon]
 })
 export class AdminSecurityInfoComponent implements OnInit {
 

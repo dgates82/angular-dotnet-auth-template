@@ -6,23 +6,26 @@
     <div class="col-xxl-9 col-lg-10">
       <div class="auth-method-container">
         <mat-radio-group [(ngModel)]="selectedMethod">
-          <div
-            *ngFor="let method of authMethods"
-            class="card auth-method-card p-3 mb-3 border cursor-pointer"
-            [ngClass]="{ 'selected': selectedMethod === method.value }"
-            (click)="selectMethod(method.value)"
-          >
-            <div class="d-flex align-items-start">
-              <mat-radio-button [value]="method.value" class="me-3"></mat-radio-button>
-              <div>
-                <div class="d-flex align-items-center mb-2">
-                  <h5 class="m-0 fw-bold fs-6">{{ method.label }}</h5>
-                  <span *ngIf="method.recommended" class="badge bg-warning text-dark ms-2">RECOMMENDED</span>
+          @for (method of authMethods; track method) {
+            <div
+              class="card auth-method-card p-3 mb-3 border cursor-pointer"
+              [ngClass]="{ 'selected': selectedMethod === method.value }"
+              (click)="selectMethod(method.value)"
+              >
+              <div class="d-flex align-items-start">
+                <mat-radio-button [value]="method.value" class="me-3"></mat-radio-button>
+                <div>
+                  <div class="d-flex align-items-center mb-2">
+                    <h5 class="m-0 fw-bold fs-6">{{ method.label }}</h5>
+                    @if (method.recommended) {
+                      <span class="badge bg-warning text-dark ms-2">RECOMMENDED</span>
+                    }
+                  </div>
+                  <p class="text-muted mb-0">{{ method.description }}</p>
                 </div>
-                <p class="text-muted mb-0">{{ method.description }}</p>
               </div>
             </div>
-          </div>
+          }
         </mat-radio-group>
       </div>
     </div>

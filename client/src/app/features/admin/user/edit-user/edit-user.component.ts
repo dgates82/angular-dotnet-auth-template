@@ -5,11 +5,16 @@ import { LoggerService } from '@core/services/logger.service';
 import { UserService } from '@data/services/user.service';
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { IApplicationUser } from '@interfaces/account/application-user';
+import { MatTabGroup, MatTab, MatTabLabel } from '@angular/material/tabs';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { AdminPersonalInfoComponent } from '../admin-personal-info/admin-personal-info.component';
+import { AdminSecurityInfoComponent } from '../admin-security-info/admin-security-info.component';
 
 @Component({
-  selector: 'app-edit-user',
-  templateUrl: './edit-user.component.html',
-  styleUrls: ['./edit-user.component.scss']
+    selector: 'app-edit-user',
+    templateUrl: './edit-user.component.html',
+    styleUrls: ['./edit-user.component.scss'],
+    imports: [MatTabGroup, MatTab, MatTabLabel, FaIconComponent, AdminPersonalInfoComponent, AdminSecurityInfoComponent]
 })
 export class EditUserComponent implements OnInit {
 

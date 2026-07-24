@@ -7,14 +7,18 @@
         <fa-icon [icon]="icons.personal" class="me-2"></fa-icon>
         Personal
       </ng-template>
-      <app-admin-personal-info *ngIf="user" [user]="user"></app-admin-personal-info>
+      @if (user) {
+        <app-admin-personal-info [user]="user"></app-admin-personal-info>
+      }
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>
         <fa-icon [icon]="icons.security" class="me-2"></fa-icon>
         Password and Security
       </ng-template>
-      <app-admin-security-info *ngIf="user && user.isActive" [user]="user"></app-admin-security-info>
+      @if (user && user.isActive) {
+        <app-admin-security-info [user]="user"></app-admin-security-info>
+      }
     </mat-tab>
   </mat-tab-group>
 </div>

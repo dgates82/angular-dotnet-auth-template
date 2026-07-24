@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { IConfirmEmailRequest } from '@interfaces/account/confirm-email-request';
+import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
 
 @Component({
-  selector: 'app-email-confirmation',
-  templateUrl: './email-confirmation.component.html',
-  styleUrls: ['./email-confirmation.component.scss']
+    selector: 'app-email-confirmation',
+    templateUrl: './email-confirmation.component.html',
+    styleUrls: ['./email-confirmation.component.scss'],
+    imports: [MatCard, MatCardContent, MatCardTitle, MatCardSubtitle, RouterLink]
 })
 export class EmailConfirmationComponent implements OnInit {
 
