@@ -1,10 +1,10 @@
 # Angular and .NET Core Authentication Template
 
-This repository provides a template for an authentication system built with Angular 18 and .NET 8, using MySQL as the database. It offers a secure foundation for applications requiring user authentication, with options for self-registration and two-factor authentication (2FA).
+This repository provides a template for an authentication system built with Angular 18 and .NET 10, using MySQL as the database. It offers a secure foundation for applications requiring user authentication, with options for self-registration and two-factor authentication (2FA).
 
 ## Technology Stack
 - **Frontend:** Angular 18
-- **Backend:** .NET 8
+- **Backend:** .NET 10
 - **Database:** MySQL
 
 ## Project Structure
@@ -23,7 +23,7 @@ The app runs as a single process: the API serves the Angular build output direct
 
 ### Quickstart
 
-The whole sequence, assuming Node/npm, .NET SDK 8, and Docker are already
+The whole sequence, assuming Node/npm, .NET SDK 10, and Docker are already
 installed. See the detailed sections below for what each step does and why.
 
 ```bash
@@ -54,7 +54,7 @@ Follow these steps to set up and run the project locally.
 
 ### Prerequisites
 - **Node.js** and **npm** for Angular
-- **.NET SDK 8** for the backend
+- **.NET SDK 10** for the backend
 - **Docker** for database setup, and optionally for running the whole app (see below)
 - **MySQL Client** (optional, for direct database access)
 
@@ -70,37 +70,37 @@ cd angular-dotnet-auth-template
 
 1. **Start MySQL and Mailpit** (from the repo root — `docker-compose.yml` also
    defines an `api` service, but leave it out for now; it needs the database
-   migrated first, see below):  
-```bash
-docker compose up -d mysql mailpit
-```
-This starts a `mysql` container with the database, user, and password already
-provisioned to match `appsettings.json`'s `DefaultConnection`, mapped to
-`localhost:3307`. No manual SQL setup needed.
+   migrated first, see below):
+   ```bash
+   docker compose up -d mysql mailpit
+   ```
+   This starts a `mysql` container with the database, user, and password already
+   provisioned to match `appsettings.json`'s `DefaultConnection`, mapped to
+   `localhost:3307`. No manual SQL setup needed.
 
-It also starts `mailpit`, a local SMTP catcher — the app's default
-`SmtpEmailConfigs` in `appsettings.json` point at it, so registration
-confirmation, password reset, and other outbound emails during local dev are
-caught instead of actually sent. View them at `http://localhost:8025`. To use
-a real provider instead (SendGrid/PostMark), swap the `IEmailSender`
-registration in `Program.cs` and supply your own API key via
-`appsettings.Development.json` or user-secrets — never commit real keys.
+   It also starts `mailpit`, a local SMTP catcher — the app's default
+   `SmtpEmailConfigs` in `appsettings.json` point at it, so registration
+   confirmation, password reset, and other outbound emails during local dev are
+   caught instead of actually sent. View them at `http://localhost:8025`. To use
+   a real provider instead (SendGrid/PostMark), swap the `IEmailSender`
+   registration in `Program.cs` and supply your own API key via
+   `appsettings.Development.json` or user-secrets — never commit real keys.
 
 2. **Install the EF Core CLI tool** (one-time per clone — `Microsoft.EntityFrameworkCore.Tools`
    in the `.csproj` only wires up the Visual Studio Package Manager Console
    cmdlets; the `dotnet ef` command itself comes from a separate tool
-   package, pinned in `api/.config/dotnet-tools.json`):  
-```bash
-cd api
-dotnet tool restore
-```
+   package, pinned in `api/.config/dotnet-tools.json`):
+   ```bash
+   cd api
+   dotnet tool restore
+   ```
 
 3. **Run Migrations** (from `api/AngularDotNetAuthTemplate.Api/` — `dotnet ef`
-   resolves the target project from the current directory):  
-```bash
-cd AngularDotNetAuthTemplate.Api
-dotnet ef database update  
-```
+   resolves the target project from the current directory):
+   ```bash
+   cd AngularDotNetAuthTemplate.Api
+   dotnet ef database update
+   ```
 
 4. **(Optional) Bootstrap an admin account.** There's no seeded user by
    default. Set `SeedAdmin:Email` and `SeedAdmin:Password` in
@@ -111,18 +111,18 @@ dotnet ef database update
 
 ### Frontend Setup
 
-1. Navigate to the `client` folder and install dependencies:  
-```bash
-cd client
-npm install  
-```
+1. Navigate to the `client` folder and install dependencies:
+   ```bash
+   cd client
+   npm install
+   ```
 
-2. Build the Angular application:  
-```bash
-ng build
-```
+2. Build the Angular application:
+   ```bash
+   ng build
+   ```
 
-This outputs to `client/dist/browser`, which the API serves as static files.
+   This outputs to `client/dist/browser`, which the API serves as static files.
 
 ### Run the Solution
 
