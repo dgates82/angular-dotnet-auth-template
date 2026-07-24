@@ -16,6 +16,12 @@ using AngularDotNetAuthTemplate.Api.Data;
 
 namespace AngularDotNetAuthTemplate.Api.Controllers.API
 {
+    /// <summary>
+    /// Handles registration, login, password reset/change, email confirmation,
+    /// and two-factor authentication (email, SMS, and authenticator app) for
+    /// the Angular client. Successful logins return a JWT (see
+    /// <see cref="JwtHandler"/>) rather than an authentication cookie.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : CustomControllerBase
@@ -34,7 +40,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
         private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
-        public AccountController(ILogger<AccountController> logger, 
+        /// <summary>Creates the controller with its injected Identity, JWT, and notification dependencies.</summary>
+        public AccountController(ILogger<AccountController> logger,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager, 
             ApplicationUserRepository userRepository,
@@ -54,6 +61,13 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         }
         
         
+        /// <summary>Looks up a user by email, including their assigned roles.</summary>
+        /// <param name="email">The email address to search for.</param>
+        /// <returns>
+        /// The matching <see cref="ApplicationUser"/> with <c>Roles</c> populated,
+        /// or a <see cref="ResponseDto"/> with <c>IsSuccess = false</c> if no user
+        /// with that email exists.
+        /// </returns>
         [HttpGet]
         [Authorize]
         [Route("getuserbyemail")]
@@ -81,6 +95,16 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             }
         }
         
+        /// <summary>
+        /// Creates a new user account and emails a confirmation link
+        /// (handled client-side via <c>HomeController.ConfirmEmail</c>).
+        /// </summary>
+        /// <param name="registerRequestDto">The new user's email and password.</param>
+        /// <returns>
+        /// <see cref="ResponseDto"/> with <c>IsSuccess = true</c> on success, or a
+        /// 400 with Identity's validation errors if account creation failed
+        /// (e.g. password policy, duplicate email).
+        /// </returns>
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto)
@@ -129,6 +153,18 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             }
         }
 
+        /// <summary>
+        /// Validates a user's credentials and, if 2FA isn't required, issues a JWT.
+        /// </summary>
+        /// <param name="userForAuthentication">The email/password to authenticate.</param>
+        /// <returns>
+        /// <see cref="AuthResponseDto"/> with a <c>Token</c> if authentication
+        /// succeeded outright; with <c>RequiresTwoFactor = true</c> (and no token)
+        /// if the credentials were valid but a second factor is still needed; or
+        /// 401 for invalid credentials. Deliberately returns 200 with
+        /// <c>IsAuthSuccessful = false</c>, rather than 404, when the email
+        /// doesn't exist, so the response doesn't reveal account existence.
+        /// </returns>
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] AuthRequestDto userForAuthentication)
@@ -200,6 +236,15 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             }
         }
 
+        /// <summary>
+        /// Completes login for a user whose password was already validated but who
+        /// still needs to supply a second factor (email, SMS, or authenticator code).
+        /// </summary>
+        /// <param name="request">The user's email, 2FA provider, and submitted code.</param>
+        /// <returns>
+        /// <see cref="AuthResponseDto"/> with a <c>Token</c> if the code verified,
+        /// or <c>IsAuthSuccessful = false</c> with an error message otherwise.
+        /// </returns>
         [HttpPost]
         [Route("login2fa")]
         public async Task<IActionResult> Login2Fa([FromBody] TwoFaAuthRequestDto request)
@@ -255,6 +300,12 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
         }
         
+        /// <summary>
+        /// Generates and delivers a 2FA code via email or SMS. Not valid for the
+        /// authenticator app method, since those codes are generated client-side.
+        /// </summary>
+        /// <param name="request">The target user's email, delivery method, and phone number (if SMS).</param>
+        /// <returns><see cref="ResponseDto"/> indicating whether a code was sent.</returns>
         [HttpPost]
         [Route("SendTwoFaCode")]
         public async Task<IActionResult> SendTwoFaCode([FromBody] SendVerificationCodeRequestDto request)
@@ -311,6 +362,14 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             }
         }
 
+        /// <summary>Emails a password reset link for a confirmed account.</summary>
+        /// <param name="forgotPasswordDto">The email address requesting a reset.</param>
+        /// <returns>
+        /// <see cref="ResponseDto"/> with <c>IsSuccess = true</c> if an email was
+        /// sent. Deliberately reports success the same way when the account
+        /// doesn't exist or isn't confirmed, so the response doesn't reveal
+        /// account existence.
+        /// </returns>
         [HttpPost]
         [Route("forgotpassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
@@ -351,6 +410,11 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
         }
 
+        /// <summary>
+        /// Sets a new password using the reset code emailed by <see cref="ForgotPassword"/>.
+        /// </summary>
+        /// <param name="request">The user's email, reset code, and new password.</param>
+        /// <returns><see cref="ResponseDto"/> indicating whether the reset succeeded.</returns>
         [HttpPost]
         [Route("resetpassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto request)
@@ -393,6 +457,9 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             }
         }
 
+        /// <summary>Changes a signed-in user's password given their current password.</summary>
+        /// <param name="request">The user's email, current password, and new password.</param>
+        /// <returns><see cref="ResponseDto"/> indicating whether the change succeeded.</returns>
         [HttpPost]
         [Authorize]
         [Route("changepassword")]
@@ -437,6 +504,13 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         }
         
 
+        /// <summary>
+        /// Resends the email confirmation link for a user. If the user hasn't set
+        /// a password yet (e.g. an admin-created account), the link also carries a
+        /// password reset code so they can set one during confirmation.
+        /// </summary>
+        /// <param name="request">The target user's email.</param>
+        /// <returns><see cref="ResponseDto"/> indicating whether an email was sent.</returns>
         [HttpPost]
         //[Authorize]
         [Route("sendemailconfirmation")]
@@ -487,6 +561,9 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
         }
 
+        /// <summary>Confirms a user's email using the code from the confirmation link.</summary>
+        /// <param name="request">The user's ID and confirmation code.</param>
+        /// <returns><see cref="ResponseDto"/> indicating whether confirmation succeeded.</returns>
         [HttpPost]
         [Route("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequestDto request)
@@ -524,7 +601,18 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
         }
 
-        [HttpPost]        
+        /// <summary>
+        /// Generates (or reuses) an authenticator app key for a user and returns it
+        /// as both a formatted shared key and a QR-code <c>otpauth://</c> URI, so the
+        /// client can render a QR code for the user to scan.
+        /// </summary>
+        /// <param name="request">The target user's email.</param>
+        /// <returns>
+        /// <see cref="EnableAuthenticatorResponseDto"/> with the shared key and
+        /// authenticator URI, or <see cref="ResponseDto"/> with <c>IsSuccess = false</c>
+        /// if the user doesn't exist.
+        /// </returns>
+        [HttpPost]
         [Route("enableauthenticator")]
         public async Task<IActionResult> EnableAuthenticator([FromBody] EnableAuthenticatorRequestDto request)
         {
@@ -557,7 +645,17 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         }
                 
 
-        [HttpPost]        
+        /// <summary>
+        /// Verifies a 2FA code and, on success, enables 2FA for the user with the
+        /// given method. For the authenticator app method, also issues a fresh set
+        /// of recovery codes.
+        /// </summary>
+        /// <param name="request">The user's email, 2FA method, submitted code, and phone number (if SMS).</param>
+        /// <returns>
+        /// <see cref="VerifyAuthenticatorResponseDto"/> with <c>IsVerified</c> and,
+        /// for the authenticator method, the new recovery codes.
+        /// </returns>
+        [HttpPost]
         [Route("verifyauthenticator")]
         public async Task<ActionResult> VerifyAuthenticator([FromBody] VerifyAuthenticatorRequestDto request)
         {
@@ -628,6 +726,16 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             }
         }
 
+        /// <summary>
+        /// Disables 2FA and clears the authenticator key for a user, requiring them
+        /// to set up a new authenticator from scratch. Restricted to admins acting
+        /// on another user's account.
+        /// </summary>
+        /// <param name="request">The target user's email.</param>
+        /// <returns>
+        /// <see cref="ResponseDto"/> on success; 404 if the user doesn't exist; 400
+        /// if the caller isn't an admin.
+        /// </returns>
         [HttpPost]
         [Authorize]
         [Route("resetauthenticator")]
@@ -675,6 +783,12 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             }
         }
 
+        /// <summary>
+        /// Maps a client-facing 2FA method name to the Identity token provider name.
+        /// "Phone" and "Sms" are aliases for the same "Phone" provider.
+        /// </summary>
+        /// <param name="method">The client-supplied method: "Authenticator", "Email", "Phone", or "Sms".</param>
+        /// <returns>The Identity token provider name, or an empty string if <paramref name="method"/> is unrecognized.</returns>
         private string GetTokenProvider(string method)
         {
             _logger.LogDebug($"GetTokenProvider | method: {method}");
@@ -690,6 +804,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         }
 
 
+        /// <summary>Gets the user's authenticator key, generating one first if none exists.</summary>
         private async Task<string> GetUnformattedKey(ApplicationUser user)
         {
             // Load the authenticator key & QR code URI to display on the form
@@ -703,6 +818,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             return unformattedKey;
         }
 
+        /// <summary>Gets the user's authenticator key formatted for display (space-separated, lowercase).</summary>
         private async Task<string> GetSharedKey(ApplicationUser user)
         {
             var unformattedKey = await GetUnformattedKey(user);
@@ -712,6 +828,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
         }
 
+        /// <summary>Builds the <c>otpauth://</c> QR-code URI for a user's authenticator key.</summary>
         private async Task<string> GetAuthenticatorUri(ApplicationUser user)
         {
             var unformattedKey = await GetUnformattedKey(user);
@@ -721,6 +838,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             return authenticatorUri;
         }                
 
+        /// <summary>Splits an authenticator key into space-separated 4-character groups, lowercased for readability.</summary>
         private string FormatKey(string unformattedKey)
         {
             var result = new StringBuilder();
@@ -738,6 +856,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             return result.ToString().ToLowerInvariant();
         }
 
+        /// <summary>Formats the authenticator key into an <c>otpauth://totp/...</c> QR-code URI.</summary>
         private string GenerateQrCodeUri(string email, string unformattedKey)
         {
             return string.Format(
@@ -749,6 +868,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         }
 
 
+        /// <summary>A minimal authenticated endpoint the client uses to smoke-test that a bearer token is still valid.</summary>
         [HttpGet]
         [Route("secure")]
         [Authorize]

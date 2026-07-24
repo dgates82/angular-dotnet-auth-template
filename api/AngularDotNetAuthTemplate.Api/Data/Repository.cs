@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 
 namespace AngularDotNetAuthTemplate.Api.Data
 {
+    /// <summary>Default EF Core-backed <see cref="IRepository{T}"/> implementation, shared across entity types.</summary>
     public class Repository<T> : IRepository<T> where T : class, IEntity
     {
         protected readonly ILogger<Repository<T>> Logger;
@@ -11,6 +12,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
         protected readonly ApplicationDbContext Context;
         protected readonly DbSet<T> Entities;
 
+        /// <summary>Creates the repository, resolving its <see cref="DbSet{T}"/> from the given context.</summary>
         public Repository(ILogger<Repository<T>> logger, ApplicationDbContext context)
         {
             Logger = logger;
@@ -18,6 +20,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
             Entities = Context.Set<T>();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<T>> GetAsync()
         {
             try
@@ -34,6 +37,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
             }
         }
 
+        /// <inheritdoc />
         public async Task<T> GetAsync(string id)
         {
             try
@@ -52,6 +56,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
             }
         }
 
+        /// <inheritdoc />
         public async Task<T> FindByConditionAsync(Expression<Func<T, bool>> expression)
         {
             try
@@ -68,6 +73,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
             }
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<T>> WhereAsync(Expression<Func<T, bool>> expression)
         {
             try
@@ -84,6 +90,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
             }
         }
 
+        /// <inheritdoc />
         public async Task<T> InsertAsync(T entity)
         {
             try
@@ -102,6 +109,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
             }
         }
 
+        /// <inheritdoc />
         public async Task<T> UpdateAsync(T entity)
         {
             try
@@ -119,6 +127,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
             }
         }
 
+        /// <inheritdoc />
         public virtual async Task DeleteAsync(string id)
         {
             try
@@ -142,6 +151,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
 
         private bool _disposed;
 
+        /// <summary>Disposes the underlying <see cref="Context"/> when called with <paramref name="disposing"/> <c>true</c>.</summary>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -154,6 +164,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
             _disposed = true;
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);

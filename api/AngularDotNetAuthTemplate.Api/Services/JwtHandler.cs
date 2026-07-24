@@ -11,18 +11,27 @@ using System.Text;
 
 namespace AngularDotNetAuthTemplate.Api.Services
 {
+    /// <summary>
+    /// Builds the signing credentials, claims, and token used to issue JWTs on
+    /// successful login. The full <see cref="ApplicationUser"/> is embedded as a
+    /// JSON claim (see <see cref="GetClaims"/>) so
+    /// <see cref="AngularDotNetAuthTemplate.Api.Controllers.CustomControllerBase.GetCurrentUser"/>
+    /// can reconstruct it without a database round-trip on every request.
+    /// </summary>
     public class JwtHandler
     {
         private readonly IOptions<JwtOptions> _options;
 
         private readonly ILogger _logger;
 
+        /// <summary>Creates the handler with its injected logger and JWT configuration options.</summary>
         public JwtHandler(ILogger<JwtHandler> logger, IOptions<JwtOptions> options)
         {
             _logger = logger;
             _options = options;
         }
 
+        /// <summary>Builds the HMAC-SHA256 signing credentials from the configured security key.</summary>
         public SigningCredentials GetSigningCredentials()
         {
             var key = Encoding.UTF8.GetBytes(_options.Value.SecurityKey);
@@ -31,18 +40,23 @@ namespace AngularDotNetAuthTemplate.Api.Services
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-        public List<Claim> GetClaims(ApplicationUser user) 
-        { 
-            var claims = new List<Claim> 
+        /// <summary>
+        /// Builds the claims for a token: the user's name, plus the full user object
+        /// serialized as a JSON claim so it can be reconstructed from the token alone.
+        /// </summary>
+        public List<Claim> GetClaims(ApplicationUser user)
+        {
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Email),
                 new Claim("user", user.ToJson(), JsonClaimValueTypes.Json)
-            };                       
+            };
 
             return claims;
         }
 
 
+        /// <summary>Builds the signed JWT with the configured issuer, audience, and expiry.</summary>
         public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
             var tokenOptions = new JwtSecurityToken(

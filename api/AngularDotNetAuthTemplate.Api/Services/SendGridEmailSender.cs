@@ -8,6 +8,12 @@ using SendGrid.Helpers.Mail;
 
 namespace AngularDotNetAuthTemplate.Api.Services
 {
+    /// <summary>
+    /// Alternate <see cref="IEmailSender"/> implementation using SendGrid. Not
+    /// wired up by default (see the commented registration in
+    /// <c>Program.cs</c>); swap in for <see cref="SmtpEmailSender"/> when a real
+    /// transactional-email provider is needed.
+    /// </summary>
     public class SendGridEmailSender : IEmailSender
     {
 
@@ -19,6 +25,7 @@ namespace AngularDotNetAuthTemplate.Api.Services
         readonly IOptions<SendGridEmailOptions> _options;
 
 
+        /// <summary>Creates the sender with its injected logger and SendGrid configuration options.</summary>
         public SendGridEmailSender(ILogger<SmtpEmailSender> logger, IOptions<SendGridEmailOptions> options)
         {
             _logger = logger;
@@ -27,6 +34,12 @@ namespace AngularDotNetAuthTemplate.Api.Services
         }
 
 
+        /// <summary>
+        /// Sends an HTML email via the SendGrid API. If
+        /// <see cref="SendGridEmailOptions.OverrideRecipient"/> is configured, the
+        /// email is redirected there instead, with the original recipient appended
+        /// to the subject line.
+        /// </summary>
         public async Task SendEmailAsync(string toEmail, string subject, string message)
         {
             _logger.LogDebug($"SendMailAsync | toEmail: {toEmail} | subject: {subject} | message: {message}");

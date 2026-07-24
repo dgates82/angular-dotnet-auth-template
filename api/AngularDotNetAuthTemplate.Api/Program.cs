@@ -8,6 +8,7 @@ using AngularDotNetAuthTemplate.Api.Data;
 using AngularDotNetAuthTemplate.Api.Models;
 using AngularDotNetAuthTemplate.Api.Models.Options;
 using AngularDotNetAuthTemplate.Api.Services;
+using System.Reflection;
 using System.Text;
 
 namespace AngularDotNetAuthTemplate.Api
@@ -25,7 +26,12 @@ namespace AngularDotNetAuthTemplate.Api
             Console.WriteLine($"WebRoot Path: {builder.Environment.WebRootPath}");
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+            });
 
             
 

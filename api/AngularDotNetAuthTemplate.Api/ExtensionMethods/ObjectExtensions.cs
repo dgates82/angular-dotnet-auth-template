@@ -2,13 +2,16 @@
 
 namespace AngularDotNetAuthTemplate.Api.ExtensionMethods
 {
+    /// <summary>Extension methods for serializing arbitrary objects, primarily for structured debug/trace logging.</summary>
     public static class ObjectExtensions
     {
+        /// <summary>Serializes <paramref name="value"/> to indented JSON, preserving object references. Returns an empty string on serialization failure rather than throwing.</summary>
         public static string ToJson(this object value)
         {
             return ToJson(value, PreserveReferencesHandling.Objects);
         }
 
+        /// <summary>Serializes <paramref name="value"/> to indented JSON with the given reference-handling behavior. Returns an empty string on serialization failure rather than throwing.</summary>
         public static string ToJson(this object value, PreserveReferencesHandling referencesHandling)
         {
             try

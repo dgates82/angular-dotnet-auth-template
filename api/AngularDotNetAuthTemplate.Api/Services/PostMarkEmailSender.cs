@@ -6,21 +6,34 @@ using PostmarkDotNet;
 
 namespace AngularDotNetAuthTemplate.Api.Services;
 
+/// <summary>
+/// Alternate <see cref="IEmailSender"/> implementation using Postmark. Not wired
+/// up by default (see the commented registration in <c>Program.cs</c>); swap in
+/// for <see cref="SmtpEmailSender"/> when a real transactional-email provider
+/// is needed.
+/// </summary>
 public class PostMarkEmailSender : IEmailSender
 {
     private readonly ILogger _logger;
-    
+
     readonly IOptions<PostMarkEmailOptions> _options;
-    
+
     private bool IsOverrideRecipient => !string.IsNullOrEmpty(_options.Value.OverrideRecipient);
     private string OverrideRecipient => _options.Value.OverrideRecipient;
-    
+
+    /// <summary>Creates the sender with its injected logger and Postmark configuration options.</summary>
     public PostMarkEmailSender(ILogger<SmtpEmailSender> logger, IOptions<PostMarkEmailOptions> options)
     {
         _logger = logger;
         _options = options;
     }
-    
+
+    /// <summary>
+    /// Sends an HTML email via the Postmark API. If
+    /// <see cref="PostMarkEmailOptions.OverrideRecipient"/> is configured, the
+    /// email is redirected there instead, with the original recipient appended
+    /// to the subject line.
+    /// </summary>
     public async Task SendEmailAsync(string toEmail, string subject, string message)
     {
         _logger.LogDebug($"SendMailAsync | toEmail: {toEmail} | subject: {subject} | message: {message}");
