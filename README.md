@@ -1,9 +1,11 @@
 # Angular and .NET Core Authentication Template
 
-This repository provides a template for an authentication system built with Angular 18 and .NET 10, using MySQL as the database. It offers a secure foundation for applications requiring user authentication, with options for self-registration and two-factor authentication (2FA).
+[![CI](https://github.com/dgates82/angular-dotnet-auth-template/actions/workflows/ci.yml/badge.svg)](https://github.com/dgates82/angular-dotnet-auth-template/actions/workflows/ci.yml)
+
+This repository provides a template for an authentication system built with Angular 21 and .NET 10, using MySQL as the database. It offers a secure foundation for applications requiring user authentication, with options for self-registration and two-factor authentication (2FA).
 
 ## Technology Stack
-- **Frontend:** Angular 18
+- **Frontend:** Angular 21
 - **Backend:** .NET 10
 - **Database:** MySQL
 
