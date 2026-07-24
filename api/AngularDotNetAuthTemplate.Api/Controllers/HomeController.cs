@@ -1,19 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using AngularDotNetAuthTemplate.Api.Models;
 using System.Diagnostics;
 
 namespace AngularDotNetAuthTemplate.Api.Controllers
 {
     /// <summary>
-    /// Serves the Angular SPA shell (<c>index.html</c>) for the app's
-    /// top-level client routes, plus a couple of server-rendered Razor views
-    /// used outside the SPA (<see cref="Privacy"/>, <see cref="Secure"/>,
-    /// <see cref="Error"/>). Most of these explicit routes are now also
-    /// covered by the catch-all SPA fallback registered in
-    /// <c>Program.cs</c>; they're kept here for routes that need
-    /// controller-level behavior (e.g. authorization) rather than a plain
-    /// static-file response.
+    /// Backs the production error handler
+    /// (<c>app.UseExceptionHandler("/Home/Error")</c> in <c>Program.cs</c>).
+    /// The Angular SPA shell and all API behavior are served elsewhere — the
+    /// SPA fallback in <c>Program.cs</c> and
+    /// <see cref="AngularDotNetAuthTemplate.Api.Controllers.API.AccountController"/>,
+    /// respectively.
     /// </summary>
     public class HomeController : Controller
     {
@@ -23,65 +20,6 @@ namespace AngularDotNetAuthTemplate.Api.Controllers
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-        }
-
-
-        /// <summary>Serves the Angular SPA shell for the app's main client routes.</summary>
-        [Route("~/")]
-        [Route("~/home")]
-        [Route("~/register")]
-        [Route("~/profile")]
-        [Route("~/admin/users")]
-        [Route("~/admin/edit-user/{id?}")]
-        [Route("~/admin/register-user")]
-        public IActionResult Index()
-        {
-            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "../../client/dist/browser", "index.html"), "text/HTML");
-        }
-
-        /// <summary>Serves the Angular SPA shell for the login route.</summary>
-        [Route("~/login")]
-        public IActionResult Login()
-        {
-            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "../../client/dist/browser", "index.html"), "text/HTML");
-        }
-
-        /// <summary>
-        /// Serves the Angular SPA shell for the password-reset link sent via
-        /// email, which includes a reset <paramref name="code"/> in the URL.
-        /// </summary>
-        [Route("~/forgot-password/reset/{code?}")]
-        public IActionResult ForgotPassword(string? code = null)
-        {
-            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "../../client/dist/browser", "index.html"), "text/HTML");
-        }
-
-        /// <summary>
-        /// Serves the Angular SPA shell for the email-confirmation link sent
-        /// via email, which includes a confirmation <paramref name="code"/>
-        /// in the URL.
-        /// </summary>
-        [Route("~/email-confirmation/{code?}")]
-        public IActionResult ConfirmEmail(string? code = null)
-        {
-            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "../../client/dist/browser", "index.html"), "text/HTML");
-        }
-
-        /// <summary>Server-rendered privacy page, restricted to the Admin role.</summary>
-        [Authorize(Roles = "Admin")]
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// A minimal authenticated endpoint used to smoke-test that a bearer
-        /// token is valid, independent of the Angular client.
-        /// </summary>
-        [Authorize]
-        public IActionResult Secure()
-        {
-            return View("Index");
         }
 
         /// <summary>

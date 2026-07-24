@@ -132,7 +132,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-                var callbackUrl = Url.Action("ConfirmEmail", "Home", values: null, protocol: Request.Scheme);
+                var callbackUrl = $"{Request.Scheme}://{Request.Host}/email-confirmation";
                 callbackUrl = $"{callbackUrl}?userId={user.Id}";
                 callbackUrl = $"{callbackUrl}&emailAddress={registerRequestDto.Email}";
                 callbackUrl = $"{callbackUrl}&emailCode={code}";
@@ -390,7 +390,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-                var callbackUrl = Url.Action("ForgotPassword", "Home", values: null, protocol: Request.Scheme);
+                var callbackUrl = $"{Request.Scheme}://{Request.Host}/forgot-password/reset";
                 callbackUrl = $"{callbackUrl}?code={code}";
 
                 await _emailSender.SendEmailAsync(
@@ -532,7 +532,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 var passwordResetCode = await _userManager.GeneratePasswordResetTokenAsync(user);
                 passwordResetCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(passwordResetCode));
 
-                var callbackUrl = Url.Action("ConfirmEmail", "Home", values: null, protocol: Request.Scheme);
+                var callbackUrl = $"{Request.Scheme}://{Request.Host}/email-confirmation";
 
                 callbackUrl = $"{callbackUrl}?userId={user.Id}";
                 callbackUrl = $"{callbackUrl}&emailCode={emailCode}";
