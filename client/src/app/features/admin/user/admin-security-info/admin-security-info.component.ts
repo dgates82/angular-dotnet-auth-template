@@ -5,8 +5,7 @@ import { UserService } from '@data/services/user.service';
 import { AccountService } from '@data/services/account.service';
 import { IApplicationUser } from '@interfaces/account/application-user';
 import Swal from 'sweetalert2';
-import { IEnableAuthenticatorRequest } from '@interfaces/account/enable-authenticator-request';
-import { ISendEmailConfirmRequest } from '@interfaces/account/send-email-confirm-request';
+import { IEmailOnlyRequest } from '@interfaces/account/email-only-request';
 import { MatCard, MatCardTitle } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -57,7 +56,7 @@ export class AdminSecurityInfoComponent implements OnInit {
         this.logger.debug(`admin-security-info.component.onResetAuthenticatorClick: confirmed`);
 
         // Reset authenticator
-        const request: IEnableAuthenticatorRequest = {
+        const request: IEmailOnlyRequest = {
           email: this.user.email
         };
 
@@ -90,7 +89,7 @@ export class AdminSecurityInfoComponent implements OnInit {
     this.logger.debug(`admin-security-info.component.onResendEmailConfirmationClick`);
 
     // Resend email confirmation
-    const request: ISendEmailConfirmRequest = {
+    const request: IEmailOnlyRequest = {
       email: this.user.email
     };
     this.accountService.sendConfirmEmail(request).then(response => {

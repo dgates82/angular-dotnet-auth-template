@@ -95,8 +95,8 @@ export class EnableTwoFaPhoneComponent implements OnInit{
 
       if (response.isVerified){
         this.isVerified = true;
+        this.accountService.updateStoredUser({ phoneNumber: this.phoneNumber.value });
         this.twoFaEnabled.emit('Sms');
-        // HACK: If the phone number is updated the authResponse will have stale information
       } else {
         // TODO: Set error?
       }

@@ -11,7 +11,7 @@ import { IState } from '@interfaces/address/state';
 import Swal from 'sweetalert2';
 
 import { faCancel, faEdit, faSave, faUserPlus, faUserTimes } from '@fortawesome/free-solid-svg-icons';
-import { ISendEmailConfirmRequest } from '@interfaces/account/send-email-confirm-request';
+import { IEmailOnlyRequest } from '@interfaces/account/email-only-request';
 import { AccountService } from '@data/services/account.service';
 import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
@@ -173,8 +173,6 @@ export class RegisterUserComponent implements OnInit {
   }
 
   onUserCreatedSuccess(response: IApplicationUser): void {
-    // HACK: Should the create method return a IResponse so we can check isSuccess?
-
     // Confirm
     Swal.fire({
       title: 'User created',
@@ -183,7 +181,7 @@ export class RegisterUserComponent implements OnInit {
     });
 
     // Send email confirmation
-    const request: ISendEmailConfirmRequest = {
+    const request: IEmailOnlyRequest = {
       email: response.email
     };
     this.accountService.sendConfirmEmail(request).then(response => {

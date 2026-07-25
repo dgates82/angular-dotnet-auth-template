@@ -3,7 +3,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+
+  // App-configurable feature flags, kept in environment files (rather than
+  // hardcoded in component/service code) so a template consumer can toggle
+  // them per build without touching application logic.
+  is2FaRequired: false,
+  allowUserEdit: true,
+  allowSelfRegister: true,
+  twoFaMethods: ['Email', 'Sms', 'Authenticator'],
 };
 
 /*
