@@ -86,9 +86,10 @@ describe('PasswordResetComponent', () => {
       confirmPassword: 'weak',
     });
 
-    expect(fixture.componentInstance.requiresDigitValid).toBe(false);
-    expect(fixture.componentInstance.requiresUppercaseValid).toBe(false);
-    expect(fixture.componentInstance.minLengthValid).toBe(false);
+    const newPassword = fixture.componentInstance.resetPasswordForm.get('newPassword')!;
+    expect(newPassword.hasError('requiresDigit')).toBe(true);
+    expect(newPassword.hasError('requiresUppercase')).toBe(true);
+    expect(newPassword.hasError('minlength')).toBe(true);
   });
 
   it('flags a mismatch between newPassword and confirmPassword', () => {
@@ -100,6 +101,6 @@ describe('PasswordResetComponent', () => {
       confirmPassword: 'Different1!',
     });
 
-    expect(fixture.componentInstance.passwordsMatchValid).toBe(false);
+    expect(fixture.componentInstance.resetPasswordForm.hasError('mismatch')).toBe(true);
   });
 });

@@ -1,26 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { IResetPasswordRequest } from '@interfaces/account/reset-password-request';
-import { Constants } from '@core/constants';
 import { PasswordValidators } from '@core/validators/password-validators';
-import { faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
 import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { NgClass } from '@angular/common';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { PasswordFieldsComponent } from '@shared/password-fields/password-fields.component';
 
 @Component({
     selector: 'app-password-reset',
     templateUrl: './password-reset.component.html',
     styleUrls: ['./password-reset.component.scss'],
-    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatInput, NgClass, FaIconComponent, MatButton, MatIcon, MatProgressSpinner, RouterLink]
+    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatInput, MatButton, MatIcon, MatProgressSpinner, RouterLink, PasswordFieldsComponent]
 })
 export class PasswordResetComponent implements OnInit {
 
@@ -42,31 +39,9 @@ export class PasswordResetComponent implements OnInit {
 
   isComplete: boolean = false;
 
-  icons = {
-    invalid: faSquareXmark,
-    valid: faSquareCheck
-  }
-
   resetPasswordForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
-    newPassword: ['',
-      Validators.compose([
-        Validators.required,
-        Validators.minLength(8),
-        PasswordValidators.patternValidator(new RegExp("(?=.*[0-9])"), {
-          requiresDigit: true
-        }),
-        PasswordValidators.patternValidator(new RegExp("(?=.*[A-Z])"), {
-          requiresUppercase: true
-        }),
-        PasswordValidators.patternValidator(new RegExp("(?=.*[a-z])"), {
-          requiresLowercase: true
-        }),
-        PasswordValidators.patternValidator(new RegExp("(?=.*[$@^!%*?&_])"), {
-          requiresSpecialChars: true
-        })
-      ]),
-    ],
+    newPassword: ['', PasswordValidators.newPasswordValidators()],
     confirmPassword: ['', [Validators.required]]
   }, {validators: PasswordValidators.matchValidator});
 
@@ -76,47 +51,6 @@ export class PasswordResetComponent implements OnInit {
 
   get newPassword(): any {
     return this.resetPasswordForm.get('newPassword')
-  }
-
-  get newPasswordControl(): AbstractControl {
-    return this.resetPasswordForm.controls['newPassword'];
-  }
-
-  get confirmPassword(): any {
-    return this.resetPasswordForm.get('confirmPassword');
-  }
-
-  get passwordValid() {
-    return !this.newPasswordControl.valid;
-  }
-
-  get requiredValid() {
-    const result = !this.newPasswordControl.hasError('required')
-    return result;
-  }
-
-  get minLengthValid() {
-    return !this.newPasswordControl.hasError('minlength');
-  }
-
-  get requiresDigitValid() {
-    return !this.newPasswordControl.hasError('requiresDigit');
-  }
-
-  get requiresUppercaseValid() {
-    return !this.newPasswordControl.hasError('requiresUppercase');
-  }
-
-  get requiresLowercaseValid() {
-    return !this.newPasswordControl.hasError('requiresLowercase');
-  }
-
-  get requiresSpecialCharsValid() {
-    return !this.newPasswordControl.hasError('requiresSpecialChars');
-  }
-
-  get passwordsMatchValid() {
-    return !this.resetPasswordForm.hasError('mismatch');
   }
 
   public resetPassword(): void {

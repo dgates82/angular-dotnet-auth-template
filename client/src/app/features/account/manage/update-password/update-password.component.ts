@@ -1,24 +1,24 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
-import { faCancel, faSave, faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCancel, faSave } from '@fortawesome/free-solid-svg-icons';
 import { IChangePasswordRequest } from '@interfaces/account/change-password-request';
 import { PasswordValidators } from '@core/validators/password-validators';
 
 import Swal from 'sweetalert2';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { NgClass } from '@angular/common';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatButton } from '@angular/material/button';
+import { PasswordFieldsComponent } from '@shared/password-fields/password-fields.component';
 
 @Component({
     selector: 'app-update-password',
     templateUrl: './update-password.component.html',
     styleUrls: ['./update-password.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgClass, FaIconComponent, MatButton]
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, FaIconComponent, MatButton, PasswordFieldsComponent]
 })
 export class UpdatePasswordComponent implements OnInit {
 
@@ -31,36 +31,14 @@ export class UpdatePasswordComponent implements OnInit {
 
   icons = {
     cancel: faCancel,
-    save: faSave,
-    invalid: faSquareXmark,
-    valid: faSquareCheck
+    save: faSave
   }
 
-  // HACK: Refactor the password form to its own component to reduce duplication
   passwordUpdateForm = this.formBuilder.group({
     currentPassword: ['', [Validators.required]],
-    newPassword: ['',
-      Validators.compose([
-        Validators.required,
-        Validators.minLength(8),
-        PasswordValidators.patternValidator(new RegExp("(?=.*[0-9])"), {
-          requiresDigit: true
-        }),
-        PasswordValidators.patternValidator(new RegExp("(?=.*[A-Z])"), {
-          requiresUppercase: true
-        }),
-        PasswordValidators.patternValidator(new RegExp("(?=.*[a-z])"), {
-          requiresLowercase: true
-        }),
-        PasswordValidators.patternValidator(new RegExp("(?=.*[$@^!%*?&_])"), {
-          requiresSpecialChars: true
-        })
-      ]),
-    ],
+    newPassword: ['', PasswordValidators.newPasswordValidators()],
     confirmPassword: ['', [Validators.required]]
   }, {validators: PasswordValidators.matchValidator});
-
-
 
   get currentPassword(): any {
     return this.passwordUpdateForm.get('currentPassword')
@@ -68,47 +46,6 @@ export class UpdatePasswordComponent implements OnInit {
 
   get newPassword(): any {
     return this.passwordUpdateForm.get('newPassword')
-  }
-
-  get newPasswordControl(): AbstractControl {
-    return this.passwordUpdateForm.controls['newPassword'];
-  }
-
-  get confirmPassword(): any {
-    return this.passwordUpdateForm.get('confirmPassword');
-  }
-
-  get passwordValid() {
-    return !this.newPasswordControl.valid;
-  }
-
-  get requiredValid() {
-    const result = !this.newPasswordControl.hasError('required')
-    return result;
-  }
-
-  get minLengthValid() {
-    return !this.newPasswordControl.hasError('minlength');
-  }
-
-  get requiresDigitValid() {
-    return !this.newPasswordControl.hasError('requiresDigit');
-  }
-
-  get requiresUppercaseValid() {
-    return !this.newPasswordControl.hasError('requiresUppercase');
-  }
-
-  get requiresLowercaseValid() {
-    return !this.newPasswordControl.hasError('requiresLowercase');
-  }
-
-  get requiresSpecialCharsValid() {
-    return !this.newPasswordControl.hasError('requiresSpecialChars');
-  }
-
-  get passwordsMatchValid() {
-    return !this.passwordUpdateForm.hasError('mismatch');
   }
 
   ngOnInit(): void {
@@ -160,16 +97,6 @@ export class UpdatePasswordComponent implements OnInit {
       });
     })
 
-  }
-
-  public validateAreEqual(c: AbstractControl): { notSame: boolean } | null {
-    return c.value.newPassword === c.value.confirmPassword ? null : { notSame: true };
-  }
-
-  public passwordMismatch(): boolean {
-    return this.newPassword.touched
-      && this.confirmPassword.touched
-      && (this.passwordUpdateForm?.errors ? this.passwordUpdateForm.errors['notSame'] : false);
   }
 
 }

@@ -4,25 +4,23 @@ import { Router } from '@angular/router';
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 
-import { faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
 import { PasswordValidators } from '@core/validators/password-validators';
-import { AbstractControl, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IResponse } from '@interfaces/response';
 import { IRegisterRequest } from '../../../interfaces/account/register-request';
 import { MatCard, MatCardContent, MatCardTitle } from '@angular/material/card';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { NgClass } from '@angular/common';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { PasswordFieldsComponent } from '@shared/password-fields/password-fields.component';
 
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss'],
-    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatError, MatFormField, MatLabel, MatInput, NgClass, FaIconComponent, MatButton, MatIcon, MatProgressSpinner]
+    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatError, MatFormField, MatLabel, MatInput, MatButton, MatIcon, MatProgressSpinner, PasswordFieldsComponent]
 })
 export class RegisterComponent implements OnInit {
 
@@ -35,30 +33,9 @@ export class RegisterComponent implements OnInit {
   isInvalidAttempt: boolean = false;
   errorMessage: string = "";
 
-  icons = {
-    invalid: faSquareXmark,
-    valid: faSquareCheck
-  }
-
   registerForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    newPassword: new FormControl('', Validators.compose([
-      Validators.required,
-      Validators.minLength(8),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[0-9])"), {
-        requiresDigit: true
-      }),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[A-Z])"), {
-        requiresUppercase: true
-      }),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[a-z])"), {
-        requiresLowercase: true
-      }),
-      PasswordValidators.patternValidator(new RegExp("(?=.*[$@^!%*?&_])"), {
-        requiresSpecialChars: true
-      }),
-    ])
-    ),
+    newPassword: new FormControl('', PasswordValidators.newPasswordValidators()),
     confirmPassword: new FormControl('', [Validators.required])
   }, { validators: PasswordValidators.matchValidator})
 
@@ -68,47 +45,6 @@ export class RegisterComponent implements OnInit {
 
   get newPassword(): any {
     return this.registerForm.get('newPassword')
-  }
-
-  get newPasswordControl(): AbstractControl {
-    return this.registerForm.controls['newPassword'];
-  }
-
-  get confirmPassword(): any {
-    return this.registerForm.get('confirmPassword');
-  }
-
-  get passwordValid() {
-    return !this.newPasswordControl.valid;
-  }
-
-  get requiredValid() {
-    const result = !this.newPasswordControl.hasError('required')
-    return result;
-  }
-
-  get minLengthValid() {
-    return !this.newPasswordControl.hasError('minlength');
-  }
-
-  get requiresDigitValid() {
-    return !this.newPasswordControl.hasError('requiresDigit');
-  }
-
-  get requiresUppercaseValid() {
-    return !this.newPasswordControl.hasError('requiresUppercase');
-  }
-
-  get requiresLowercaseValid() {
-    return !this.newPasswordControl.hasError('requiresLowercase');
-  }
-
-  get requiresSpecialCharsValid() {
-    return !this.newPasswordControl.hasError('requiresSpecialChars');
-  }
-
-  get passwordsMatchValid() {
-    return !this.registerForm.hasError('mismatch');
   }
 
   onRegister(): void {
