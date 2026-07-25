@@ -342,10 +342,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                         // Use user phone number if 2fa is already enabled
                         var phoneNumber = user.TwoFactorEnabled ? user.PhoneNumber : request.PhoneNumber;
                         _logger.LogDebug($"SendTwoFaCode | Sending 2FA code to {phoneNumber}");
-                        
-                        // Send SMS
-                        // TODO: Enable SMS sending
-                        // await _smsSender.SendSmsAsync(phoneNumber, $"Your 2FA code for [Application Name] is: {code}. This code is valid for {VerificationCodeExpiryMinutes}. DO NOT share it with anyone."); // TEMPLATE: Update SMS message
+
+                        await _smsSender.SendSmsAsync(phoneNumber, $"Your 2FA code for [Application Name] is: {code}. This code is valid for {VerificationCodeExpiryMinutes} minutes. DO NOT share it with anyone."); // TEMPLATE: Update SMS message
                         break;
                 }
                 
