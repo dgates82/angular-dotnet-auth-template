@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import { faCancel, faEdit, faSave, faUserPlus, faUserTimes } from '@fortawesome/free-solid-svg-icons';
 import { IEmailOnlyRequest } from '@interfaces/account/email-only-request';
 import { AccountService } from '@data/services/account.service';
+import { ProfileFieldValidators } from '@core/validators/profile-field-validators';
 import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -49,14 +50,14 @@ export class RegisterUserComponent implements OnInit {
   }
 
   newUserForm = this.formBuilder.group({
-    firstName: ['', [Validators.required]],
-    lastName: ['', [Validators.required]],
+    firstName: ['', ProfileFieldValidators.forField('firstName')],
+    lastName: ['', ProfileFieldValidators.forField('lastName')],
     email: ['', [Validators.required, Validators.email]],
-    phoneNumber: ['', [Validators.required]],
-    streetAddress: ['', [Validators.required]],
-    city: ['', [Validators.required]],
-    zipCode: ['', [Validators.required]],
-    state: ['', [Validators.required]],
+    phoneNumber: ['', ProfileFieldValidators.forField('phoneNumber')],
+    streetAddress: ['', ProfileFieldValidators.forField('streetAddress')],
+    city: ['', ProfileFieldValidators.forField('city')],
+    zipCode: ['', ProfileFieldValidators.forField('zipCode')],
+    state: ['', ProfileFieldValidators.forField('state')],
     roles: this.formBuilder.array([]),
     addRoleControl: ['']
   });

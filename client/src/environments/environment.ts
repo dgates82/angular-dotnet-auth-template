@@ -12,6 +12,21 @@ export const environment = {
   allowUserEdit: true,
   allowSelfRegister: true,
   twoFaMethods: ['Email', 'Sms', 'Authenticator'],
+
+  // Which profile fields are required on the register-user/edit-user/
+  // edit-profile forms. Email is always required (it's the login name) and
+  // isn't part of this config. A template consumer whose app doesn't need a
+  // full mailing address, for example, can flip those to false here instead
+  // of hunting down Validators.required in three separate components.
+  requiredProfileFields: {
+    firstName: true,
+    lastName: true,
+    phoneNumber: true,
+    streetAddress: true,
+    city: true,
+    zipCode: true,
+    state: true,
+  },
 };
 
 /*

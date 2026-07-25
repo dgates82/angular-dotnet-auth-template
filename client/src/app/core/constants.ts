@@ -19,6 +19,8 @@ export class Constants {
 
   public static twoFaMethods = environment.twoFaMethods;
 
+  public static requiredProfileFields = environment.requiredProfileFields;
+
   public static LocalStorageKeys = {
     sideNavExpanded: 'sideNavExpanded',
   }

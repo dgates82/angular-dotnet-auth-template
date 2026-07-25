@@ -10,7 +10,7 @@
         <div class="row mt-2">
           <mat-form-field class="col-md-6">
             <mat-label>First Name</mat-label>
-            <input matInput formControlName="firstName" required>
+            <input matInput formControlName="firstName">
             @if (firstName?.invalid && (firstName?.dirty || firstName?.touched)) {
               <mat-error>
                 A valid first name is required
@@ -19,7 +19,7 @@
           </mat-form-field>
           <mat-form-field class="col-md-6">
             <mat-label>Last Name</mat-label>
-            <input matInput formControlName="lastName" required>
+            <input matInput formControlName="lastName">
             @if (lastName?.invalid && (lastName?.dirty || lastName?.touched)) {
               <mat-error class="mb-2">
                 A valid last name is required
@@ -30,7 +30,7 @@
         <div class="row mt-2">
           <mat-form-field class="col-md-6">
             <mat-label>Phone Number</mat-label>
-            <input matInput formControlName="phoneNumber" required mask="(000) 000-0000">
+            <input matInput formControlName="phoneNumber" mask="(000) 000-0000">
             @if (phoneNumber?.invalid && (phoneNumber?.dirty || phoneNumber?.touched)) {
               <mat-error class="mb-2">
                 A valid phone number is required
@@ -41,7 +41,7 @@
         <div class="row mt-2">
           <mat-form-field class="col-md-6">
             <mat-label>Street Address</mat-label>
-            <input matInput formControlName="streetAddress" required>
+            <input matInput formControlName="streetAddress">
             @if (streetAddress?.invalid && (streetAddress?.dirty || streetAddress?.touched)) {
               <mat-error class="mb-2">
                 A valid street address is required
@@ -52,7 +52,7 @@
         <div class="row mt-2">
           <mat-form-field class="col-md-6">
             <mat-label>Zip Code</mat-label>
-            <input matInput formControlName="zipCode" required (blur)="onZipCodeChange($event)">
+            <input matInput formControlName="zipCode" (blur)="onZipCodeChange($event)">
             @if (zipCode?.invalid && (zipCode?.dirty || zipCode?.touched)) {
               <mat-error>
                 A valid zip code is required
@@ -61,7 +61,7 @@
           </mat-form-field>
           <mat-form-field class="col-md-6">
             <mat-label>City</mat-label>
-            <input matInput formControlName="city" required>
+            <input matInput formControlName="city">
             @if (city?.invalid && (city?.dirty || city?.touched)) {
               <mat-error class="mb-2">
                 A valid city is required
