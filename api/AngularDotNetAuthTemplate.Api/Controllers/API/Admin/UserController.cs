@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using AngularDotNetAuthTemplate.Api.Models;
+using AngularDotNetAuthTemplate.Api.Models.DataTransferObjects.Account;
 using AngularDotNetAuthTemplate.Api.Data;
 using System.Text;
 
@@ -50,8 +51,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
                 
                 var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
                 user.Roles = roles.ToList();
-                
-                return Ok(user);
+
+                return Ok(new ApplicationUserDto(user));
             }
             catch (Exception e)
             {
@@ -76,8 +77,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
                     var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
                     user.Roles = roles.ToList();
                 }
-                
-                return Ok(users);
+
+                return Ok(users.Select(u => new ApplicationUserDto(u)));
             }
             catch (Exception e)
             {
@@ -92,7 +93,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
         /// the user sets their own password later via the email confirmation flow.
         /// </summary>
         /// <param name="newUser">The new user's profile fields and requested roles.</param>
-        /// <returns>The created <see cref="ApplicationUser"/>, or 400 with Identity's validation errors.</returns>
+        /// <returns>The created <see cref="ApplicationUserDto"/>, or 400 with Identity's validation errors.</returns>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post([FromBody] ApplicationUser newUser)
@@ -150,7 +151,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
                     }
                 }
 
-                return Ok(user);
+                return Ok(new ApplicationUserDto(user));
             }
             catch (Exception e)
             {
@@ -162,7 +163,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
 
         /// <summary>Updates a user's profile fields and role assignments.</summary>
         /// <param name="updateUser">The user's ID plus the new profile field values and role list.</param>
-        /// <returns>The updated <see cref="ApplicationUser"/>, 404 if not found, or 400 with Identity's validation errors.</returns>
+        /// <returns>The updated <see cref="ApplicationUserDto"/>, 404 if not found, or 400 with Identity's validation errors.</returns>
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> Put([FromBody] ApplicationUser updateUser)
@@ -219,7 +220,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
                     return BadRequest(result.Errors);
                 }
 
-                return Ok(user);
+                return Ok(new ApplicationUserDto(user));
             }
             catch (Exception e)
             {

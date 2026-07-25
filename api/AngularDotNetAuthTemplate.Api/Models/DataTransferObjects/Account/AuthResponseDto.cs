@@ -26,7 +26,7 @@
         public string PhoneNumber { get; set; }
 
         /// <summary>The authenticated user, populated only on success.</summary>
-        public ApplicationUser User { get; set; }
+        public ApplicationUserDto User { get; set; }
 
     }
 

@@ -64,7 +64,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         /// <summary>Looks up a user by email, including their assigned roles.</summary>
         /// <param name="email">The email address to search for.</param>
         /// <returns>
-        /// The matching <see cref="ApplicationUser"/> with <c>Roles</c> populated,
+        /// The matching <see cref="ApplicationUserDto"/> with <c>Roles</c> populated,
         /// or a <see cref="ResponseDto"/> with <c>IsSuccess = false</c> if no user
         /// with that email exists.
         /// </returns>
@@ -86,7 +86,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 var roles = await _userManager.GetRolesAsync(user);
                 user.Roles = roles.ToList();
 
-                return Ok(user);
+                return Ok(new ApplicationUserDto(user));
             }
             catch (Exception e)
             {
@@ -206,10 +206,10 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                         IsAuthSuccessful = true,
                         Token = token,
                         RequiresTwoFactor = user.TwoFactorEnabled,
-                        User = user
+                        User = new ApplicationUserDto(user)
                     });
                 }
-                
+
                 if (result.RequiresTwoFactor)
                 {
                     return Ok(new AuthResponseDto
@@ -277,18 +277,16 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 
                 var signingCredentials = _jwtHandler.GetSigningCredentials();
 
-                // var userDto = new ApplicationUserDto(user, roles.Contains("Admin"));
-
                 var claims = _jwtHandler.GetClaims(user);
                 var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
                 var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-                
+
                 return Ok(new AuthResponseDto
                 {
                     IsAuthSuccessful = true,
                     Token = token,
                     RequiresTwoFactor = true,
-                    User = user
+                    User = new ApplicationUserDto(user)
                 });
                 
             }
