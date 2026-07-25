@@ -21,7 +21,8 @@ namespace AngularDotNetAuthTemplate.Api.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
-        // HACK I don't like this, but the first user can't be inserted unless this is nullable
+        // Nullable because the very first user in the system (e.g. the DbSeeder
+        // admin) can't reference a creator that doesn't exist yet.
         [ForeignKey("CreatedByUser")]
         public string? CreatedById { get; set; }
 

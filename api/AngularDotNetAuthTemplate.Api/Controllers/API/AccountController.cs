@@ -478,13 +478,14 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
                 if (!changePasswordResult.Succeeded)
                 {
+                    var errorMessage = string.Join(" ", changePasswordResult.Errors.Select(e => e.Description));
+
                     foreach (var error in changePasswordResult.Errors)
                     {
-                        // HACK: Should we be returning errors here?
                         _logger.LogError($"Error adding password: {error.Description}");
                     }
 
-                    return Ok(new ResponseDto { IsSuccess = false });
+                    return Ok(new ResponseDto { IsSuccess = false, Message = errorMessage });
                 }
 
                 await _signInManager.RefreshSignInAsync(user);
@@ -710,7 +711,6 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
                 if (tokenProvider == "Authenticator")
                 {
-                    // HACK: Since we can't clear out existing recovery codes we are just generating new ones every time
                     var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
                     response.Codes = recoveryCodes.ToArray();
                 }
