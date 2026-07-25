@@ -51,8 +51,8 @@ export class ListUsersComponent implements OnInit {
       lengthChange: false,
       columnDefs: [
         {
-          targets: 3,
-          orderable: false // HACK: Why isn't this working?
+          targets: 4,
+          orderable: false
         }
       ]
     }
