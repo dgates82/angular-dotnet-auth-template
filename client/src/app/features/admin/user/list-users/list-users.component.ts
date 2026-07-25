@@ -1,12 +1,14 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 
-import { DataTableDirective, DataTablesModule } from 'angular-datatables';
-import { Api } from 'datatables.net';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 
 import { LoggerService } from '@core/services/logger.service';
 import { UserService } from '@data/services/user.service';
 import { IApplicationUser } from '@interfaces/account/application-user';
-import { Subject } from 'rxjs';
 
 import { faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
@@ -19,24 +21,21 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
     selector: 'app-list-users',
     templateUrl: './list-users.component.html',
     styleUrls: ['./list-users.component.scss'],
-    imports: [MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatButton, FaIconComponent, MatSlideToggle, DataTablesModule, MatMiniFabButton]
+    imports: [MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatButton, FaIconComponent, MatSlideToggle, MatMiniFabButton, MatTableModule, MatSortModule, MatPaginatorModule, MatFormField, MatLabel, MatInput]
 })
-export class ListUsersComponent implements OnInit {
+export class ListUsersComponent implements OnInit, AfterViewInit {
 
   constructor(private readonly logger: LoggerService,
               private readonly userService: UserService,
-              private readonly router: Router,
-              private readonly cdr: ChangeDetectorRef) { }
+              private readonly router: Router) { }
 
-  @ViewChild(DataTableDirective) dtElement!: DataTableDirective;
-  dtOptions: any = {};
-  dtTrigger: Subject<any> = new Subject<any>();
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  users!: IApplicationUser[];
+  displayedColumns: string[] = ['email', 'firstName', 'lastName', 'status', 'actions'];
+  dataSource = new MatTableDataSource<IApplicationUser>([]);
 
   includeInactiveUsers: boolean = false;
-
-  private dtInitialized: boolean = false;
 
   icons = {
     edit: faUserEdit,
@@ -46,19 +45,31 @@ export class ListUsersComponent implements OnInit {
   ngOnInit(): void {
     this.logger.debug(`list-users.component.ngOnInit`)
 
-    this.dtOptions = {
-      pageLength: 10,
-      lengthChange: false,
-      columnDefs: [
-        {
-          targets: 4,
-          orderable: false
-        }
-      ]
-    }
+    this.dataSource.filterPredicate = (user: IApplicationUser, filter: string) => {
+      const haystack = `${user.email} ${user.firstName} ${user.lastName} ${user.isActive ? 'Active' : 'Inactive'}`.toLowerCase();
+      return haystack.includes(filter);
+    };
+
+    // MatTableDataSource's default sortingDataAccessor reads properties by
+    // column name (e.g. user['status']), which doesn't exist on
+    // IApplicationUser - the underlying field is isActive. Map the display
+    // columns that aren't a direct property match; fall back to the raw
+    // property for the rest.
+    this.dataSource.sortingDataAccessor = (user: IApplicationUser, columnName: string) => {
+      switch (columnName) {
+        case 'status':
+          return user.isActive ? 1 : 0;
+        default:
+          return (user as any)[columnName] ?? '';
+      }
+    };
 
     this.reloadData();
+  }
 
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
 
   reloadData(): void {
@@ -69,36 +80,17 @@ export class ListUsersComponent implements OnInit {
         response = response.filter(x => x.isActive);
       }
 
-      this.users = response;
-      // Flush *ngFor's row update into the live DOM before touching
-      // DataTables - it reads <tbody> synchronously on (re)init, and
-      // relying on zone.js timing to flush it first isn't reliable.
-      this.cdr.detectChanges();
-      this.initializeDataTable();
+      this.dataSource.data = response;
     });
   }
 
-  initializeDataTable(): void {
-    this.logger.debug(`list-users.component.initializeDataTable`);
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
 
-    // First render: the table has real rows from *ngFor already, so just
-    // trigger DataTables once. Re-triggering an empty table and destroying
-    // it afterwards isn't reliable across datatables.net versions, so avoid
-    // that path entirely rather than depend on its timing.
-    if (!this.dtInitialized) {
-      this.dtInitialized = true;
-      this.dtTrigger.next(this.dtOptions);
-      return;
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
-
-    this.dtElement.dtInstance.then((dtInstance: Api) => {
-      dtInstance.destroy();
-      this.dtTrigger.next(this.dtOptions);
-    });
-  }
-
-  ngOnDestroy() {
-    this.dtTrigger.unsubscribe();
   }
 
   onAddUser(): void {
