@@ -66,12 +66,12 @@ namespace AngularDotNetAuthTemplate.Api
                 };
             });
 
-            builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
-                options.SignIn.RequireConfirmedAccount = true;                
+                options.SignIn.RequireConfirmedAccount = true;
             })
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
             builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => 
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
@@ -135,8 +135,6 @@ namespace AngularDotNetAuthTemplate.Api
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.MapControllers();
-
-            app.MapRazorPages();
 
             // SPA fallback: any GET request that doesn't match a controller or
             // Razor route falls through to the Angular app's index.html, so
