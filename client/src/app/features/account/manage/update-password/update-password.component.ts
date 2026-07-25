@@ -91,7 +91,7 @@ export class UpdatePasswordComponent implements OnInit {
       // Update failed
       Swal.fire({
         title: 'Password update failed',
-        text: 'Your password could not be updated',
+        text: response.message || 'Your password could not be updated',
         icon: 'error',
         heightAuto: false
       });
