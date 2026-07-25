@@ -21,6 +21,8 @@ export class Constants {
 
   public static requiredProfileFields = environment.requiredProfileFields;
 
+  public static availableRoles = environment.availableRoles;
+
   public static LocalStorageKeys = {
     sideNavExpanded: 'sideNavExpanded',
   }

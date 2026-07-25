@@ -19,6 +19,9 @@
       }
       @if (isCodeSent) {
         <div>
+          @if (errorMessage) {
+            <mat-error class="mb-2">{{ errorMessage }}</mat-error>
+          }
           <mat-form-field class="w-100 mt-2">
             <mat-label>Verification Code</mat-label>
             <input matInput formControlName="code" required mask="000 000" (keyup.enter)="verifyCode()">

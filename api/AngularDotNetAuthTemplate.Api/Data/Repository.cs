@@ -45,9 +45,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
                 Logger.LogDebug($"Repository - GetAsync - Id: {id}");
                 var result = await Entities.FirstOrDefaultAsync(e => e.Id == id);
                 Logger.LogTrace($"Repository - GetAsync - Result: {result?.ToJson()}");
-                
-                // TODO: What to return if no result is found
-                return result; 
+                return result;
             }
             catch (Exception ex)
             {
@@ -101,9 +99,12 @@ namespace AngularDotNetAuthTemplate.Api.Data
                 Logger.LogTrace($"Repository - InsertAsync - Entity: {entity.ToJson()}");
                 return entity;
             }
-            // TODO: Handle validation exceptions
             catch (Exception ex)
             {
+                // Deliberately rethrows the original exception type (e.g.
+                // DbUpdateException) rather than wrapping it, so callers -
+                // including template consumers adding their own entities -
+                // can catch specific EF exceptions if they need to.
                 Logger.LogError(ex, "An error occurred in Repository - InsertAsync");
                 throw;
             }

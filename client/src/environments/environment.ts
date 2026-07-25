@@ -27,6 +27,12 @@ export const environment = {
     zipCode: true,
     state: true,
   },
+
+  // TODO(template): "Tech"/"Manager" are this app's own business roles -
+  // replace with whatever roles your application needs. "Admin" is assumed
+  // to exist elsewhere (SeedAdmin, route guards, navigation) - keep it
+  // unless those are updated too.
+  availableRoles: ['Admin', 'Tech', 'Manager'],
 };
 
 /*

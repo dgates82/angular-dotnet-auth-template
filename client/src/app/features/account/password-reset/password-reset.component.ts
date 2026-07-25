@@ -93,11 +93,9 @@ export class PasswordResetComponent implements OnInit {
 
         this.isSubmitting = false;
 
-        // TODO: Try to determine what the error was
-
         // Display an error to the user
         this.isInvalidAttempt = true;
-        this.errorMessage = "Password reset failed. Please try again."
+        this.errorMessage = response.message || "Password reset failed. Please try again."
       }
     }).catch(err => {
       this.logger.error(`password-reset.component.resetPassword | error:`, err);
