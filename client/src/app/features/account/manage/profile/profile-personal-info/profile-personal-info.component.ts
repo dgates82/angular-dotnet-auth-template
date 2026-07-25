@@ -7,6 +7,7 @@ import { UserService } from '@data/services/user.service';
 import { AccountService } from '@data/services/account.service';
 import { Constants } from '@core/constants';
 import { faCancel, faEdit, faSave, faUserPlus, faUserTimes } from '@fortawesome/free-solid-svg-icons';
+import { ProfileFieldValidators } from '@core/validators/profile-field-validators';
 
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { IState } from '@interfaces/address/state';
@@ -48,14 +49,14 @@ export class ProfilePersonalInfoComponent implements OnInit {
   }
 
   profileForm = this.formBuilder.group({
-    firstName: ['', [Validators.required]],
-    lastName: ['', [Validators.required]],
+    firstName: ['', ProfileFieldValidators.forField('firstName')],
+    lastName: ['', ProfileFieldValidators.forField('lastName')],
     email: ['', [Validators.required]],
-    phoneNumber: ['', [Validators.required]],
-    streetAddress: ['', [Validators.required]],
-    city: ['', [Validators.required]],
-    zipCode: ['', [Validators.required]],
-    state: ['', [Validators.required]]
+    phoneNumber: ['', ProfileFieldValidators.forField('phoneNumber')],
+    streetAddress: ['', ProfileFieldValidators.forField('streetAddress')],
+    city: ['', ProfileFieldValidators.forField('city')],
+    zipCode: ['', ProfileFieldValidators.forField('zipCode')],
+    state: ['', ProfileFieldValidators.forField('state')]
   });
 
   get firstName() { return this.profileForm.get('firstName'); }

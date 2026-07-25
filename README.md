@@ -182,8 +182,13 @@ This template offers several configurable options to customize the authenticatio
   - **Authenticator App** (e.g., Google Authenticator)
   - **Email Verification**
   - **SMS Verification**
+- **Required Profile Fields**: Choose which fields (name, phone number,
+  mailing address) are mandatory on the register-user, edit-user, and
+  edit-profile forms. Email is always required, since it's the account's
+  login name.
 
-To modify these options, adjust the corresponding settings in the configuration files.
+To modify these options, adjust the corresponding settings in the configuration files
+(`client/src/environments/environment.ts` and `environment.prod.ts`).
 
 ## License
 This project is licensed under the MIT License.
