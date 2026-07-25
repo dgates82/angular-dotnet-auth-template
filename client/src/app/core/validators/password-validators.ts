@@ -1,4 +1,4 @@
-import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+import { AbstractControl, ValidationErrors, Validators, ValidatorFn } from "@angular/forms";
 
 import { LoggerService } from '@core/services/logger.service';
 
@@ -16,6 +16,28 @@ export class PasswordValidators {
 
       return valid ? null : error;
     }
+  }
+
+  // The full set of validators used everywhere a user sets a new password
+  // (register, password reset, change password), so the strength rules only
+  // need to be defined in one place.
+  static newPasswordValidators(): ValidatorFn[] {
+    return [
+      Validators.required,
+      Validators.minLength(8),
+      PasswordValidators.patternValidator(new RegExp("(?=.*[0-9])"), {
+        requiresDigit: true
+      }),
+      PasswordValidators.patternValidator(new RegExp("(?=.*[A-Z])"), {
+        requiresUppercase: true
+      }),
+      PasswordValidators.patternValidator(new RegExp("(?=.*[a-z])"), {
+        requiresLowercase: true
+      }),
+      PasswordValidators.patternValidator(new RegExp("(?=.*[$@^!%*?&_])"), {
+        requiresSpecialChars: true
+      }),
+    ];
   }
 
 

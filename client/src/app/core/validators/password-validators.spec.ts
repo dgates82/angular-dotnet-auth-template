@@ -47,4 +47,26 @@ describe('PasswordValidators', () => {
       expect(PasswordValidators.matchValidator(group)).toBeNull();
     });
   });
+
+  describe('newPasswordValidators', () => {
+    const control = () => new FormControl('', PasswordValidators.newPasswordValidators());
+
+    it('is invalid when empty', () => {
+      expect(control().valid).toBe(false);
+    });
+
+    it('is invalid when missing a required character class', () => {
+      const c = control();
+      c.setValue('password1'); // no uppercase, no special char
+      expect(c.valid).toBe(false);
+      expect(c.hasError('requiresUppercase')).toBe(true);
+      expect(c.hasError('requiresSpecialChars')).toBe(true);
+    });
+
+    it('is valid when all rules are satisfied', () => {
+      const c = control();
+      c.setValue('Password1!');
+      expect(c.valid).toBe(true);
+    });
+  });
 });
