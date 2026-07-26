@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -79,17 +78,11 @@ namespace AngularDotNetAuthTemplate.Api
             // so a fresh clone has a working email path with no external account/API key.
             // Swap to SendGrid/PostMark below (and supply your own key via
             // appsettings.Development.json or user-secrets) for a real provider.
-            builder.Services.Configure<SmtpEmailOptions>(builder.Configuration.GetSection(SmtpEmailOptions.ConfigSection));
-            builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
+            builder.Services.AddSmtpEmailSender(builder.Configuration);
+            // builder.Services.AddSendGridEmailSender(builder.Configuration);
+            // builder.Services.AddPostMarkEmailSender(builder.Configuration);
 
-            // builder.Services.Configure<SendGridEmailOptions>(builder.Configuration.GetSection(SendGridEmailOptions.ConfigSection));
-            // builder.Services.AddTransient<IEmailSender, SendGridEmailSender>();
-
-            // builder.Services.Configure<PostMarkEmailOptions>(builder.Configuration.GetSection(PostMarkEmailOptions.ConfigSection));
-            // builder.Services.AddTransient<IEmailSender, PostMarkEmailSender>();
-            
-            builder.Services.Configure<TwilioSmsOptions>(builder.Configuration.GetSection(TwilioSmsOptions.ConfigSection));
-            builder.Services.AddTransient<ISmsSender, TwilioSmsSender>();
+            builder.Services.AddTwilioSmsSender(builder.Configuration);
             
             builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigSection));
             builder.Services.AddScoped<JwtHandler>();
