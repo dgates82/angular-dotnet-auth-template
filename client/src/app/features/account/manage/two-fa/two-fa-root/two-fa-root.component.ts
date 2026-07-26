@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -24,7 +24,8 @@ export class TwoFaRootComponent implements OnInit {
   constructor(private readonly logger: LoggerService,
               private readonly accountService: AccountService) { }
 
-  user!: IApplicationUser;
+  // Fetched once by ProfileRootComponent instead of independently here.
+  @Input() user!: IApplicationUser;
 
   isTwoFaEnabled: boolean = false;
   // get isTwoFaEnabledString(): string {return this.isTwoFaEnabled ? 'Enabled' : 'Disabled';}
@@ -35,24 +36,8 @@ export class TwoFaRootComponent implements OnInit {
   isTwoFaRequired: boolean = Constants.is2FaRequired;
 
   ngOnInit(): void {
-
-    this.getUserInfo();
-
-  }
-
-  getUserInfo() {
-    // Get user info
-    // HACK: Should this be done in the parent and passed in?
-    const applicationUser = this.accountService.getAuthResponse()?.user;
-    if (applicationUser) {
-      this.accountService.getUserByEmail(applicationUser?.email).then(response => {
-        this.logger.trace(`two-fa-root.component.ngOnInit | response:`, response)
-
-        this.user = response;
-        this.isTwoFaEnabled = response.twoFactorEnabled;
-        this.isTwoFaEnabledString = this.isTwoFaEnabled ? 'Enabled' : 'Disabled';
-      });
-    }
+    this.isTwoFaEnabled = this.user.twoFactorEnabled;
+    this.isTwoFaEnabledString = this.isTwoFaEnabled ? 'Enabled' : 'Disabled';
   }
 
   onEnabledChanged(event: any) {
