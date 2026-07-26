@@ -4,6 +4,10 @@
 
 This repository provides a template for an authentication system built with Angular 21 and .NET 10, using MySQL as the database. It offers a secure foundation for applications requiring user authentication, with options for self-registration and two-factor authentication (2FA).
 
+> This is a starter template, not a finished app — clone it, verify it
+> runs, then work through [Customizing for Your Project](#customizing-for-your-project)
+> before treating anything here as production-ready.
+
 ## Technology Stack
 - **Frontend:** Angular 21
 - **Backend:** .NET 10
@@ -21,7 +25,73 @@ The app runs as a single process: the API serves the Angular build output direct
 - Configurable two-factor authentication (2FA) options
 - Secure password storage and management
 
-## Getting Started
+## Customizing for Your Project
+
+This repo is meant to be cloned and adapted, not run as-is. Every spot that
+needs a look before you ship is marked `TODO(template)` (in code comments)
+or a literal `[Application Name]` placeholder (in copy that gets sent to
+users). Find them all with:
+
+```bash
+grep -rn "TODO(template)" .
+grep -rn "\[Application Name\]" api client/src
+```
+
+What's currently marked:
+
+- **App name in emails/SMS/authenticator app** —
+  `api/AngularDotNetAuthTemplate.Api/Controllers/API/AccountController.cs`
+  has `[Application Name]` in the confirmation, password reset, and 2FA
+  email/SMS copy, plus the issuer name shown in authenticator apps
+  (`GenerateQrCodeUri`). The Angular route `title`s in
+  `client/src/app/app.routes.ts` and `client/src/index.html`'s default
+  `<title>` use the same placeholder.
+- **Logo and favicon** — `client/src/assets/images/logo-small.png` (used
+  across the login/register/2FA pages) and `client/src/favicon.ico` are
+  both placeholders; replace the files in place, no code changes needed.
+- **Seeded admin account** — off by default; see `SeedAdmin` in
+  [Backend Setup](#set-up-mysql-mailpit-and-the-sms-mock-using-docker-compose)
+  below.
+- **`client/package.json`'s `"name"`** — still the Angular CLI default
+  (`"angular"`); harmless to leave, but worth renaming if you're publishing
+  this as its own project.
+- **Angular feature flags** — `is2FaRequired`, `allowUserEdit`,
+  `allowSelfRegister`, `twoFaMethods`, `requiredProfileFields`, and
+  `availableRoles` in `client/src/environments/environment.ts` /
+  `environment.prod.ts` — see [Options](#options) below.
+- **`LICENSE`'s copyright holder**, **`CONTRIBUTING.md`**, and
+  **`docs/LOCAL_DEV.md`** — all still placeholders from the template itself.
+- **JWT config** — `JwtConfigs.securityKey` in `appsettings.json` ships
+  with an obviously-fake default (`...ReplaceMe`); replace it with a real
+  secret via `appsettings.Development.json`/user-secrets/environment
+  variable before any real deployment, and never commit the real value.
+  `validIssuer`/`validAudience` in the same block are just internal labels
+  the client and server need to agree on, but worth updating to reflect
+  your actual app/API name too.
+
+### Notification Senders
+
+The default `IEmailSender`/`ISmsSender` registrations in `Program.cs` are
+marked `TODO(template)`. Email defaults to SMTP (pointed at the Mailpit
+container so a fresh clone works with no external account), with
+`SendGridEmailSender`/`PostMarkEmailSender` already implemented but
+commented out — swap the registration and supply your own API key via
+`appsettings.Development.json` or user-secrets to switch providers. SMS only
+has one implementation, `TwilioSmsSender`; swap it out entirely if you need
+a different provider. Never commit real provider credentials.
+
+### Upgrading Angular
+
+`@fortawesome/angular-fontawesome`, `angularx-qrcode`, and `ngx-mask` all
+release major versions in lockstep with Angular's own major version rather
+than independent semver — e.g. `ngx-mask@21.x` targets Angular 21,
+`ngx-mask@22.x` targets Angular 22. When you run your own `ng update` in the
+future, bump these alongside it. `npm install` will happily resolve a stale
+peer range without complaint; only `npm ci` (used in CI, see the badge
+above) enforces it, so a mismatch here can pass local `npm install` and only
+surface once CI (or a teammate's clean clone) runs `npm ci`.
+
+## Running the Template As-Is
 
 ### Quickstart
 
@@ -202,69 +272,6 @@ This template offers several configurable options to customize the authenticatio
 
 To modify these options, adjust the corresponding settings in the configuration files
 (`client/src/environments/environment.ts` and `environment.prod.ts`).
-
-## Customizing for Your Project
-
-This repo is meant to be cloned and adapted, not run as-is. Every spot that
-needs a look before you ship is marked `TODO(template)` (in code comments)
-or a literal `[Application Name]` placeholder (in copy that gets sent to
-users). Find them all with:
-
-```bash
-grep -rn "TODO(template)" .
-grep -rn "\[Application Name\]" api client/src
-```
-
-What's currently marked:
-
-- **App name in emails/SMS/authenticator app** —
-  `api/AngularDotNetAuthTemplate.Api/Controllers/API/AccountController.cs`
-  has `[Application Name]` in the confirmation, password reset, and 2FA
-  email/SMS copy, plus the issuer name shown in authenticator apps
-  (`GenerateQrCodeUri`). The Angular route `title`s in
-  `client/src/app/app.routes.ts` and `client/src/index.html`'s default
-  `<title>` use the same placeholder.
-- **Logo and favicon** — `client/src/assets/images/logo-small.png` (used
-  across the login/register/2FA pages) and `client/src/favicon.ico` are
-  both placeholders; replace the files in place, no code changes needed.
-- **Seeded admin account** — off by default; see `SeedAdmin` in
-  [Backend Setup](#set-up-mysql-mailpit-and-the-sms-mock-using-docker-compose)
-  above.
-- **`client/package.json`'s `"name"`** — still the Angular CLI default
-  (`"angular"`); harmless to leave, but worth renaming if you're publishing
-  this as its own project.
-- **Angular feature flags** — `is2FaRequired`, `allowUserEdit`,
-  `allowSelfRegister`, `twoFaMethods`, `requiredProfileFields`, and
-  `availableRoles` in `client/src/environments/environment.ts` /
-  `environment.prod.ts` — see [Options](#options) below.
-- **`LICENSE`'s copyright holder**, **`CONTRIBUTING.md`**, and
-  **`docs/LOCAL_DEV.md`** — all still placeholders from the template itself.
-- **JWT signing key** — `JwtConfigs.securityKey` in `appsettings.json`
-  ships with an obviously-fake default (`...ReplaceMe`). Replace it with a
-  real secret via `appsettings.Development.json`/user-secrets/environment
-  variable before any real deployment; never commit the real value.
-
-### Notification Senders
-
-The default `IEmailSender`/`ISmsSender` registrations in `Program.cs` are
-marked `TODO(template)`. Email defaults to SMTP (pointed at the Mailpit
-container so a fresh clone works with no external account), with
-`SendGridEmailSender`/`PostMarkEmailSender` already implemented but
-commented out — swap the registration and supply your own API key via
-`appsettings.Development.json` or user-secrets to switch providers. SMS only
-has one implementation, `TwilioSmsSender`; swap it out entirely if you need
-a different provider. Never commit real provider credentials.
-
-### Upgrading Angular
-
-`@fortawesome/angular-fontawesome`, `angularx-qrcode`, and `ngx-mask` all
-release major versions in lockstep with Angular's own major version rather
-than independent semver — e.g. `ngx-mask@21.x` targets Angular 21,
-`ngx-mask@22.x` targets Angular 22. When you run your own `ng update` in the
-future, bump these alongside it. `npm install` will happily resolve a stale
-peer range without complaint; only `npm ci` (used in CI, see the badge
-above) enforces it, so a mismatch here can pass local `npm install` and only
-surface once CI (or a teammate's clean clone) runs `npm ci`.
 
 ## License
 This project is licensed under the MIT License.
