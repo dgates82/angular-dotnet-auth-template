@@ -46,7 +46,6 @@ namespace AngularDotNetAuthTemplate.Api
 
             var jwtSettings = builder.Configuration.GetSection(JwtOptions.ConfigSection);
 
-            /* TODO: Enable for JWT authentication */
             builder.Services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -95,12 +94,6 @@ namespace AngularDotNetAuthTemplate.Api
             builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigSection));
             builder.Services.AddScoped<JwtHandler>();
 
-            builder.Services.ConfigureApplicationCookie(options =>
-            {
-                // TODO: Redirect to custom login
-                // options.LoginPath = "/Home/Privacy";
-            });
-            
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())

@@ -6,6 +6,7 @@ import { AddressService } from '@core/services/address.service';
 import { UserService } from '@data/services/user.service';
 import { faCancel, faEdit, faSave, faUserPlus, faUserTimes } from '@fortawesome/free-solid-svg-icons';
 import { ProfileFieldValidators } from '@core/validators/profile-field-validators';
+import { Constants } from '@core/constants';
 
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { IState } from '@interfaces/address/state';
@@ -34,9 +35,7 @@ export class AdminPersonalInfoComponent implements OnInit {
 
   @Input() user!: IApplicationUser;
 
-  // TODO: pull this from the api
-  // Define available roles
-  availableRoles: string[] = ['Admin', 'Tech', 'Manager'];
+  availableRoles: string[] = Constants.availableRoles;
 
   isEditMode: boolean = false;
 

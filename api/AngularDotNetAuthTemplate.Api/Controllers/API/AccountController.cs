@@ -432,7 +432,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
                 var response = new ResponseDto
                 {
-                    IsSuccess = result.Succeeded
+                    IsSuccess = result.Succeeded,
+                    Message = result.Succeeded ? null : string.Join(" ", result.Errors.Select(e => e.Description))
                 };
 
                 if (result.Succeeded)

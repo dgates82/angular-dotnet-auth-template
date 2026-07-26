@@ -32,6 +32,8 @@ export class EnableTwoFaPhoneComponent implements OnInit{
 
   isCodeSent: boolean = false;
 
+  errorMessage: string = '';
+
   ngOnInit() {
     this.logger.debug(`enable-two-fa-phone.component.ngOnInit | email: ${this.email} | isRouted: ${this.isRouted}`);
 
@@ -98,7 +100,7 @@ export class EnableTwoFaPhoneComponent implements OnInit{
         this.accountService.updateStoredUser({ phoneNumber: this.phoneNumber.value });
         this.twoFaEnabled.emit('Sms');
       } else {
-        // TODO: Set error?
+        this.errorMessage = response.message ?? 'An error occurred';
       }
     });
   }

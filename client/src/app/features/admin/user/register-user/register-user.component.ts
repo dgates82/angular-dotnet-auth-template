@@ -5,6 +5,7 @@ import { FormArray, FormBuilder, FormControl, Validators, FormsModule, ReactiveF
 import { LoggerService } from '@core/services/logger.service';
 import { AddressService } from '@core/services/address.service';
 import { UserService } from '@data/services/user.service';
+import { Constants } from '@core/constants';
 
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { IState } from '@interfaces/address/state';
@@ -38,9 +39,7 @@ export class RegisterUserComponent implements OnInit {
               private readonly formBuilder: FormBuilder,
               private readonly router: Router) { }
 
-  // TODO: pull this from the api
-  // Define available roles
-  availableRoles: string[] = ['Admin', 'Tech', 'Manager'];
+  availableRoles: string[] = Constants.availableRoles;
 
   states!: IState[];
 
