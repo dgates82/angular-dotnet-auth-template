@@ -26,6 +26,14 @@ services:
       - "1025:1025" # SMTP
       - "8025:8025" # web UI
 
+  smsmock:
+    build:
+      context: docker/sms-mock
+    container_name: auth-template-sms-mock
+    restart: unless-stopped
+    ports:
+      - "3030:3030" # web UI + Twilio-compatible REST API
+
   api:
     build:
       context: .
@@ -37,9 +45,12 @@ services:
         condition: service_healthy
       mailpit:
         condition: service_started
+      smsmock:
+        condition: service_started
     environment:
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=AuthTemplate;User=webapp;Password=mypass"
       SmtpEmailConfigs__Host: mailpit
+      TwilioSmsConfigs__BaseUrlOverride: "http://smsmock:3030"
     ports:
       - "8080:8080"
 

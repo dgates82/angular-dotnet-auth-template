@@ -1,6 +1,7 @@
 using AngularDotNetAuthTemplate.Api.Models.Options;
 using Microsoft.Extensions.Options;
 using Twilio;
+using Twilio.Clients;
 using Twilio.Rest.Api.V2010.Account;
 
 namespace AngularDotNetAuthTemplate.Api.Services;
@@ -30,8 +31,18 @@ public class TwilioSmsSender : ISmsSender
     public Task SendSmsAsync(string number, string message)
     {
         _logger.LogDebug($"SendSmsAsync | number: {number} | message: {message}");
-        TwilioClient.Init(_options.Value.AccountSid, _options.Value.AuthToken);
-        
+
+        if (!string.IsNullOrEmpty(_options.Value.BaseUrlOverride))
+        {
+            var mockClient = new TwilioRestClient(_options.Value.AccountSid, _options.Value.AuthToken,
+                httpClient: new TwilioMockRedirectHttpClient(_options.Value.BaseUrlOverride));
+            TwilioClient.SetRestClient(mockClient);
+        }
+        else
+        {
+            TwilioClient.Init(_options.Value.AccountSid, _options.Value.AuthToken);
+        }
+
         // Set number based on override 
         var finalNumber = !string.IsNullOrEmpty(_options.Value.OverrideRecipient) ? _options.Value.OverrideRecipient : number;
         

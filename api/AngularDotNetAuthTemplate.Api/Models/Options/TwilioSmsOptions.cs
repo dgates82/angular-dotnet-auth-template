@@ -17,4 +17,11 @@ public class TwilioSmsOptions
 
     /// <summary>When set, all SMS messages are redirected here instead of their real recipient, for testing against a real phone without texting real users.</summary>
     public string OverrideRecipient { get; set; } = "";
+
+    /// <summary>
+    /// When set, redirects all Twilio API requests to this URL instead of
+    /// api.twilio.com - for local dev, point this at a Twilio-compatible
+    /// mock (e.g. twillio-sms-mock) instead of a real Twilio account.
+    /// </summary>
+    public string BaseUrlOverride { get; set; } = "";
 }

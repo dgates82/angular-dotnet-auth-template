@@ -32,7 +32,7 @@ installed. See the detailed sections below for what each step does and why.
 git clone https://github.com/yourusername/angular-dotnet-auth-template.git
 cd angular-dotnet-auth-template
 
-docker compose up -d mysql mailpit
+docker compose up -d mysql mailpit smsmock
 
 cd api
 dotnet tool restore
@@ -51,6 +51,7 @@ dotnet run --project api/AngularDotNetAuthTemplate.Api
 **Available at:**
 - App: https://localhost:7249
 - Mailpit (dev inbox — confirmation/reset emails land here instead of a real inbox): http://localhost:8025
+- SMS mock (dev inbox for SMS 2FA codes — see below): http://localhost:3030
 
 Follow these steps to set up and run the project locally.
 
@@ -68,13 +69,13 @@ cd angular-dotnet-auth-template
 
 ### Backend Setup
 
-#### Set Up MySQL and Mailpit Using Docker Compose
+#### Set Up MySQL, Mailpit, and the SMS Mock Using Docker Compose
 
-1. **Start MySQL and Mailpit** (from the repo root — `docker-compose.yml` also
-   defines an `api` service, but leave it out for now; it needs the database
-   migrated first, see below):
+1. **Start MySQL, Mailpit, and the SMS mock** (from the repo root —
+   `docker-compose.yml` also defines an `api` service, but leave it out for
+   now; it needs the database migrated first, see below):
    ```bash
-   docker compose up -d mysql mailpit
+   docker compose up -d mysql mailpit smsmock
    ```
    This starts a `mysql` container with the database, user, and password already
    provisioned to match `appsettings.json`'s `DefaultConnection`, mapped to
@@ -87,6 +88,17 @@ cd angular-dotnet-auth-template
    a real provider instead (SendGrid/PostMark), swap the `IEmailSender`
    registration in `Program.cs` and supply your own API key via
    `appsettings.Development.json` or user-secrets — never commit real keys.
+
+   `smsmock` plays the same role for SMS 2FA: a containerized
+   [`twillio-sms-mock`](https://www.npmjs.com/package/twillio-sms-mock)
+   server (`docker/sms-mock/`) implementing the Twilio REST API. The app's
+   default `TwilioSmsConfigs.BaseUrlOverride` in `appsettings.json` points
+   `TwilioSmsSender` at it, so 2FA codes sent via SMS are caught instead of
+   going through a real Twilio account — view them at `http://localhost:3030`.
+   To use a real Twilio account instead, set `TwilioSmsConfigs.AccountSid`/
+   `AuthToken`/`FromNumber` to real values and clear `BaseUrlOverride` via
+   `appsettings.Development.json` or user-secrets — never commit real
+   credentials.
 
 2. **Install the EF Core CLI tool** (one-time per clone — `Microsoft.EntityFrameworkCore.Tools`
    in the `.csproj` only wires up the Visual Studio Package Manager Console
@@ -138,8 +150,8 @@ dotnet run --project api/AngularDotNetAuthTemplate.Api
 The Dockerfile builds the Angular client and the API together into a single
 image (`api/AngularDotNetAuthTemplate.Api/Dockerfile`). The easiest way to run
 it locally is via the `api` service already defined in `docker-compose.yml` —
-it shares a Docker network with `mysql`/`mailpit`, so it can reach them by
-service name instead of `localhost`. **Requires the database to already be
+it shares a Docker network with `mysql`/`mailpit`/`smsmock`, so it can reach
+them by service name instead of `localhost`. **Requires the database to already be
 migrated** (see Backend Setup above) — the container doesn't run migrations
 itself:
 ```bash
@@ -150,14 +162,15 @@ Browse to `http://localhost:8080`.
 Alternatively, to build/run the image standalone (e.g. to test the raw
 production image outside this compose network), run from the repo root,
 since the build needs both `api/` and `client/`, and point
-`ConnectionStrings__DefaultConnection`/`SmtpEmailConfigs__Host` at wherever
-your MySQL/SMTP actually are — `localhost` won't resolve to anything inside
-the container:
+`ConnectionStrings__DefaultConnection`/`SmtpEmailConfigs__Host`/
+`TwilioSmsConfigs__BaseUrlOverride` at wherever your MySQL/SMTP/SMS mock
+actually are — `localhost` won't resolve to anything inside the container:
 ```bash
 docker build -f api/AngularDotNetAuthTemplate.Api/Dockerfile -t angular-dotnet-auth-template .
 docker run -p 8080:8080 \
   --add-host=host.docker.internal:host-gateway \
   -e ConnectionStrings__DefaultConnection="Server=host.docker.internal;Port=3307;Database=AuthTemplate;User=webapp;Password=mypass" \
+  -e TwilioSmsConfigs__BaseUrlOverride="http://host.docker.internal:3030" \
   -e SmtpEmailConfigs__Host=host.docker.internal \
   angular-dotnet-auth-template
 ```
