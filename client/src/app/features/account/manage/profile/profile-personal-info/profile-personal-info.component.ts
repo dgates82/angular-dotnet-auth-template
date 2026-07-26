@@ -153,8 +153,19 @@ export class ProfilePersonalInfoComponent implements OnInit {
         const request = {
           email: this.user.email,
         }
-        await this.accountService.resetAuthenticator(request);
-        this.logger.trace(`profile-personal-info.component.onSaveClick | 2fa disabled`);
+        try {
+          await this.accountService.resetAuthenticator(request);
+          this.logger.trace(`profile-personal-info.component.onSaveClick | 2fa disabled`);
+        } catch (err) {
+          this.logger.error(`profile-personal-info.component.onSaveClick | Failed to disable 2fa:`, err);
+          Swal.fire({
+            title: 'Error',
+            text: 'Two-factor authentication could not be disabled. Profile changes were not saved.',
+            icon: 'error',
+            heightAuto: false
+          });
+          return;
+        }
       } else {
         this.logger.trace(`profile-personal-info.component.onSaveClick | 2fa not disabled`);
         return;
