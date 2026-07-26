@@ -203,5 +203,47 @@ This template offers several configurable options to customize the authenticatio
 To modify these options, adjust the corresponding settings in the configuration files
 (`client/src/environments/environment.ts` and `environment.prod.ts`).
 
+## Customizing for Your Project
+
+This repo is meant to be cloned and adapted, not run as-is. Every spot that
+needs a look before you ship is marked `TODO(template)` (in code comments)
+or a literal `[Application Name]` placeholder (in copy that gets sent to
+users). Find them all with:
+
+```bash
+grep -rn "TODO(template)" api client/src
+grep -rn "\[Application Name\]" api client/src
+```
+
+What's currently marked:
+
+- **App name in emails/SMS/authenticator app** —
+  `api/AngularDotNetAuthTemplate.Api/Controllers/API/AccountController.cs`
+  has `[Application Name]` in the confirmation, password reset, and 2FA
+  email/SMS copy, plus the issuer name shown in authenticator apps
+  (`GenerateQrCodeUri`). The Angular route `title`s in
+  `client/src/app/app.routes.ts` and `client/src/index.html`'s default
+  `<title>` use the same placeholder.
+- **Logo and favicon** — `client/src/assets/images/logo-small.png` (used
+  across the login/register/2FA pages) and `client/src/favicon.ico` are
+  both placeholders; replace the files in place, no code changes needed.
+- **Seeded admin account** — off by default; see `SeedAdmin` in
+  [Backend Setup](#set-up-mysql-mailpit-and-the-sms-mock-using-docker-compose)
+  above.
+- **`client/package.json`'s `"name"`** — still the Angular CLI default
+  (`"angular"`); harmless to leave, but worth renaming if you're publishing
+  this as its own project.
+
+### Upgrading Angular
+
+`@fortawesome/angular-fontawesome`, `angularx-qrcode`, and `ngx-mask` all
+release major versions in lockstep with Angular's own major version rather
+than independent semver — e.g. `ngx-mask@21.x` targets Angular 21,
+`ngx-mask@22.x` targets Angular 22. When you run your own `ng update` in the
+future, bump these alongside it. `npm install` will happily resolve a stale
+peer range without complaint; only `npm ci` (used in CI, see the badge
+above) enforces it, so a mismatch here can pass local `npm install` and only
+surface once CI (or a teammate's clean clone) runs `npm ci`.
+
 ## License
 This project is licensed under the MIT License.

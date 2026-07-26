@@ -23,11 +23,13 @@ import { HomeComponent } from "@features/home/home.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
+  // TODO(template): Replace "[Application Name]" below with your app's name
+  // (also used in api/.../AccountController.cs emails/SMS - see README).
   /* Authentication */
-  { path: 'login/:returnUrl', component: LoginComponent, canActivate: [LoginGuard], title: "Login - [App Name]" },
-  { path: 'login', component: LoginComponent, canActivate: [LoginGuard] , title: "Login - [App Name]"},
-  { path: 'logout', component: LogoutComponent, canActivate: [AuthGuard] , title: "Login - [App Name]"},
-  { path: 'forbidden', component: ForbiddenComponent , title: "Forbidden - [App Name]"},
+  { path: 'login/:returnUrl', component: LoginComponent, canActivate: [LoginGuard], title: "Login - [Application Name]" },
+  { path: 'login', component: LoginComponent, canActivate: [LoginGuard] , title: "Login - [Application Name]"},
+  { path: 'logout', component: LogoutComponent, canActivate: [AuthGuard] , title: "Login - [Application Name]"},
+  { path: 'forbidden', component: ForbiddenComponent , title: "Forbidden - [Application Name]"},
   /* Forgot Password */
   { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [LoginGuard] },
   { path: 'forgot-password/confirm', component: ForgotPasswordConfirmComponent, canActivate: [LoginGuard] },
@@ -36,15 +38,15 @@ export const routes: Routes = [
   /* Register */
   { path: 'register', component: RegisterComponent, canActivate: [LoginGuard] },
   /* Email Confirmation */
-  { path: 'email-confirmation', component: EmailConfirmationComponent, canActivate: [LoginGuard] , title: "Confirm Email - [App Name]"},
+  { path: 'email-confirmation', component: EmailConfirmationComponent, canActivate: [LoginGuard] , title: "Confirm Email - [Application Name]"},
   { path: 'email-confirmation/reset', component: PasswordResetComponent },
   /* Home */
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard], title: "Home - [App Name]" },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard], title: "Home - [Application Name]" },
   /* Profile */
-  { path: 'profile', component: ProfileRootComponent, canActivate: [AuthGuard], title: "Profile - [App Name]" },
+  { path: 'profile', component: ProfileRootComponent, canActivate: [AuthGuard], title: "Profile - [Application Name]" },
   { path: 'enable2fa/:email', component: EnableTwoFaRootComponent },
   /* Admin */
-  { path: 'admin/users', component: ListUsersComponent, canActivate: [AuthGuard, roleGuard(["Admin"])], title: "Users - [App Name]" },
+  { path: 'admin/users', component: ListUsersComponent, canActivate: [AuthGuard, roleGuard(["Admin"])], title: "Users - [Application Name]" },
   { path: 'admin/edit-user/:id', component: EditUserComponent, canActivate: [AuthGuard, roleGuard(["Admin"])]},
   { path: 'admin/register-user', component: RegisterUserComponent, canActivate: [AuthGuard, roleGuard(["Admin"])]}
 

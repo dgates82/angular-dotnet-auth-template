@@ -139,8 +139,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
                 await _emailSender.SendEmailAsync(
                     registerRequestDto.Email,
-                    "[Application Name] Email Confirmation", // TEMPLATE: Update email subject
-                    $"In order to start using [Application Name], you need to verify your email.<br/><br/>Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.<br/><br/>If you did not request a login to [Application Name], please ignore this email."); // TEMPLATE: Update email body
+                    "[Application Name] Email Confirmation", // TODO(template): Update email subject
+                    $"In order to start using [Application Name], you need to verify your email.<br/><br/>Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.<br/><br/>If you did not request a login to [Application Name], please ignore this email."); // TODO(template): Update email body
 
                 _logger.LogInformation($"Register | User created a new account with password.");
                 
@@ -335,7 +335,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                     case "Email":
                         await _emailSender.SendEmailAsync(
                             request.Email,
-                            "[Application Name] 2FA Code", // TEMPLATE: Update email subject
+                            "[Application Name] 2FA Code", // TODO(template): Update email subject
                             $"Your 2FA code is: {code}<br/><br/>This code is valid for {VerificationCodeExpiryMinutes} minutes.<br/><br/>If you did not request a 2FA code please ignore this email.");
                         break;
                     case "Phone":
@@ -343,7 +343,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                         var phoneNumber = user.TwoFactorEnabled ? user.PhoneNumber : request.PhoneNumber;
                         _logger.LogDebug($"SendTwoFaCode | Sending 2FA code to {phoneNumber}");
 
-                        await _smsSender.SendSmsAsync(phoneNumber, $"Your 2FA code for [Application Name] is: {code}. This code is valid for {VerificationCodeExpiryMinutes} minutes. DO NOT share it with anyone."); // TEMPLATE: Update SMS message
+                        await _smsSender.SendSmsAsync(phoneNumber, $"Your 2FA code for [Application Name] is: {code}. This code is valid for {VerificationCodeExpiryMinutes} minutes. DO NOT share it with anyone."); // TODO(template): Update SMS message
                         break;
                 }
                 
@@ -391,7 +391,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
                 await _emailSender.SendEmailAsync(
                     forgotPasswordDto.Email,
-                    "[Application Name] Password Reset", // TEMPLATE: Update email subject
+                    "[Application Name] Password Reset", // TODO(template): Update email subject
                     $"Forgot your password?<br/>We received a request to reset the password for your account.<br/><br/>To reset your password <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>click here</a>.<br/><br/>If you did not request a password reset please ignore this email.");
 
                 _logger.LogInformation($"Password reset email sent to {forgotPasswordDto.Email}");
@@ -544,8 +544,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
                 await _emailSender.SendEmailAsync(
                     request.Email,
-                    "[Application Name] Email Confirmation", // TEMPLATE: Update email subject
-                    $"In order to start using [Application Name], you need to verify your email.<br/><br/>Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.<br/><br/>If you did not request a login to SkillSpring, please ignore this email."); // TEMPLATE: Update email body
+                    "[Application Name] Email Confirmation", // TODO(template): Update email subject
+                    $"In order to start using [Application Name], you need to verify your email.<br/><br/>Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.<br/><br/>If you did not request a login to [Application Name], please ignore this email."); // TODO(template): Update email body
 
                 _logger.LogInformation($"Email confirmation sent to {request.Email}");
 
@@ -859,7 +859,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             return string.Format(
                 CultureInfo.InvariantCulture,
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("AngularDotNetAuthTemplate.Api"), // TEMPLATE: Change to your app's name
+                _urlEncoder.Encode("AngularDotNetAuthTemplate.Api"), // TODO(template): Change to your app's name
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }
