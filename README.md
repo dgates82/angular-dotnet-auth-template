@@ -4,9 +4,19 @@
 
 This repository provides a template for an authentication system built with Angular 21 and .NET 10, using Entity Framework Core, tested against MySQL. It offers a secure foundation for applications requiring user authentication, with options for self-registration and two-factor authentication (2FA).
 
-> This is a starter template, not a finished app — clone it, verify it
-> runs, then work through [Customizing for Your Project](#customizing-for-your-project)
-> before treating anything here as production-ready.
+> Starter template, not a finished app — see
+> [How to Use This Template](#how-to-use-this-template) to get started.
+
+## How to Use This Template
+
+1. Click **[Use this template](https://github.com/dgates82/angular-dotnet-auth-template/generate)**
+   on GitHub to generate your own repository from this one — not a fork, a
+   fresh repo with its own history.
+2. Clone *your new repo* locally.
+3. Follow [Running the Template As-Is](#running-the-template-as-is) to
+   confirm it works before changing anything.
+4. Work through [Customizing for Your Project](#customizing-for-your-project)
+   to make it yours.
 
 ## Technology Stack
 - **Frontend:** Angular 21
@@ -33,8 +43,8 @@ or a literal `[Application Name]` placeholder (in copy that gets sent to
 users). Find them all with:
 
 ```bash
-grep -rn "TODO(template)" .
-grep -rn "\[Application Name\]" api client/src
+git grep -n "TODO(template)"
+git grep -n "\[Application Name\]" -- api client/src
 ```
 
 What's currently marked:
@@ -111,11 +121,14 @@ surface once CI (or a teammate's clean clone) runs `npm ci`.
 ### Quickstart
 
 The whole sequence, assuming Node/npm, .NET SDK 10, and Docker are already
-installed. See the detailed sections below for what each step does and why.
+installed, and you've already generated your own repo via
+[Use this template](https://github.com/dgates82/angular-dotnet-auth-template/generate)
+(see [How to Use This Template](#how-to-use-this-template)). See the
+detailed sections below for what each step does and why.
 
 ```bash
-git clone https://github.com/yourusername/angular-dotnet-auth-template.git
-cd angular-dotnet-auth-template
+git clone https://github.com/yourusername/your-generated-repo.git
+cd your-generated-repo
 
 docker compose up -d mysql mailpit smsmock
 
@@ -146,10 +159,13 @@ Follow these steps to set up and run the project locally.
 - **Docker** for database setup, and optionally for running the whole app (see below)
 - **MySQL Client** (optional, for direct database access)
 
-### Clone the Repository
+### Clone Your Repository
+
+Once you've generated your own repo from this template (see
+[How to Use This Template](#how-to-use-this-template)), clone it locally:
 ```bash
-git clone https://github.com/yourusername/angular-dotnet-auth-template.git  
-cd angular-dotnet-auth-template  
+git clone https://github.com/yourusername/your-generated-repo.git
+cd your-generated-repo
 ```
 
 ### Backend Setup
