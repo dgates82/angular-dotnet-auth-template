@@ -211,7 +211,7 @@ or a literal `[Application Name]` placeholder (in copy that gets sent to
 users). Find them all with:
 
 ```bash
-grep -rn "TODO(template)" api client/src
+grep -rn "TODO(template)" .
 grep -rn "\[Application Name\]" api client/src
 ```
 
@@ -233,6 +233,27 @@ What's currently marked:
 - **`client/package.json`'s `"name"`** — still the Angular CLI default
   (`"angular"`); harmless to leave, but worth renaming if you're publishing
   this as its own project.
+- **Angular feature flags** — `is2FaRequired`, `allowUserEdit`,
+  `allowSelfRegister`, `twoFaMethods`, `requiredProfileFields`, and
+  `availableRoles` in `client/src/environments/environment.ts` /
+  `environment.prod.ts` — see [Options](#options) below.
+- **`LICENSE`'s copyright holder**, **`CONTRIBUTING.md`**, and
+  **`docs/LOCAL_DEV.md`** — all still placeholders from the template itself.
+- **JWT signing key** — `JwtConfigs.securityKey` in `appsettings.json`
+  ships with an obviously-fake default (`...ReplaceMe`). Replace it with a
+  real secret via `appsettings.Development.json`/user-secrets/environment
+  variable before any real deployment; never commit the real value.
+
+### Notification Senders
+
+The default `IEmailSender`/`ISmsSender` registrations in `Program.cs` are
+marked `TODO(template)`. Email defaults to SMTP (pointed at the Mailpit
+container so a fresh clone works with no external account), with
+`SendGridEmailSender`/`PostMarkEmailSender` already implemented but
+commented out — swap the registration and supply your own API key via
+`appsettings.Development.json` or user-secrets to switch providers. SMS only
+has one implementation, `TwilioSmsSender`; swap it out entirely if you need
+a different provider. Never commit real provider credentials.
 
 ### Upgrading Angular
 
