@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/dgates82/angular-dotnet-auth-template/actions/workflows/ci.yml/badge.svg)](https://github.com/dgates82/angular-dotnet-auth-template/actions/workflows/ci.yml)
 
-This repository provides a template for an authentication system built with Angular 21 and .NET 10, using MySQL as the database. It offers a secure foundation for applications requiring user authentication, with options for self-registration and two-factor authentication (2FA).
+This repository provides a template for an authentication system built with Angular 21 and .NET 10, using Entity Framework Core, tested against MySQL. It offers a secure foundation for applications requiring user authentication, with options for self-registration and two-factor authentication (2FA).
 
 > This is a starter template, not a finished app — clone it, verify it
 > runs, then work through [Customizing for Your Project](#customizing-for-your-project)
@@ -11,7 +11,7 @@ This repository provides a template for an authentication system built with Angu
 ## Technology Stack
 - **Frontend:** Angular 21
 - **Backend:** .NET 10
-- **Database:** MySQL
+- **Database:** EF Core, tested against MySQL (see [Customizing for Your Project](#customizing-for-your-project) for swapping providers)
 
 ## Project Structure
 - `/api` — the .NET backend solution (`AngularDotNetAuthTemplate.sln`, `AngularDotNetAuthTemplate.Api/`)
@@ -79,6 +79,21 @@ commented out — swap the registration and supply your own API key via
 `appsettings.Development.json` or user-secrets to switch providers. SMS only
 has one implementation, `TwilioSmsSender`; swap it out entirely if you need
 a different provider. Never commit real provider credentials.
+
+### Database Provider
+
+The app only uses EF Core's provider-agnostic APIs — no raw SQL, no
+MySQL-specific query syntax anywhere in the codebase. MySQL (via
+`Pomelo.EntityFrameworkCore.MySql`) is the only provider this template
+ships with and has been tested against, wired up in the single
+`options.UseMySql(...)` call in `Program.cs`. Swapping to another EF Core
+provider (SQL Server, PostgreSQL, SQLite, etc.) means: referencing that
+provider's NuGet package instead of Pomelo's, changing that one `UseMySql`
+call to the provider's equivalent (`UseSqlServer`, `UseNpgsql`, etc.), and
+regenerating the EF Core migrations from scratch for the new provider —
+the ones shipped here are MySQL-specific (see the
+`MySqlModelBuilderExtensions` calls in `Migrations/`) and won't apply as-is
+against a different database.
 
 ### Upgrading Angular
 
