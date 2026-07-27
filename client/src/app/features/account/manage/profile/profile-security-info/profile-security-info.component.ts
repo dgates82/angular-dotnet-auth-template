@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { Constants } from '@core/constants';
 
@@ -7,6 +7,7 @@ import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
 import { UpdatePasswordComponent } from '../../update-password/update-password.component';
 import { TwoFaRootComponent } from '../../two-fa/two-fa-root/two-fa-root.component';
+import { IApplicationUser } from '@interfaces/account/application-user';
 
 @Component({
     selector: 'app-profile-security-info',
@@ -17,6 +18,10 @@ import { TwoFaRootComponent } from '../../two-fa/two-fa-root/two-fa-root.compone
 export class ProfileSecurityInfoComponent implements OnInit {
 
   constructor() { }
+
+  // Passed straight through to TwoFaRootComponent - fetched once by
+  // ProfileRootComponent instead of independently here.
+  @Input() user!: IApplicationUser;
 
   isUpdatingPassword: boolean = false;
 
