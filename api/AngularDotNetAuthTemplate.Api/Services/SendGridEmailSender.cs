@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using AngularDotNetAuthTemplate.Api.Models.Options;
 using System.Net;
@@ -10,9 +11,9 @@ namespace AngularDotNetAuthTemplate.Api.Services
 {
     /// <summary>
     /// Alternate <see cref="IEmailSender"/> implementation using SendGrid. Not
-    /// wired up by default (see the commented registration in
-    /// <c>Program.cs</c>); swap in for <see cref="SmtpEmailSender"/> when a real
-    /// transactional-email provider is needed.
+    /// wired up by default (see the commented-out <c>AddSendGridEmailSender</c>
+    /// call in <c>Program.cs</c>); swap in for <see cref="SmtpEmailSender"/>
+    /// when a real transactional-email provider is needed.
     /// </summary>
     public class SendGridEmailSender : IEmailSender
     {
@@ -70,5 +71,17 @@ namespace AngularDotNetAuthTemplate.Api.Services
 
         }
 
+    }
+
+    /// <summary>Registers <see cref="SendGridEmailSender"/> as the <see cref="IEmailSender"/> implementation.</summary>
+    public static class SendGridEmailSenderServiceCollectionExtensions
+    {
+        /// <summary>Binds <see cref="SendGridEmailOptions"/> from configuration and registers <see cref="SendGridEmailSender"/>.</summary>
+        public static IServiceCollection AddSendGridEmailSender(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<SendGridEmailOptions>(configuration.GetSection(SendGridEmailOptions.ConfigSection));
+            services.AddTransient<IEmailSender, SendGridEmailSender>();
+            return services;
+        }
     }
 }
