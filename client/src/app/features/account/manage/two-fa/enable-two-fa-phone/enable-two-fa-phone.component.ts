@@ -44,6 +44,8 @@ export class EnableTwoFaPhoneComponent implements OnInit{
         this.user = response;
         // set phone number
         this.verifyPhoneForm.get('phoneNumber')?.setValue(response.phoneNumber ?? '');
+      }).catch(err => {
+        this.logger.error(`enable-two-fa-phone.component.ngOnInit | Failed to load user:`, err);
       });
     }
   }
@@ -76,9 +78,13 @@ export class EnableTwoFaPhoneComponent implements OnInit{
       method: 'Sms'
     }
 
-    await this.accountService.sendTwoFaCode(request);
-
-    this.isCodeSent = true;
+    try {
+      await this.accountService.sendTwoFaCode(request);
+      this.isCodeSent = true;
+    } catch (err) {
+      this.logger.error(`enable-two-fa-phone.component.sendCode | error:`, err);
+      this.errorMessage = 'Could not send a verification code. Please try again.';
+    }
 
   }
 
@@ -102,6 +108,9 @@ export class EnableTwoFaPhoneComponent implements OnInit{
       } else {
         this.errorMessage = response.message ?? 'An error occurred';
       }
+    }).catch(err => {
+      this.logger.error(`enable-two-fa-phone.component.verifyCode | error:`, err);
+      this.errorMessage = 'Something went wrong. Please try again.';
     });
   }
 

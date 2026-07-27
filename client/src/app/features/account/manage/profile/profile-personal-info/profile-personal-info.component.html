@@ -59,6 +59,9 @@
                   A valid zip code is required
                 </mat-error>
               }
+              @if (zipLookupFailed) {
+                <mat-hint>Couldn't look up that zip code - enter city and state manually.</mat-hint>
+              }
             </mat-form-field>
             <mat-form-field class="col-md-6">
               <mat-label>City</mat-label>

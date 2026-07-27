@@ -122,6 +122,8 @@ export class LoginComponent implements OnInit {
       // Test secure endpoint
       this.accountService.testSecure().then(secureResponse => {
         this.logger.debug(`account.login | secureResponse: ${secureResponse}`);
+      }).catch(err => {
+        this.logger.error(`account.login | testSecure error:`, err);
       });
 
       // Redirect to return url

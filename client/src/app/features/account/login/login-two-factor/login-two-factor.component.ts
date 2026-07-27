@@ -9,6 +9,7 @@ import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { NgxMaskDirective } from 'ngx-mask';
 import { MatButton } from '@angular/material/button';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-login-two-factor',
@@ -40,6 +41,8 @@ export class LoginTwoFactorComponent implements OnInit {
 
   @ViewChild("twoFaCodeInput") twoFaCodeInput: ElementRef | undefined;
 
+  errorMessage = '';
+
   ngOnInit(): void {
     this.logger.debug(`login-two-factor.component.ngOnInit | email: ${this.email}`);
 
@@ -63,13 +66,17 @@ export class LoginTwoFactorComponent implements OnInit {
       twoFactorCode: this.twoFaCode.value
     }
 
+    this.errorMessage = '';
     this.accountService.login2fa(authRequest).then(response => {
         this.logger.trace(`login-two-factor.component.login2Fa | response:`, response);
 
         this.loginResponse.emit(response);
 
       }
-    );
+    ).catch(err => {
+      this.logger.error(`login-two-factor.component.login2Fa | error:`, err);
+      this.errorMessage = 'Something went wrong. Please try again.';
+    });
   }
 
   async resendCode() {
@@ -80,7 +87,17 @@ export class LoginTwoFactorComponent implements OnInit {
       method: this.twoFactorMethod
     }
 
-    await this.accountService.sendTwoFaCode(request);
+    try {
+      await this.accountService.sendTwoFaCode(request);
+    } catch (err) {
+      this.logger.error(`login-two-factor.component.resendCode | error:`, err);
+      Swal.fire({
+        title: 'Error',
+        text: 'Could not resend the verification code. Please try again.',
+        icon: 'error',
+        heightAuto: false
+      });
+    }
   }
 
 }

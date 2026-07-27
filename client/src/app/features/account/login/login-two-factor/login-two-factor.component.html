@@ -12,6 +12,10 @@
     </mat-form-field>
   </form>
 
+  @if (errorMessage) {
+    <mat-error class="mb-2">{{ errorMessage }}</mat-error>
+  }
+
   <div class="mt-3 d-flex justify-content-end w-75 mx-auto">
     <a class="text-primary fw-bold text-decoration-none cursor-pointer" role="button" tabindex="0" (click)="resendCode()" (keyup.enter)="resendCode()">Resend verification code</a>
   </div>

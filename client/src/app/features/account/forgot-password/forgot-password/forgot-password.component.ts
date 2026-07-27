@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { IForgotPasswordRequest } from '@interfaces/account/forgot-password-request';
+import Swal from 'sweetalert2';
 import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -45,6 +46,14 @@ export class ForgotPasswordComponent {
       // Route user to the forgot password confirmation page
       this.router.navigate(['/forgot-password/confirm']);
 
+    }).catch(err => {
+      this.logger.error(`forgot-password.component.sendPasswordReset | error:`, err);
+      Swal.fire({
+        title: 'Error',
+        text: 'Something went wrong. Please try again.',
+        icon: 'error',
+        heightAuto: false
+      });
     });
   }
 

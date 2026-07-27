@@ -16,7 +16,7 @@ import { IEmailOnlyRequest } from '@interfaces/account/email-only-request';
 import { AccountService } from '@data/services/account.service';
 import { ProfileFieldValidators } from '@core/validators/profile-field-validators';
 import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { NgxMaskDirective } from 'ngx-mask';
 import { MatSelect, MatOption } from '@angular/material/select';
@@ -28,7 +28,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     selector: 'app-register-user',
     templateUrl: './register-user.component.html',
     styleUrls: ['./register-user.component.scss'],
-    imports: [MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgxMaskDirective, MatSelect, MatOption, MatIconButton, MatIcon, MatButton, FaIconComponent]
+    imports: [MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatHint, NgxMaskDirective, MatSelect, MatOption, MatIconButton, MatIcon, MatButton, FaIconComponent]
 })
 export class RegisterUserComponent implements OnInit {
   private readonly logger = inject(LoggerService);
@@ -74,17 +74,22 @@ export class RegisterUserComponent implements OnInit {
   }
   get addRoleControl() {return this.newUserForm.get('addRoleControl')}
 
+  zipLookupFailed = false;
+
   ngOnInit(): void {
     this.logger.debug(`register-user.component.ngOnInit`);
 
     this.addressService.getStates().then(states => {
       this.logger.trace(`register-user.component.ngOnInit | states:`, states);
       this.states = states;
+    }).catch(err => {
+      this.logger.error(`register-user.component.ngOnInit | Failed to load states:`, err);
     });
   }
 
   onZipCodeChange(): void {
     this.logger.debug(`register-user.component.onZipCodeChange | zipCode: ${this.zipCode?.value}`);
+    this.zipLookupFailed = false;
     this.addressService.getPlaceByZipCode(this.zipCode?.value ?? '').then(zippoResponse => {
       const place = zippoResponse.places[0];
       this.logger.trace(`register-user.component.onZipCodeChange | place:`, place)
@@ -92,6 +97,9 @@ export class RegisterUserComponent implements OnInit {
         this.city?.patchValue(place.placeName);
         this.state?.patchValue(place.stateAbbreviation);
       }
+    }).catch(err => {
+      this.logger.error(`register-user.component.onZipCodeChange | Zip code lookup failed:`, err);
+      this.zipLookupFailed = true;
     });
   }
 

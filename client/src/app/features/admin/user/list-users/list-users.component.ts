@@ -10,6 +10,7 @@ import { LoggerService } from '@core/services/logger.service';
 import { UserService } from '@data/services/user.service';
 import { IApplicationUser } from '@interfaces/account/application-user';
 
+import Swal from 'sweetalert2';
 import { faUserEdit, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
 import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/material/card';
@@ -81,6 +82,14 @@ export class ListUsersComponent implements OnInit, AfterViewInit {
       }
 
       this.dataSource.data = response;
+    }).catch(err => {
+      this.logger.error(`list-users.component.reloadData | Failed to load users:`, err);
+      Swal.fire({
+        title: 'Error',
+        text: 'The user list could not be loaded. Please try again.',
+        icon: 'error',
+        heightAuto: false
+      });
     });
   }
 

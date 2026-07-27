@@ -13,7 +13,7 @@ import { IApplicationUser } from '@interfaces/account/application-user';
 import { IState } from '@interfaces/address/state';
 import Swal from 'sweetalert2';
 import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { NgxMaskDirective } from 'ngx-mask';
 import { MatSelect, MatOption } from '@angular/material/select';
@@ -24,7 +24,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     selector: 'app-profile-personal-info',
     templateUrl: './profile-personal-info.component.html',
     styleUrls: ['./profile-personal-info.component.scss'],
-    imports: [MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgxMaskDirective, MatSelect, MatOption, MatButton, FaIconComponent]
+    imports: [MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatHint, NgxMaskDirective, MatSelect, MatOption, MatButton, FaIconComponent]
 })
 export class ProfilePersonalInfoComponent implements OnInit {
   private readonly logger = inject(LoggerService);
@@ -69,12 +69,16 @@ export class ProfilePersonalInfoComponent implements OnInit {
   get zipCode() {return this.profileForm.get('zipCode'); }
   get state() {return this.profileForm.get('state'); }
 
+  zipLookupFailed = false;
+
   ngOnInit(): void {
     this.logger.debug(`profile-personal-info.component.ngOnInit`);
 
     // Get states from address service
     this.addressService.getStates().then(states => {
       this.states = states;
+    }).catch(err => {
+      this.logger.error(`profile-personal-info.component.ngOnInit | Failed to load states:`, err);
     });
 
     this.handleFormState(false);
@@ -158,9 +162,6 @@ export class ProfilePersonalInfoComponent implements OnInit {
       }
     }
 
-    this.isEditMode = false;
-    this.handleFormState(false);
-
     // Update user
     this.user.firstName = this.firstName?.value;
     this.user.lastName = this.lastName?.value;
@@ -173,6 +174,9 @@ export class ProfilePersonalInfoComponent implements OnInit {
     this.userService.update(this.user).then(response => {
       this.logger.trace(`profile-personal-info.component.onSaveClick | response:`, response)
 
+      this.isEditMode = false;
+      this.handleFormState(false);
+
       // Confirmation
       Swal.fire({
         title: 'Profile Updated',
@@ -180,11 +184,20 @@ export class ProfilePersonalInfoComponent implements OnInit {
         heightAuto: false
       });
 
+    }).catch(err => {
+      this.logger.error(`profile-personal-info.component.onSaveClick | Failed to update profile:`, err);
+      Swal.fire({
+        title: 'Error',
+        text: 'Your profile could not be updated. Please try again.',
+        icon: 'error',
+        heightAuto: false
+      });
     });
   }
 
   onZipCodeChange() {
     this.logger.debug(`profile-personal-info.component.onZipCodeChange | zipCode: ${this.zipCode?.value}`);
+    this.zipLookupFailed = false;
     this.addressService.getPlaceByZipCode(this.zipCode?.value).then(zippoResponse => {
       const place = zippoResponse.places[0];
       this.logger.trace(`profile-personal-info.component.onZipCodeChange | place:`, place)
@@ -192,6 +205,9 @@ export class ProfilePersonalInfoComponent implements OnInit {
         this.city?.patchValue(place.placeName);
         this.state?.patchValue(place.stateAbbreviation);
       }
+    }).catch(err => {
+      this.logger.error(`profile-personal-info.component.onZipCodeChange | Zip code lookup failed:`, err);
+      this.zipLookupFailed = true;
     });
   }
 

@@ -51,6 +51,8 @@ export class EmailConfirmationComponent implements OnInit {
           this.isConfirmed = true;
         }
 
+      }).catch(err => {
+        this.logger.error(`email-confirmation.component.ngOnInit | error:`, err);
       });
     });
 
