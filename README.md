@@ -37,10 +37,10 @@ The app runs as a single process: the API serves the Angular build output direct
 
 ## Customizing for Your Project
 
-This repo is meant to be cloned and adapted, not run as-is. Every spot that
-needs a look before you ship is marked `TODO(template)` (in code comments)
-or a literal `[Application Name]` placeholder (in copy that gets sent to
-users). Find them all with:
+This template is meant to be generated and adapted, not used as-is. Every
+spot that needs a look before you ship is marked `TODO(template)` (in code
+comments) or a literal `[Application Name]` placeholder (in copy that gets
+sent to users). Find them all with:
 
 ```bash
 git grep -n "TODO(template)"
@@ -71,13 +71,33 @@ What's currently marked:
   `environment.prod.ts` — see [Options](#options) below.
 - **`LICENSE`'s copyright holder**, **`CONTRIBUTING.md`**, and
   **`docs/LOCAL_DEV.md`** — all still placeholders from the template itself.
-- **JWT config** — `JwtConfigs.securityKey` in `appsettings.json` ships
-  with an obviously-fake default (`...ReplaceMe`); replace it with a real
-  secret via `appsettings.Development.json`/user-secrets/environment
-  variable before any real deployment, and never commit the real value.
-  `validIssuer`/`validAudience` in the same block are just internal labels
-  the client and server need to agree on, but worth updating to reflect
-  your actual app/API name too.
+- **JWT config** — see [JWT Configuration](#jwt-configuration) below.
+
+### JWT Configuration
+
+`JwtConfigs.securityKey` in `appsettings.json` ships with an obviously-fake
+default (`...ReplaceMe`); replace it with a real secret before any real
+deployment, and never commit the real value. `validIssuer`/`validAudience`
+in the same block are just internal labels the client and server need to
+agree on, but worth updating to reflect your actual app/API name too.
+
+Via `appsettings.Development.json` (gitignored):
+```json
+{
+  "JwtConfigs": {
+    "securityKey": "some-long-random-secret-value",
+    "validIssuer": "YourAppAPI",
+    "validAudience": "https://localhost:7249"
+  }
+}
+```
+
+Or via environment variables:
+```bash
+export JwtConfigs__securityKey="some-long-random-secret-value"
+export JwtConfigs__validIssuer="YourAppAPI"
+export JwtConfigs__validAudience="https://localhost:7249"
+```
 
 ### Notification Senders
 
@@ -186,9 +206,8 @@ cd your-generated-repo
    `SmtpEmailConfigs` in `appsettings.json` point at it, so registration
    confirmation, password reset, and other outbound emails during local dev are
    caught instead of actually sent. View them at `http://localhost:8025`. To use
-   a real provider instead (SendGrid/PostMark), swap which `AddXyzEmailSender()`
-   call is active in `Program.cs` and supply your own API key via
-   `appsettings.Development.json` or user-secrets — never commit real keys.
+   a real provider instead, see [Notification Senders](#notification-senders)
+   below.
 
    `smsmock` plays the same role for SMS 2FA: a containerized
    [`twillio-sms-mock`](https://www.npmjs.com/package/twillio-sms-mock)
@@ -218,11 +237,25 @@ cd your-generated-repo
    ```
 
 4. **(Optional) Bootstrap an admin account.** There's no seeded user by
-   default. Set `SeedAdmin:Email` and `SeedAdmin:Password` in
-   `appsettings.Development.json` (gitignored) or as environment variables
-   (`SeedAdmin__Email`, `SeedAdmin__Password`) before first run, and the app
-   creates that user — pre-confirmed, in the `Admin` role — on startup. Safe
-   to leave set across restarts; it only creates the user once.
+   default. Set `SeedAdmin:Email` and `SeedAdmin:Password` before first run,
+   and the app creates that user — pre-confirmed, in the `Admin` role — on
+   startup. Safe to leave set across restarts; it only creates the user once.
+
+   Via `appsettings.Development.json` (gitignored):
+   ```json
+   {
+     "SeedAdmin": {
+       "Email": "admin@example.com",
+       "Password": "ChangeMe123!"
+     }
+   }
+   ```
+
+   Or via environment variables:
+   ```bash
+   export SeedAdmin__Email="admin@example.com"
+   export SeedAdmin__Password="ChangeMe123!"
+   ```
 
 ### Frontend Setup
 
