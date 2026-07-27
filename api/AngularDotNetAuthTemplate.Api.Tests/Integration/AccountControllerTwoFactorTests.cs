@@ -23,7 +23,7 @@ public class AccountControllerTwoFactorTests
     {
         var client = _factory.CreateClient();
         var email = TestUsers.NewEmail();
-        await AccountTestHelper.RegisterAndConfirmAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
+        await AccountTestHelper.RegisterConfirmAndAuthenticateAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
 
         var enableResponse = await client.PostAsJsonAsync("/api/account/enableauthenticator",
             new { Email = email }, AccountTestHelper.JsonOptions);
@@ -43,15 +43,20 @@ public class AccountControllerTwoFactorTests
         Assert.NotNull(verifyResult.Codes);
         Assert.Equal(10, verifyResult.Codes.Length);
 
+        // Rest of the flow (re-login, 2FA prompt, code verification) happens before the
+        // client ever holds a token, so use a fresh anonymous client - proves the login
+        // path still works without the Authorization header the enrollment steps needed.
+        var anonClient = _factory.CreateClient();
+
         // 2FA is now on, so a normal password login should stop short of issuing a token.
-        var loginResponse = await client.PostAsJsonAsync("/api/account/login",
+        var loginResponse = await anonClient.PostAsJsonAsync("/api/account/login",
             new { Email = email, Password = TestUsers.DefaultPassword }, AccountTestHelper.JsonOptions);
         loginResponse.EnsureSuccessStatusCode();
         var loginResult = await loginResponse.Content.ReadFromJsonAsync<AuthResponseDto>(AccountTestHelper.JsonOptions);
         Assert.False(loginResult!.IsAuthSuccessful);
         Assert.True(loginResult.RequiresTwoFactor);
 
-        var login2FaResponse = await client.PostAsJsonAsync("/api/account/login2fa",
+        var login2FaResponse = await anonClient.PostAsJsonAsync("/api/account/login2fa",
             new { Email = email, TwoFactorProvider = "Authenticator", TwoFactorCode = totp.ComputeTotp() },
             AccountTestHelper.JsonOptions);
         login2FaResponse.EnsureSuccessStatusCode();
@@ -65,7 +70,7 @@ public class AccountControllerTwoFactorTests
     {
         var client = _factory.CreateClient();
         var email = TestUsers.NewEmail();
-        await AccountTestHelper.RegisterAndConfirmAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
+        await AccountTestHelper.RegisterConfirmAndAuthenticateAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
 
         var enableResponse = await client.PostAsJsonAsync("/api/account/enableauthenticator",
             new { Email = email }, AccountTestHelper.JsonOptions);
@@ -84,7 +89,7 @@ public class AccountControllerTwoFactorTests
     {
         var client = _factory.CreateClient();
         var email = TestUsers.NewEmail();
-        await AccountTestHelper.RegisterAndConfirmAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
+        await AccountTestHelper.RegisterConfirmAndAuthenticateAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
 
         var response = await client.PostAsJsonAsync("/api/account/SendTwoFaCode",
             new { Email = email, Method = "Authenticator" }, AccountTestHelper.JsonOptions);
@@ -92,6 +97,40 @@ public class AccountControllerTwoFactorTests
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<ResponseDto>(AccountTestHelper.JsonOptions);
         Assert.False(result!.IsSuccess);
+    }
+
+    [Fact]
+    public async Task EnableAuthenticator_ForAnotherUser_WithoutAdminRole_IsRejected()
+    {
+        var client = _factory.CreateClient();
+        var attackerEmail = TestUsers.NewEmail();
+        await AccountTestHelper.RegisterConfirmAndAuthenticateAsync(client, _factory.Services, attackerEmail, TestUsers.DefaultPassword);
+
+        var victimClient = _factory.CreateClient();
+        var victimEmail = TestUsers.NewEmail();
+        await AccountTestHelper.RegisterAndConfirmAsync(victimClient, _factory.Services, victimEmail, TestUsers.DefaultPassword);
+
+        var response = await client.PostAsJsonAsync("/api/account/enableauthenticator",
+            new { Email = victimEmail }, AccountTestHelper.JsonOptions);
+
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SendTwoFaCode_ForAnotherUsersUnenrolledAccount_WithoutAdminRole_IsRejected()
+    {
+        var client = _factory.CreateClient();
+        var attackerEmail = TestUsers.NewEmail();
+        await AccountTestHelper.RegisterConfirmAndAuthenticateAsync(client, _factory.Services, attackerEmail, TestUsers.DefaultPassword);
+
+        var victimClient = _factory.CreateClient();
+        var victimEmail = TestUsers.NewEmail();
+        await AccountTestHelper.RegisterAndConfirmAsync(victimClient, _factory.Services, victimEmail, TestUsers.DefaultPassword);
+
+        var response = await client.PostAsJsonAsync("/api/account/SendTwoFaCode",
+            new { Email = victimEmail, PhoneNumber = "5551234567", Method = "Sms" }, AccountTestHelper.JsonOptions);
+
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     private static string ExtractSecret(string authenticatorUri)

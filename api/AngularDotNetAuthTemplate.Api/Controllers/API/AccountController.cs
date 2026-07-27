@@ -303,7 +303,11 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         /// authenticator app method, since those codes are generated client-side.
         /// </summary>
         /// <param name="request">The target user's email, delivery method, and phone number (if SMS).</param>
-        /// <returns><see cref="ResponseDto"/> indicating whether a code was sent.</returns>
+        /// <returns>
+        /// <see cref="ResponseDto"/> indicating whether a code was sent; 400 if
+        /// 2FA isn't already enabled for the target user and the caller is
+        /// neither that user nor an admin.
+        /// </returns>
         [HttpPost]
         [Route("SendTwoFaCode")]
         public async Task<IActionResult> SendTwoFaCode([FromBody] SendVerificationCodeRequestDto request)
@@ -316,6 +320,18 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 if (user == null)
                 {
                     return Ok(new ResponseDto { IsSuccess = false });
+                }
+
+                // Only the not-yet-enrolled case trusts request.PhoneNumber as the delivery target, so only it needs auth.
+                if (!user.TwoFactorEnabled)
+                {
+                    var currentUser = GetCurrentUser();
+                    var isSelf = currentUser != null && currentUser.Id == user.Id;
+                    var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
+                    if (!isSelf && !isAdmin)
+                    {
+                        return BadRequest("You can only send a 2FA setup code to your own account. Doing this for another account requires the Admin role.");
+                    }
                 }
 
                 var tokenProvider = GetTokenProvider(request.Method);
@@ -612,9 +628,11 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         /// <returns>
         /// <see cref="EnableAuthenticatorResponseDto"/> with the shared key and
         /// authenticator URI, or <see cref="ResponseDto"/> with <c>IsSuccess = false</c>
-        /// if the user doesn't exist.
+        /// if the user doesn't exist; 400 if the caller is neither the target
+        /// user nor an admin.
         /// </returns>
         [HttpPost]
+        [Authorize]
         [Route("enableauthenticator")]
         public async Task<IActionResult> EnableAuthenticator([FromBody] EnableAuthenticatorRequestDto request)
         {
@@ -626,6 +644,14 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 if (user == null)
                 {
                     return Ok(new ResponseDto { IsSuccess = false });
+                }
+
+                var currentUser = GetCurrentUser();
+                var isSelf = currentUser != null && currentUser.Id == user.Id;
+                var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
+                if (!isSelf && !isAdmin)
+                {
+                    return BadRequest("You can only enable your own authenticator. Enabling another account's authenticator requires the Admin role.");
                 }
 
                 var formattedKey = await GetSharedKey(user);
@@ -655,9 +681,11 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         /// <param name="request">The user's email, 2FA method, submitted code, and phone number (if SMS).</param>
         /// <returns>
         /// <see cref="VerifyAuthenticatorResponseDto"/> with <c>IsVerified</c> and,
-        /// for the authenticator method, the new recovery codes.
+        /// for the authenticator method, the new recovery codes; 400 if the
+        /// caller is neither the target user nor an admin.
         /// </returns>
         [HttpPost]
+        [Authorize]
         [Route("verifyauthenticator")]
         public async Task<ActionResult> VerifyAuthenticator([FromBody] VerifyAuthenticatorRequestDto request)
         {
@@ -669,7 +697,15 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 {
                     return Ok(new ResponseDto { IsSuccess = false });
                 }
-                
+
+                var currentUser = GetCurrentUser();
+                var isSelf = currentUser != null && currentUser.Id == user.Id;
+                var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
+                if (!isSelf && !isAdmin)
+                {
+                    return BadRequest("You can only verify your own authenticator. Verifying another account's authenticator requires the Admin role.");
+                }
+
                 var tokenProvider = GetTokenProvider(request.Method);
                 
                 if (string.IsNullOrEmpty(tokenProvider))

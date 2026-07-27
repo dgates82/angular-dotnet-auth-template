@@ -24,7 +24,7 @@ public class AccountControllerEmailTwoFactorTests
         await mailpit.DeleteAllMessagesAsync();
         var client = _factory.CreateClient();
         var email = TestUsers.NewEmail();
-        await AccountTestHelper.RegisterAndConfirmAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
+        await AccountTestHelper.RegisterConfirmAndAuthenticateAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
 
         var sendResponse = await client.PostAsJsonAsync("/api/account/SendTwoFaCode",
             new { Email = email, Method = "Email" }, AccountTestHelper.JsonOptions);
@@ -41,8 +41,13 @@ public class AccountControllerEmailTwoFactorTests
             .ReadFromJsonAsync<VerifyAuthenticatorResponseDto>(AccountTestHelper.JsonOptions);
         Assert.True(verifyResult!.IsVerified);
 
+        // Rest of the flow (re-login, 2FA prompt, code send/verify) happens before the
+        // client ever holds a token, so use a fresh anonymous client - proves the login
+        // path still works without the Authorization header the enrollment steps needed.
+        var anonClient = _factory.CreateClient();
+
         // 2FA is now on, so a normal password login should stop short of issuing a token.
-        var loginResponse = await client.PostAsJsonAsync("/api/account/login",
+        var loginResponse = await anonClient.PostAsJsonAsync("/api/account/login",
             new { Email = email, Password = TestUsers.DefaultPassword }, AccountTestHelper.JsonOptions);
         loginResponse.EnsureSuccessStatusCode();
         var loginResult = await loginResponse.Content.ReadFromJsonAsync<AuthResponseDto>(AccountTestHelper.JsonOptions);
@@ -51,12 +56,12 @@ public class AccountControllerEmailTwoFactorTests
         Assert.Equal("Email", loginResult.TwoFactorMethod);
 
         await mailpit.DeleteAllMessagesAsync();
-        var loginSendResponse = await client.PostAsJsonAsync("/api/account/SendTwoFaCode",
+        var loginSendResponse = await anonClient.PostAsJsonAsync("/api/account/SendTwoFaCode",
             new { Email = email, Method = "Email" }, AccountTestHelper.JsonOptions);
         loginSendResponse.EnsureSuccessStatusCode();
         var loginCode = await ExtractCodeAsync(mailpit, email);
 
-        var login2FaResponse = await client.PostAsJsonAsync("/api/account/login2fa",
+        var login2FaResponse = await anonClient.PostAsJsonAsync("/api/account/login2fa",
             new { Email = email, TwoFactorProvider = "Email", TwoFactorCode = loginCode },
             AccountTestHelper.JsonOptions);
         login2FaResponse.EnsureSuccessStatusCode();
@@ -72,7 +77,7 @@ public class AccountControllerEmailTwoFactorTests
         await mailpit.DeleteAllMessagesAsync();
         var client = _factory.CreateClient();
         var email = TestUsers.NewEmail();
-        await AccountTestHelper.RegisterAndConfirmAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
+        await AccountTestHelper.RegisterConfirmAndAuthenticateAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
 
         var sendResponse = await client.PostAsJsonAsync("/api/account/SendTwoFaCode",
             new { Email = email, Method = "Email" }, AccountTestHelper.JsonOptions);
