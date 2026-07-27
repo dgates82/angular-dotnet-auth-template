@@ -52,7 +52,7 @@ namespace AngularDotNetAuthTemplate.Api.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.Name, user.Email!),
                 new Claim("user", new ApplicationUserDto(user).ToJson(), JsonClaimValueTypes.Json)
             };
 

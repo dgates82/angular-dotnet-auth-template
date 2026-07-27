@@ -48,7 +48,11 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
                 _logger.LogDebug($"Getting user by id: {id}");
 
                 var user = await _userRepository.GetAsync(id);
-                
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
                 var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
                 user.Roles = roles.ToList();
 

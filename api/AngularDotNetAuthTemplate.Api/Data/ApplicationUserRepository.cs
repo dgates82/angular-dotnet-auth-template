@@ -48,7 +48,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
 
             try
             {
-                var user = await GetAsync(id);
+                var user = await GetAsync(id) ?? throw new KeyNotFoundException($"No user found with ID '{id}'");
                 user.IsActive = false;
                 user.UpdatedById = updateUserId;
                 user.UpdatedAt = DateTime.Now;
@@ -69,7 +69,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
 
             try
             {
-                var user = await GetAsync(id);
+                var user = await GetAsync(id) ?? throw new KeyNotFoundException($"No user found with ID '{id}'");
                 user.IsActive = true;
                 user.UpdatedById = updateUserId;
                 user.UpdatedAt = DateTime.Now;

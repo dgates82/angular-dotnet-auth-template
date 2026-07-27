@@ -40,6 +40,7 @@ public class AccountControllerTwoFactorTests
         var verifyResult = await verifyResponse.Content
             .ReadFromJsonAsync<VerifyAuthenticatorResponseDto>(AccountTestHelper.JsonOptions);
         Assert.True(verifyResult!.IsVerified);
+        Assert.NotNull(verifyResult.Codes);
         Assert.Equal(10, verifyResult.Codes.Length);
 
         // 2FA is now on, so a normal password login should stop short of issuing a token.

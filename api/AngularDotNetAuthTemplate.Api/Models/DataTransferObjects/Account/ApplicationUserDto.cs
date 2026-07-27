@@ -8,15 +8,15 @@ namespace AngularDotNetAuthTemplate.Api.Models.DataTransferObjects.Account
     /// </summary>
     public class ApplicationUserDto
     {
-        public string Id { get; set; }
-        public string Email { get; set; }
+        public required string Id { get; set; }
+        public required string Email { get; set; }
         public bool EmailConfirmed { get; set; }
         public bool TwoFactorEnabled { get; set; }
         public bool HasSetPassword { get; set; } = false;
         public bool IsActive { get; set; } = true;
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string FullName { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? FullName { get; set; }
         public string? PhoneNumber { get; set; }
         public string? StreetAddress { get; set; }
         public string? ZipCode { get; set; }
@@ -30,17 +30,19 @@ namespace AngularDotNetAuthTemplate.Api.Models.DataTransferObjects.Account
         public string? CreatedById { get; set; }
         public string? UpdatedById { get; set; }
 
-        /// <summary>Creates an empty DTO for the caller to populate manually.</summary>
+        // System.Text.Json needs a parameterless constructor to deserialize this type (e.g. in
+        // tests reading a server response) - without one it picks the ApplicationUser
+        // constructor below as the deserialization constructor and fails to bind it.
         public ApplicationUserDto()
         {
-            // Empty on purpose
         }
 
         /// <summary>Projects an <see cref="Models.ApplicationUser"/> down to this DTO's fields.</summary>
+        [System.Diagnostics.CodeAnalysis.SetsRequiredMembers]
         public ApplicationUserDto(ApplicationUser user)
         {
             Id = user.Id;
-            Email = user.Email;
+            Email = user.Email!;
             EmailConfirmed = user.EmailConfirmed;
             TwoFactorEnabled = user.TwoFactorEnabled;
             HasSetPassword = user.HasSetPassword;

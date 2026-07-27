@@ -9,7 +9,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
         Task<IEnumerable<T>> GetAsync();
 
         /// <summary>Gets a single entity by ID, or <c>null</c> if not found.</summary>
-        Task<T> GetAsync(string id);
+        Task<T?> GetAsync(string id);
 
         /// <summary>Inserts a new entity and saves changes.</summary>
         Task<T> InsertAsync(T entity);
@@ -21,7 +21,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
         Task DeleteAsync(string id);
 
         /// <summary>Gets the first entity matching <paramref name="expression"/>, or <c>null</c> if none match.</summary>
-        Task<T> FindByConditionAsync(Expression<Func<T, bool>> expression);
+        Task<T?> FindByConditionAsync(Expression<Func<T, bool>> expression);
 
         /// <summary>Gets all entities matching <paramref name="expression"/>.</summary>
         Task<IEnumerable<T>> WhereAsync(Expression<Func<T, bool>> expression);

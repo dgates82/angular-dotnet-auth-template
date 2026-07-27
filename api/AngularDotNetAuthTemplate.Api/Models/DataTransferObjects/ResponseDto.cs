@@ -7,6 +7,6 @@
         public bool IsSuccess { get; set; }
 
         /// <summary>An optional human-readable message describing the outcome.</summary>
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 }

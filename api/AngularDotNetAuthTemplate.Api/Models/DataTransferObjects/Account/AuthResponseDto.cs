@@ -20,13 +20,13 @@
         public bool RequiresTwoFactor { get; set; }
 
         /// <summary>The user's configured 2FA method: "Authenticator", "Email", or "Phone".</summary>
-        public string TwoFactorMethod { get; set; }
+        public string? TwoFactorMethod { get; set; }
 
         /// <summary>The user's phone number, populated only when <see cref="TwoFactorMethod"/> is "Phone".</summary>
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         /// <summary>The authenticated user, populated only on success.</summary>
-        public ApplicationUserDto User { get; set; }
+        public ApplicationUserDto? User { get; set; }
 
     }
 
