@@ -13,7 +13,7 @@
 CI runs an API build + test job and a client build job (see the badge in
 `README.md`) — both need to pass. To check locally first:
 
-**API** (needs `docker compose up -d mysql mailpit` running first — the
+**API** (needs `docker compose up -d mysql mailpit smsmock` running first — the
 integration tests exercise real auth/2FA flows against them):
 ```bash
 cd api

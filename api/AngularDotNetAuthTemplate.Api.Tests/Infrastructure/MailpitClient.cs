@@ -56,4 +56,15 @@ public class MailpitClient
             await Task.Delay(200);
         }
     }
+
+    // The list endpoint only returns headers (Subject/To) - fetching a single message
+    // is a separate call that includes the actual body, needed to extract a 2FA code.
+    public async Task<string> GetMessageTextAsync(string messageId)
+    {
+        var response = await _http.GetAsync($"/api/v1/message/{messageId}");
+        response.EnsureSuccessStatusCode();
+
+        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        return doc.RootElement.GetProperty("Text").GetString() ?? "";
+    }
 }

@@ -29,8 +29,8 @@ jobs:
       # AngularDotNetAuthTemplate.Api.Tests' integration tests exercise the
       # real auth/2FA/JWT controller flows over HTTP against these
       # containers rather than mocks - same docker-compose.yml used locally.
-      - name: Start MySQL & Mailpit
-        run: docker compose up -d mysql mailpit
+      - name: Start MySQL, Mailpit & SMS mock
+        run: docker compose up -d mysql mailpit smsmock
 
       - name: Wait for MySQL to be healthy
         run: |
