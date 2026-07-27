@@ -54,14 +54,34 @@ public static class AccountTestHelper
     }
 
     // Registers, confirms, and logs in as the new user, attaching the resulting JWT to
-    // the client's default headers - for tests exercising self-service endpoints (2FA
-    // enrollment) that require the caller to be authenticated as the target account.
-    // Password-only login already issues a full token even before 2FA is configured
-    // (see AccountController.Login), so this mirrors the real client-side flow.
+    // the client's default headers - for tests exercising endpoints that require the
+    // caller to be authenticated.
     public static async Task RegisterConfirmAndAuthenticateAsync(HttpClient client, IServiceProvider services, string email, string password)
     {
         await RegisterAndConfirmAsync(client, services, email, password);
+        await LoginAndAttachTokenAsync(client, email, password);
+    }
 
+    // Same as RegisterConfirmAndAuthenticateAsync, but assigns the Admin role first so
+    // the login response's embedded role claim (and any [Authorize(Roles = "Admin")]
+    // check) reflects it.
+    public static async Task RegisterConfirmAndAuthenticateAsAdminAsync(HttpClient client, IServiceProvider services, string email, string password)
+    {
+        await RegisterAndConfirmAsync(client, services, email, password);
+
+        using (var scope = services.CreateScope())
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var user = await userManager.FindByEmailAsync(email)
+                ?? throw new InvalidOperationException($"User {email} was not created by /register");
+            await userManager.AddToRoleAsync(user, "Admin");
+        }
+
+        await LoginAndAttachTokenAsync(client, email, password);
+    }
+
+    private static async Task LoginAndAttachTokenAsync(HttpClient client, string email, string password)
+    {
         var loginResponse = await client.PostAsJsonAsync("/api/account/login",
             new { Email = email, Password = password }, JsonOptions);
         loginResponse.EnsureSuccessStatusCode();
