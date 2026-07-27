@@ -725,13 +725,13 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
 
         /// <summary>
         /// Disables 2FA and clears the authenticator key for a user, requiring them
-        /// to set up a new authenticator from scratch. Restricted to admins acting
-        /// on another user's account.
+        /// to set up a new authenticator from scratch. Allowed for the user acting
+        /// on their own account, or an admin acting on another user's account.
         /// </summary>
         /// <param name="request">The target user's email.</param>
         /// <returns>
         /// <see cref="ResponseDto"/> on success; 404 if the user doesn't exist; 400
-        /// if the caller isn't an admin.
+        /// if the caller is neither the target user nor an admin.
         /// </returns>
         [HttpPost]
         [Authorize]
@@ -747,24 +747,26 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                     return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
                 }
 
-                // Get update user to track who updated
-                var adminUser = GetCurrentUser();
+                // Get calling user to authorize the request and track who performed it
+                var currentUser = GetCurrentUser();
 
-                // Validate admin user before resetting authenticator
-                if (adminUser == null || await _userManager.IsInRoleAsync(adminUser, "Admin") == false)
+                var isSelf = currentUser != null && currentUser.Id == user.Id;
+                var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
+
+                if (!isSelf && !isAdmin)
                 {
-                    return BadRequest("Admin user is required to reset authenticator.");
+                    return BadRequest("You can only reset your own authenticator. Resetting another account's authenticator requires the Admin role.");
                 }
 
                 await _userManager.SetTwoFactorEnabledAsync(user, false);
                 await _userManager.ResetAuthenticatorKeyAsync(user);
-                
+
                 // Set 2fa method on user to null
                 user.TwoFactorMethod = "";
                 await _userManager.UpdateAsync(user);
-                
+
                 _logger.LogInformation(
-                    $"Authentication app key for user with ID '{user.Id}' has been reset by '{adminUser.Id}'");
+                    $"Authentication app key for user with ID '{user.Id}' has been reset by '{currentUser!.Id}'");
 
                 await _signInManager.RefreshSignInAsync(user);
                 var message =
