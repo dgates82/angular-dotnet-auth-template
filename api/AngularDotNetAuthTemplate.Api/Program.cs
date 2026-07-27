@@ -46,15 +46,7 @@ namespace AngularDotNetAuthTemplate.Api
 
             var jwtSettings = builder.Configuration.GetSection(JwtOptions.ConfigSection);
 
-            // AddIdentity must come before AddAuthentication().AddJwtBearer(): it
-            // registers its own AddAuthentication(...) call that sets
-            // DefaultAuthenticateScheme/DefaultChallengeScheme to Identity's cookie
-            // scheme. Since IConfigureOptions<AuthenticationOptions> instances all
-            // run in registration order, whichever call runs last wins - if
-            // AddIdentity ran after the JWT setup, it would silently overwrite the
-            // defaults back to cookie auth, and every bare [Authorize] endpoint
-            // would authenticate against an always-empty cookie instead of the
-            // Bearer token (see https://github.com/dotnet/aspnetcore/issues/47119).
+            // AddIdentity must come before AddAuthentication().AddJwtBearer()
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
