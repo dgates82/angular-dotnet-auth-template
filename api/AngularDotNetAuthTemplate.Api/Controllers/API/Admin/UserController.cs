@@ -20,19 +20,16 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
     public class UserController : CustomControllerBase
     {
         private readonly ILogger _logger;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationUserRepository _userRepository;
 
         /// <summary>Creates the controller with its injected Identity and repository dependencies.</summary>
         public UserController(ILogger<UserController> logger,
-            SignInManager<ApplicationUser> signInManager, 
             UserManager<ApplicationUser> userManager,
-            ApplicationUserRepository userRepository            
+            ApplicationUserRepository userRepository
             )
         {
             _logger = logger;
-            _signInManager = signInManager;
             _userManager = userManager;
             _userRepository = userRepository;
         }
@@ -89,8 +86,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
                     return Forbid();
                 }
 
-                var users = await _userRepository.GetAsync();
-                
+                var users = (await _userRepository.GetAsync()).ToList();
+
                 // add roles to user
                 foreach (var user in users)
                 {
@@ -163,7 +160,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
                 }
                 
                 // Add user roles
-                if (newUser.Roles?.Count > 0)
+                if (newUser.Roles.Count > 0)
                 {
                     foreach (var role in newUser.Roles)
                     {
