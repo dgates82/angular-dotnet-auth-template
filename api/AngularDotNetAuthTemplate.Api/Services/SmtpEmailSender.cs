@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using AngularDotNetAuthTemplate.Api.ExtensionMethods;
@@ -75,7 +76,19 @@ namespace AngularDotNetAuthTemplate.Api.Services
 
             _logger.LogInformation($"Message sent to {finalRecipient}");
 
-        }       
+        }
 
+    }
+
+    /// <summary>Registers <see cref="SmtpEmailSender"/> as the <see cref="IEmailSender"/> implementation.</summary>
+    public static class SmtpEmailSenderServiceCollectionExtensions
+    {
+        /// <summary>Binds <see cref="SmtpEmailOptions"/> from configuration and registers <see cref="SmtpEmailSender"/>.</summary>
+        public static IServiceCollection AddSmtpEmailSender(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<SmtpEmailOptions>(configuration.GetSection(SmtpEmailOptions.ConfigSection));
+            services.AddTransient<IEmailSender, SmtpEmailSender>();
+            return services;
+        }
     }
 }

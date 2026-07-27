@@ -1,16 +1,17 @@
 using AngularDotNetAuthTemplate.Api.ExtensionMethods;
 using AngularDotNetAuthTemplate.Api.Models.Options;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PostmarkDotNet;
 
 namespace AngularDotNetAuthTemplate.Api.Services;
 
 /// <summary>
-/// Alternate <see cref="IEmailSender"/> implementation using Postmark. Not wired
-/// up by default (see the commented registration in <c>Program.cs</c>); swap in
-/// for <see cref="SmtpEmailSender"/> when a real transactional-email provider
-/// is needed.
+/// Alternate <see cref="IEmailSender"/> implementation using Postmark. Not
+/// wired up by default (see the commented-out <c>AddPostMarkEmailSender</c>
+/// call in <c>Program.cs</c>); swap in for <see cref="SmtpEmailSender"/> when
+/// a real transactional-email provider is needed.
 /// </summary>
 public class PostMarkEmailSender : IEmailSender
 {
@@ -74,5 +75,17 @@ public class PostMarkEmailSender : IEmailSender
         {
             _logger.LogError(ex, $"Error sending email to {toEmail}");
         }
+    }
+}
+
+/// <summary>Registers <see cref="PostMarkEmailSender"/> as the <see cref="IEmailSender"/> implementation.</summary>
+public static class PostMarkEmailSenderServiceCollectionExtensions
+{
+    /// <summary>Binds <see cref="PostMarkEmailOptions"/> from configuration and registers <see cref="PostMarkEmailSender"/>.</summary>
+    public static IServiceCollection AddPostMarkEmailSender(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<PostMarkEmailOptions>(configuration.GetSection(PostMarkEmailOptions.ConfigSection));
+        services.AddTransient<IEmailSender, PostMarkEmailSender>();
+        return services;
     }
 }

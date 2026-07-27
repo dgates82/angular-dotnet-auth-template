@@ -36,7 +36,8 @@ export class ProfilePersonalInfoComponent implements OnInit {
 
   states!: IState[];
 
-  user: IApplicationUser | null = null;
+  // Fetched once by ProfileRootComponent instead of independently here.
+  @Input() user!: IApplicationUser;
 
   isEditMode: boolean = false;
 
@@ -76,23 +77,8 @@ export class ProfilePersonalInfoComponent implements OnInit {
       this.states = states;
     });
 
-    // Get current user info
-    const authUser = this.accountService.getLoggedInUser();
-    this.accountService.getUserByEmail(authUser?.email ?? '').then(response => {
-      this.user = response;
-
-      this.logger.trace(`profile-personal-info.component.ngOnInit | user:`, this.user)
-
-      this.handleFormState(false);
-
-      if (!this.user) {
-        this.logger.debug(`profile-personal-info.component.ngOnInit | user is null`);
-        return;
-      }
-
-      this.setFormValues();
-    });
-
+    this.handleFormState(false);
+    this.setFormValues();
   }
 
   setFormValues(): void {
@@ -153,8 +139,19 @@ export class ProfilePersonalInfoComponent implements OnInit {
         const request = {
           email: this.user.email,
         }
-        await this.accountService.resetAuthenticator(request);
-        this.logger.trace(`profile-personal-info.component.onSaveClick | 2fa disabled`);
+        try {
+          await this.accountService.resetAuthenticator(request);
+          this.logger.trace(`profile-personal-info.component.onSaveClick | 2fa disabled`);
+        } catch (err) {
+          this.logger.error(`profile-personal-info.component.onSaveClick | Failed to disable 2fa:`, err);
+          Swal.fire({
+            title: 'Error',
+            text: 'Two-factor authentication could not be disabled. Profile changes were not saved.',
+            icon: 'error',
+            heightAuto: false
+          });
+          return;
+        }
       } else {
         this.logger.trace(`profile-personal-info.component.onSaveClick | 2fa not disabled`);
         return;

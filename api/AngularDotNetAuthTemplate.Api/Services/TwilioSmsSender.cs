@@ -1,4 +1,5 @@
 using AngularDotNetAuthTemplate.Api.Models.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Twilio;
 using Twilio.Clients;
@@ -61,7 +62,19 @@ public class TwilioSmsSender : ISmsSender
             from: new Twilio.Types.PhoneNumber(_options.Value.FromNumber),
             to: new Twilio.Types.PhoneNumber(finalNumber)
         );
-        
+
     }
-    
+
+}
+
+/// <summary>Registers <see cref="TwilioSmsSender"/> as the <see cref="ISmsSender"/> implementation.</summary>
+public static class TwilioSmsSenderServiceCollectionExtensions
+{
+    /// <summary>Binds <see cref="TwilioSmsOptions"/> from configuration and registers <see cref="TwilioSmsSender"/>.</summary>
+    public static IServiceCollection AddTwilioSmsSender(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<TwilioSmsOptions>(configuration.GetSection(TwilioSmsOptions.ConfigSection));
+        services.AddTransient<ISmsSender, TwilioSmsSender>();
+        return services;
+    }
 }

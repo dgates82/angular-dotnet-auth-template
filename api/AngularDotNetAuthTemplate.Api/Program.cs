@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -33,8 +32,6 @@ namespace AngularDotNetAuthTemplate.Api
                 options.IncludeXmlComments(xmlPath);
             });
 
-            
-
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -45,6 +42,14 @@ namespace AngularDotNetAuthTemplate.Api
             builder.Services.AddScoped<ApplicationUserRepository, ApplicationUserRepository>();
 
             var jwtSettings = builder.Configuration.GetSection(JwtOptions.ConfigSection);
+
+            // AddIdentity must come before AddAuthentication().AddJwtBearer()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+            })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             builder.Services.AddAuthentication(opt =>
             {
@@ -64,35 +69,21 @@ namespace AngularDotNetAuthTemplate.Api
                     .GetBytes(jwtSettings.GetSection("securityKey").Value))
                 };
             });
-
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.SignIn.RequireConfirmedAccount = true;
-            })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
             builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => 
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-
 
             // Default sender: SMTP pointed at the Mailpit container from docker-compose.yml,
             // so a fresh clone has a working email path with no external account/API key.
             // TODO(template): swap to SendGrid/PostMark below (and supply your own key via
             // appsettings.Development.json or user-secrets) for a real provider - see README's
             // "Customizing for Your Project" section.
-            builder.Services.Configure<SmtpEmailOptions>(builder.Configuration.GetSection(SmtpEmailOptions.ConfigSection));
-            builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
-
-            // builder.Services.Configure<SendGridEmailOptions>(builder.Configuration.GetSection(SendGridEmailOptions.ConfigSection));
-            // builder.Services.AddTransient<IEmailSender, SendGridEmailSender>();
-
-            // builder.Services.Configure<PostMarkEmailOptions>(builder.Configuration.GetSection(PostMarkEmailOptions.ConfigSection));
-            // builder.Services.AddTransient<IEmailSender, PostMarkEmailSender>();
+            builder.Services.AddSmtpEmailSender(builder.Configuration);
+            // builder.Services.AddSendGridEmailSender(builder.Configuration);
+            // builder.Services.AddPostMarkEmailSender(builder.Configuration);
 
             // TODO(template): TwilioSmsSender is the only ISmsSender implementation - swap it
             // out entirely if you need a different SMS provider (see README).
-            builder.Services.Configure<TwilioSmsOptions>(builder.Configuration.GetSection(TwilioSmsOptions.ConfigSection));
-            builder.Services.AddTransient<ISmsSender, TwilioSmsSender>();
+            builder.Services.AddTwilioSmsSender(builder.Configuration);
             
             builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigSection));
             builder.Services.AddScoped<JwtHandler>();
@@ -132,17 +123,8 @@ namespace AngularDotNetAuthTemplate.Api
 
             app.MapControllers();
 
-            // SPA fallback: any GET request that doesn't match a controller or
-            // Razor route falls through to the Angular app's index.html, so
-            // client-side routes (e.g. a hard refresh on /profile) load the SPA
-            // shell instead of a raw 404. Real /api/* 404s are preserved.
-            //
-            // Uses an explicit "{**path}" pattern rather than the parameterless
-            // MapFallback(handler) overload: that overload applies an implicit
-            // ":nonfile" constraint that excludes any path whose last segment
-            // contains a dot (to avoid swallowing missing-static-file 404s), but
-            // this app has real client routes with a dotted last segment (e.g.
-            // /enable2fa/:email), which that constraint would incorrectly 404.
+            // SPA fallback: explicit "{**path}" pattern, not MapFallback(handler) - that
+            // overload's implicit :nonfile constraint breaks dotted routes like /enable2fa/:email.
             app.MapFallback("/{**path}", async context =>
             {
                 if (context.Request.Path.StartsWithSegments("/api"))

@@ -186,8 +186,8 @@ cd your-generated-repo
    `SmtpEmailConfigs` in `appsettings.json` point at it, so registration
    confirmation, password reset, and other outbound emails during local dev are
    caught instead of actually sent. View them at `http://localhost:8025`. To use
-   a real provider instead (SendGrid/PostMark), swap the `IEmailSender`
-   registration in `Program.cs` and supply your own API key via
+   a real provider instead (SendGrid/PostMark), swap which `AddXyzEmailSender()`
+   call is active in `Program.cs` and supply your own API key via
    `appsettings.Development.json` or user-secrets — never commit real keys.
 
    `smsmock` plays the same role for SMS 2FA: a containerized
