@@ -40,12 +40,20 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
         /// <summary>Gets a single user by ID, including their assigned roles.</summary>
         /// <param name="id">The user's ID.</param>
         [HttpGet]
+        [Authorize]
         [Route("get/{id?}")]
         public async Task<IActionResult> Get([FromQuery] string id)
         {
             try
             {
                 _logger.LogDebug($"Getting user by id: {id}");
+
+                var currentUser = GetCurrentUser();
+                var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
+                if (!isAdmin)
+                {
+                    return Forbid();
+                }
 
                 var user = await _userRepository.GetAsync(id);
                 if (user == null)
@@ -67,11 +75,19 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
 
         /// <summary>Lists all users, including each user's assigned roles.</summary>
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Get()
         {
             try
             {
                 _logger.LogDebug($"Getting all users");
+
+                var currentUser = GetCurrentUser();
+                var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
+                if (!isAdmin)
+                {
+                    return Forbid();
+                }
 
                 var users = await _userRepository.GetAsync();
                 

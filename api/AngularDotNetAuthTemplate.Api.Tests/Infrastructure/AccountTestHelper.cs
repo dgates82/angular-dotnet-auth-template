@@ -1,8 +1,10 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using AngularDotNetAuthTemplate.Api.Models;
 using AngularDotNetAuthTemplate.Api.Models.DataTransferObjects;
+using AngularDotNetAuthTemplate.Api.Models.DataTransferObjects.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,5 +51,47 @@ public static class AccountTestHelper
         {
             throw new InvalidOperationException($"Failed to confirm email for {email}");
         }
+    }
+
+    // Registers, confirms, and logs in as the new user, attaching the resulting JWT to
+    // the client's default headers - for tests exercising endpoints that require the
+    // caller to be authenticated.
+    public static async Task RegisterConfirmAndAuthenticateAsync(HttpClient client, IServiceProvider services, string email, string password)
+    {
+        await RegisterAndConfirmAsync(client, services, email, password);
+        await LoginAndAttachTokenAsync(client, email, password);
+    }
+
+    // Same as RegisterConfirmAndAuthenticateAsync, but assigns the Admin role first so
+    // the login response's embedded role claim (and any [Authorize(Roles = "Admin")]
+    // check) reflects it.
+    public static async Task RegisterConfirmAndAuthenticateAsAdminAsync(HttpClient client, IServiceProvider services, string email, string password)
+    {
+        await RegisterAndConfirmAsync(client, services, email, password);
+
+        using (var scope = services.CreateScope())
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var user = await userManager.FindByEmailAsync(email)
+                ?? throw new InvalidOperationException($"User {email} was not created by /register");
+            await userManager.AddToRoleAsync(user, "Admin");
+        }
+
+        await LoginAndAttachTokenAsync(client, email, password);
+    }
+
+    private static async Task LoginAndAttachTokenAsync(HttpClient client, string email, string password)
+    {
+        var loginResponse = await client.PostAsJsonAsync("/api/account/login",
+            new { Email = email, Password = password }, JsonOptions);
+        loginResponse.EnsureSuccessStatusCode();
+
+        var loginResult = await loginResponse.Content.ReadFromJsonAsync<AuthResponseDto>(JsonOptions);
+        if (loginResult is null || string.IsNullOrEmpty(loginResult.Token))
+        {
+            throw new InvalidOperationException($"Failed to log in as {email}");
+        }
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResult.Token);
     }
 }
