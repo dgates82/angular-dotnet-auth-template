@@ -4,6 +4,6 @@
     public class EnableAuthenticatorRequestDto
     {
         /// <summary>The email address of the account enabling or resetting authenticator-app 2FA.</summary>
-        public string Email { get; set; }
+        public required string Email { get; set; }
     }
 }

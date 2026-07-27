@@ -7,13 +7,13 @@ public class TwilioSmsOptions
     public const string ConfigSection = "TwilioSmsConfigs";
 
     /// <summary>The Twilio account SID.</summary>
-    public string AccountSid { get; set; }
+    public required string AccountSid { get; set; }
 
     /// <summary>The Twilio auth token.</summary>
-    public string AuthToken { get; set; }
+    public required string AuthToken { get; set; }
 
     /// <summary>The Twilio phone number to send SMS from.</summary>
-    public string FromNumber { get; set; }
+    public required string FromNumber { get; set; }
 
     /// <summary>When set, all SMS messages are redirected here instead of their real recipient, for testing against a real phone without texting real users.</summary>
     public string OverrideRecipient { get; set; } = "";

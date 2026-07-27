@@ -62,6 +62,7 @@ public class AccountControllerLoginTests
         Assert.True(result!.IsAuthSuccessful);
         Assert.False(string.IsNullOrEmpty(result.Token));
         Assert.False(result.RequiresTwoFactor);
+        Assert.NotNull(result.User);
         Assert.Equal(email, result.User.Email);
     }
 

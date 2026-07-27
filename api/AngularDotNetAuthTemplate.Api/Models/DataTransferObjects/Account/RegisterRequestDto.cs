@@ -4,9 +4,9 @@
     public class RegisterRequestDto
     {
         /// <summary>The new account's email address, also used as the username.</summary>
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         /// <summary>The new account's password.</summary>
-        public string Password { get; set; }
+        public required string Password { get; set; }
     }
 }

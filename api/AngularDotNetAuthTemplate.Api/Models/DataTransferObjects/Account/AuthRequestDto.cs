@@ -4,9 +4,9 @@
     public class AuthRequestDto
     {
         /// <summary>The email address to authenticate.</summary>
-        public string? Email { get; set; }
+        public required string Email { get; set; }
 
         /// <summary>The account's password.</summary>
-        public string? Password { get; set; }
+        public required string Password { get; set; }
     }
 }

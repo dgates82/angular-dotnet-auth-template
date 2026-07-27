@@ -7,16 +7,16 @@
         public const string ConfigSection = "SendGridEmailConfigs";
 
         /// <summary>The SendGrid API key.</summary>
-        public string ApiKey { get; set; }
+        public required string ApiKey { get; set; }
 
         /// <summary>The "From" address for outgoing emails.</summary>
-        public string FromAddress { get; set; }
+        public required string FromAddress { get; set; }
 
         /// <summary>The "From" display name for outgoing emails.</summary>
-        public string FromName { get; set; }
+        public required string FromName { get; set; }
 
         /// <summary>When set, all emails are redirected here instead of their real recipient, for testing against a real inbox without emailing real users.</summary>
-        public string OverrideRecipient { get; set; }
+        public string OverrideRecipient { get; set; } = "";
 
     }
 }

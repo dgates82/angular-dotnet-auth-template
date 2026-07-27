@@ -4,7 +4,7 @@
     public class SendEmailConfirmationRequestDto
     {
         /// <summary>The email address to resend a confirmation link to.</summary>
-        public string Email { get; set; }
+        public required string Email { get; set; }
         // public bool IsFirstLogin { get; set; }
     }
 }

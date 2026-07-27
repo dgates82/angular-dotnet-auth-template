@@ -66,7 +66,8 @@ namespace AngularDotNetAuthTemplate.Api
                     ValidIssuer = jwtSettings["validIssuer"],
                     ValidAudience = jwtSettings["validAudience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                    .GetBytes(jwtSettings.GetSection("securityKey").Value))
+                    .GetBytes(jwtSettings.GetSection("securityKey").Value
+                        ?? throw new InvalidOperationException($"'{JwtOptions.ConfigSection}:securityKey' not found.")))
                 };
             });
             builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => 

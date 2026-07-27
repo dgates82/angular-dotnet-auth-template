@@ -4,15 +4,15 @@
     public class VerifyAuthenticatorRequestDto
     {
         /// <summary>The user's email address.</summary>
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         /// <summary>The phone number to enable for SMS-based 2FA, if <see cref="Method"/> is "Phone".</summary>
         public string PhoneNumber { get; set; } = "";
 
         /// <summary>The 2FA method being verified: "Authenticator", "Email", "Phone", or "Sms".</summary>
-        public string Method { get; set; }
+        public required string Method { get; set; }
 
         /// <summary>The 2FA code submitted for verification.</summary>
-        public string Code { get; set; }
+        public required string Code { get; set; }
     }
 }

@@ -38,7 +38,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
         }
 
         /// <inheritdoc />
-        public async Task<T> GetAsync(string id)
+        public async Task<T?> GetAsync(string id)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace AngularDotNetAuthTemplate.Api.Data
         }
 
         /// <inheritdoc />
-        public async Task<T> FindByConditionAsync(Expression<Func<T, bool>> expression)
+        public async Task<T?> FindByConditionAsync(Expression<Func<T, bool>> expression)
         {
             try
             {

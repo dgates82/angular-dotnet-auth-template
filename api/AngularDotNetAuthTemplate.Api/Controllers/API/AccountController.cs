@@ -341,6 +341,10 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                     case "Phone":
                         // Use user phone number if 2fa is already enabled
                         var phoneNumber = user.TwoFactorEnabled ? user.PhoneNumber : request.PhoneNumber;
+                        if (string.IsNullOrEmpty(phoneNumber))
+                        {
+                            return Ok(new ResponseDto { IsSuccess = false });
+                        }
                         _logger.LogDebug($"SendTwoFaCode | Sending 2FA code to {phoneNumber}");
 
                         await _smsSender.SendSmsAsync(phoneNumber, $"Your 2FA code for [Application Name] is: {code}. This code is valid for {VerificationCodeExpiryMinutes} minutes. DO NOT share it with anyone."); // TODO(template): Update SMS message
@@ -711,7 +715,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 if (tokenProvider == "Authenticator")
                 {
                     var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-                    response.Codes = recoveryCodes.ToArray();
+                    response.Codes = recoveryCodes?.ToArray() ?? Array.Empty<string>();
                 }
 
                 return Ok(response);
@@ -814,7 +818,8 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
             }
 
-            return unformattedKey;
+            return unformattedKey
+                ?? throw new InvalidOperationException($"Failed to generate an authenticator key for user '{user.Id}'.");
         }
 
         /// <summary>Gets the user's authenticator key formatted for display (space-separated, lowercase).</summary>
@@ -832,7 +837,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         {
             var unformattedKey = await GetUnformattedKey(user);
             var email = await _userManager.GetEmailAsync(user);
-            var authenticatorUri = GenerateQrCodeUri(email, unformattedKey);
+            var authenticatorUri = GenerateQrCodeUri(email!, unformattedKey);
 
             return authenticatorUri;
         }                

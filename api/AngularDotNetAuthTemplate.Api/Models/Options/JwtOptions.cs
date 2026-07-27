@@ -7,15 +7,15 @@
         public const string ConfigSection = "JwtConfigs";
 
         /// <summary>The symmetric key used to sign and validate JWTs.</summary>
-        public string SecurityKey { get; set; }
+        public required string SecurityKey { get; set; }
 
         /// <summary>The expected "iss" (issuer) claim value.</summary>
-        public string ValidIssuer { get; set; }
+        public required string ValidIssuer { get; set; }
 
         /// <summary>The expected "aud" (audience) claim value.</summary>
-        public string ValidAudience { get; set; }
+        public required string ValidAudience { get; set; }
 
         /// <summary>How many minutes after issuance a token remains valid.</summary>
-        public string ExpiryInMinutes { get; set; }
+        public required string ExpiryInMinutes { get; set; }
     }
 }
