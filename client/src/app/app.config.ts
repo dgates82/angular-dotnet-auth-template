@@ -1,6 +1,6 @@
 import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { APP_BASE_HREF } from '@angular/common';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -23,7 +23,10 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(withInterceptors([errorInterceptor])),
+    // withInterceptorsFromDi() is load-bearing: JwtModule below registers its
+    // JwtInterceptor (attaches the Authorization header) via the classic
+    // HTTP_INTERCEPTORS DI token, not the functional interceptor API.
+    provideHttpClient(withInterceptors([errorInterceptor]), withInterceptorsFromDi()),
     provideNgxMask(),
     provideSweetAlert2(),
     importProvidersFrom(
