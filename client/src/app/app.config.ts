@@ -15,6 +15,10 @@ import { tokenGetter } from '@core/token-getter';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // Load-bearing: without this, plain async .then() handlers with no
+    // subsequent Router navigation (e.g. register/email-confirmation
+    // success) never trigger change detection, leaving the UI stuck
+    // showing stale state even though the underlying data updated.
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimations(),

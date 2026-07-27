@@ -74,13 +74,15 @@ namespace AngularDotNetAuthTemplate.Api
 
             // Default sender: SMTP pointed at the Mailpit container from docker-compose.yml,
             // so a fresh clone has a working email path with no external account/API key.
-            // Swap to SendGrid/PostMark below (and supply your own key via
-            // appsettings.Development.json or user-secrets) for a real provider.
+            // TODO(template): swap to SendGrid/PostMark below (and supply your own key via
+            // appsettings.Development.json or user-secrets) for a real provider - see README's
+            // "Customizing for Your Project" section.
             builder.Services.AddSmtpEmailSender(builder.Configuration);
-            
             // builder.Services.AddSendGridEmailSender(builder.Configuration);
             // builder.Services.AddPostMarkEmailSender(builder.Configuration);
 
+            // TODO(template): TwilioSmsSender is the only ISmsSender implementation - swap it
+            // out entirely if you need a different SMS provider (see README).
             builder.Services.AddTwilioSmsSender(builder.Configuration);
             
             builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigSection));
