@@ -148,6 +148,7 @@ export class AdminPersonalInfoComponent implements OnInit {
     this.user.state = this.state?.value ?? '';
     this.user.roles = this.roles.value;
 
+    // Network failures surface via the global error interceptor.
     this.userService.update(this.user).then(response => {
       this.logger.trace(`admin-personal-info.component.onSaveClick | response:`, response)
 
@@ -161,14 +162,6 @@ export class AdminPersonalInfoComponent implements OnInit {
         heightAuto: false
       });
 
-    }).catch(err => {
-      this.logger.error(`admin-personal-info.component.onSaveClick | Failed to update user:`, err);
-      Swal.fire({
-        title: 'Error',
-        text: 'This user could not be updated. Please try again.',
-        icon: 'error',
-        heightAuto: false
-      });
     });
   }
 

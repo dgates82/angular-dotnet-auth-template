@@ -92,16 +92,8 @@ export class UpdatePasswordComponent {
         icon: 'error',
         heightAuto: false
       });
-    }).catch(err => {
-      this.logger.error('UpdatePasswordComponent.onSubmit | error:', err);
-      Swal.fire({
-        title: 'Password update failed',
-        text: 'Something went wrong. Please try again.',
-        icon: 'error',
-        heightAuto: false
-      });
-    })
-
+    });
+    // Network failures surface via the global error interceptor.
   }
 
 }

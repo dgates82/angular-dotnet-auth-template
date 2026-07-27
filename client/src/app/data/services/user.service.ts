@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { LocationStrategy } from '@angular/common';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -10,6 +10,13 @@ import { lastValueFrom } from 'rxjs';
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { Constants } from '@core/constants';
 import {IResponse} from "@interfaces/response";
+import { SKIP_ERROR_DIALOG } from '@core/interceptors/error.interceptor';
+
+// getById/createUser/deactivate/activate/unlock already show their own
+// specific error feedback at every current call site - opt out of the
+// interceptor's generic dialog so failures aren't reported twice. get()
+// and update() are left on the default (interceptor-handled) path.
+const silentContext = new HttpContext().set(SKIP_ERROR_DIALOG, true);
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +46,7 @@ export class UserService {
 
     this.logger.debug(`user.service.getbyId | url: ${url}`);
 
-    return lastValueFrom(this.httpClient.get<IApplicationUser>(url).pipe(
+    return lastValueFrom(this.httpClient.get<IApplicationUser>(url, { context: silentContext }).pipe(
       tap(response => this.logger.trace(`user.service.getById | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
 
@@ -48,7 +55,7 @@ export class UserService {
   public createUser(request: IApplicationUser): Promise<IApplicationUser> {
     this.logger.debug(`user.service.createUser | request: ${JSON.stringify(request)}`);
 
-    return lastValueFrom(this.httpClient.post<IApplicationUser>(this.apiUrl, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IApplicationUser>(this.apiUrl, request, { ...Constants.postOptions, context: silentContext }).pipe(
       tap(response => this.logger.trace(`user.service.createUser | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
   }
@@ -67,7 +74,7 @@ export class UserService {
 
     const url = `${this.apiUrl}/deactivate?id=${id}`;
 
-    return lastValueFrom(this.httpClient.post<IApplicationUser>(url, null).pipe(
+    return lastValueFrom(this.httpClient.post<IApplicationUser>(url, null, { context: silentContext }).pipe(
       tap(response => this.logger.trace(`user.service.deactivate | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
 
@@ -78,7 +85,7 @@ export class UserService {
 
     const url = `${this.apiUrl}/activate?id=${id}`;
 
-    return lastValueFrom(this.httpClient.post<IApplicationUser>(url, null).pipe(
+    return lastValueFrom(this.httpClient.post<IApplicationUser>(url, null, { context: silentContext }).pipe(
       tap(response => this.logger.trace(`user.service.activate | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
 
@@ -89,7 +96,7 @@ export class UserService {
 
     const url = `${this.apiUrl}/unlock?id=${id}`;
 
-    return lastValueFrom(this.httpClient.post<IResponse>(url, null).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, null, { context: silentContext }).pipe(
       tap(response => this.logger.trace(`user.service.unlock | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
   }

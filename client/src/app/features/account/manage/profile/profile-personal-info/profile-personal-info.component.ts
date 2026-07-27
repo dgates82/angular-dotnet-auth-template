@@ -171,6 +171,7 @@ export class ProfilePersonalInfoComponent implements OnInit {
     this.user.zipCode = this.zipCode?.value;
     this.user.state = this.state?.value;
 
+    // Network failures surface via the global error interceptor.
     this.userService.update(this.user).then(response => {
       this.logger.trace(`profile-personal-info.component.onSaveClick | response:`, response)
 
@@ -184,14 +185,6 @@ export class ProfilePersonalInfoComponent implements OnInit {
         heightAuto: false
       });
 
-    }).catch(err => {
-      this.logger.error(`profile-personal-info.component.onSaveClick | Failed to update profile:`, err);
-      Swal.fire({
-        title: 'Error',
-        text: 'Your profile could not be updated. Please try again.',
-        icon: 'error',
-        heightAuto: false
-      });
     });
   }
 
