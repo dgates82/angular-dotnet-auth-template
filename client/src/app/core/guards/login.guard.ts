@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { Injectable, inject } from '@angular/core';
+import { Router, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { AccountService } from '@data/services/account.service';
@@ -10,14 +10,12 @@ import { LoggerService } from '@core/services/logger.service';
   providedIn: 'root'
 })
 export class LoginGuard  {
+  private accountService = inject(AccountService);
+  private logger = inject(LoggerService);
+  private router = inject(Router);
 
-  constructor(private accountService: AccountService,
-    private logger: LoggerService,
-    private router: Router) { }
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
     this.logger.trace(`login.guard.canActivate`);
 

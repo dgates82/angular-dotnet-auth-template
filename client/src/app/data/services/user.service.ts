@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 import { LocationStrategy } from '@angular/common';
@@ -15,13 +15,13 @@ import {IResponse} from "@interfaces/response";
   providedIn: 'root'
 })
 export class UserService {
+  private readonly logger = inject(LoggerService);
+  private readonly locationStrategy = inject(LocationStrategy);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorService = inject(HttpErrorService);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly locationStrategy: LocationStrategy,
-              private readonly httpClient: HttpClient,
-              private readonly errorService: HttpErrorService) { }
 
-  private apiUrl: string = `${this.locationStrategy.getBaseHref()}api/admin/user`
+  private apiUrl = `${this.locationStrategy.getBaseHref()}api/admin/user`
 
   public get(): Promise<IApplicationUser[]> {
     this.logger.debug(`user.service.get`);

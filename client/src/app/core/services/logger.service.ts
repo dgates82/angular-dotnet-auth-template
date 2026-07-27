@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { NGXLogger } from 'ngx-logger';
 
@@ -6,27 +6,27 @@ import { NGXLogger } from 'ngx-logger';
   providedIn: 'root'
 })
 export class LoggerService {
+  private logger = inject(NGXLogger);
 
-  constructor(private logger: NGXLogger) { }
 
-  private getMessaage(msg: string, obj?: any) {
-    var result = `${msg} ${(obj) ? JSON.stringify(obj) : ""}`
+  private getMessaage(msg: string, obj?: unknown) {
+    const result = `${msg} ${(obj) ? JSON.stringify(obj) : ""}`
     return result;
   }
 
-  info(msg: string, obj?: any): void {
+  info(msg: string, obj?: unknown): void {
     this.logger.info(this.getMessaage(msg, obj));
   }
 
-  debug(msg: string, obj?: any): void {
+  debug(msg: string, obj?: unknown): void {
     this.logger.debug(this.getMessaage(msg, obj));
   }
 
-  error(msg: string, obj?: any): void {
+  error(msg: string, obj?: unknown): void {
     this.logger.error(this.getMessaage(msg, obj));
   }
 
-  trace(msg: string, obj?: any): void {
+  trace(msg: string, obj?: unknown): void {
     this.logger.trace(this.getMessaage(msg, obj));
   }
 

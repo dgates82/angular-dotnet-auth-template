@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import {LoggerService} from "@core/services/logger.service";
 import {Constants} from "@core/constants";
 import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
@@ -20,13 +20,12 @@ interface AuthMethod {
     imports: [MatRadioGroup, FormsModule, NgClass, MatRadioButton, MatButton]
 })
 export class EnableTwoFaMethodsComponent implements OnInit{
+  private readonly logger = inject(LoggerService);
 
-  constructor(private readonly logger: LoggerService) {
-  }
 
   @Output() methodSelected: EventEmitter<string> = new EventEmitter<string>();
 
-  selectedMethod: string = 'Authenticator';
+  selectedMethod = 'Authenticator';
 
   allowedMethods: string[] = Constants.twoFaMethods;
 

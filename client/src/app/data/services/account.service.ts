@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LocationStrategy } from '@angular/common';
 
@@ -27,21 +27,20 @@ import { IVerifyAuthenticatorResponse } from '@interfaces/account/verify-authent
 import { IChangePasswordRequest } from '@interfaces/account/change-password-request';
 import {IRegisterRequest} from "@interfaces/account/register-request";
 import {ISendVerificationCodeRequest} from "@interfaces/account/send-verification-code-request";
-import {CanActivateFn} from "@angular/router";
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
+  private readonly logger = inject(LoggerService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorService = inject(HttpErrorService);
+  private readonly locationStrategy = inject(LocationStrategy);
+  private readonly jwtHelper = inject(JwtHelperService);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly httpClient: HttpClient,
-              private readonly errorService: HttpErrorService,
-              private readonly locationStrategy: LocationStrategy,
-              private readonly jwtHelper: JwtHelperService) { }
 
-  private apiUrl: string = `${this.locationStrategy.getBaseHref()}api/account`
+  private apiUrl = `${this.locationStrategy.getBaseHref()}api/account`
 
   public authChanged: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -107,7 +106,7 @@ export class AccountService {
 
   public isUserAuthenticated = (): boolean => {
 
-    var authResponse = this.getAuthResponse();
+    const authResponse = this.getAuthResponse();
 
     const token = authResponse?.token;
 
@@ -117,7 +116,7 @@ export class AccountService {
   async register(request: IRegisterRequest): Promise<IResponse>{
     this.logger.debug(`account.service.register | email: ${request.email}`);
 
-    let url = `${this.apiUrl}/register`;
+    const url = `${this.apiUrl}/register`;
 
     return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.register | response: `, response)),
@@ -128,7 +127,7 @@ export class AccountService {
   async getUserByEmail(email: string): Promise<IApplicationUser> {
     this.logger.debug(`account.service.getUserByEmail | email: ${email}`)
 
-    let url = `${this.apiUrl}/getuserbyemail?email=${email}`;
+    const url = `${this.apiUrl}/getuserbyemail?email=${email}`;
 
     return lastValueFrom(this.httpClient.get<IApplicationUser>(url).pipe(
       tap(response => this.logger.trace(`account.service.getUserByEmail | response:`, response)),
@@ -138,7 +137,7 @@ export class AccountService {
   async login(authRequest: IAuthRequest): Promise<IAuthResponse> {
     this.logger.debug(`account.service.login | email: ${authRequest.email}`)
 
-    let url = `${this.apiUrl}/login`;
+    const url = `${this.apiUrl}/login`;
 
     return lastValueFrom(this.httpClient.post<IAuthResponse>(url, authRequest, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.login | response:`, response)),
@@ -148,7 +147,7 @@ export class AccountService {
   async login2fa(authRequest: ITwoFaAuthRequest): Promise<IAuthResponse> {
     this.logger.debug(`account.service.login2fa | authRequest: ${JSON.stringify(authRequest)}`)
 
-    let url = `${this.apiUrl}/login2fa`;
+    const url = `${this.apiUrl}/login2fa`;
 
     return lastValueFrom(this.httpClient.post<IAuthResponse>(url, authRequest, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.login2fa | response:`, response)),
@@ -159,7 +158,7 @@ export class AccountService {
   async sendForgotPassword(forgotPasswordRequest: IForgotPasswordRequest): Promise<IResponse> {
     this.logger.debug(`account.service.sendForgotPassword`);
 
-    let url = `${this.apiUrl}/forgotpassword`;
+    const url = `${this.apiUrl}/forgotpassword`;
 
     return lastValueFrom(this.httpClient.post<IResponse>(url, forgotPasswordRequest, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.sendForgotPassword | response:`, response)),
@@ -170,7 +169,7 @@ export class AccountService {
   async resetPassword(request: IResetPasswordRequest): Promise<IResponse> {
     this.logger.debug(`account.service.resetPassword | email: ${request.email}`);
 
-    let url = `${this.apiUrl}/resetpassword`;
+    const url = `${this.apiUrl}/resetpassword`;
     return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.resetPassword | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
@@ -179,7 +178,7 @@ export class AccountService {
   async changePassword(request: IChangePasswordRequest): Promise<IResponse> {
     this.logger.debug(`account.service.changePassword | email: ${request.email}`);
 
-    let url = `${this.apiUrl}/changepassword`;
+    const url = `${this.apiUrl}/changepassword`;
 
     return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.changePassword | response:`, response)),
@@ -190,7 +189,7 @@ export class AccountService {
   async sendConfirmEmail(request: IEmailOnlyRequest): Promise<IResponse> {
     this.logger.debug(`account.service.sendConfirmEmail | email: ${request.email}`);
 
-    let url = `${this.apiUrl}/sendemailconfirmation`;
+    const url = `${this.apiUrl}/sendemailconfirmation`;
 
     return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.sendConfirmEmail | response:`, response)),
@@ -201,7 +200,7 @@ export class AccountService {
   async confirmEmail(request: IConfirmEmailRequest): Promise<IResponse>{
     this.logger.debug(`account.service.confirmEmail | userId: ${request.userId}`);
 
-    let url = `${this.apiUrl}/confirmemail`;
+    const url = `${this.apiUrl}/confirmemail`;
 
     return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.resetPassword | response:`, response)),
@@ -212,7 +211,7 @@ export class AccountService {
   async sendTwoFaCode(request: ISendVerificationCodeRequest) : Promise<IResponse> {
     this.logger.debug(`account.service.sendVerificationCode | email: ${request.email}`);
 
-    let url = `${this.apiUrl}/SendTwoFaCode`;
+    const url = `${this.apiUrl}/SendTwoFaCode`;
 
     return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.sendVerificationCode | response:`, response)),
@@ -222,7 +221,7 @@ export class AccountService {
   async enableAuthenticator(request: IEmailOnlyRequest): Promise<IEnableAuthenticatorResponse> {
     this.logger.debug(`account.service.enableAuthenticator | email: ${request.email}`);
 
-    let url = `${this.apiUrl}/enableauthenticator`;
+    const url = `${this.apiUrl}/enableauthenticator`;
 
     return lastValueFrom(this.httpClient.post<IEnableAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.enableAuthenticator | response:`, response)),
@@ -233,7 +232,7 @@ export class AccountService {
   async verifyAuthenticator(request: IVerifyAuthenticatorRequest): Promise<IVerifyAuthenticatorResponse>{
     this.logger.debug(`account.service.verifyAuthenticator | email: ${request.email}`);
 
-    let url = `${this.apiUrl}/verifyauthenticator`;
+    const url = `${this.apiUrl}/verifyauthenticator`;
 
     return lastValueFrom(this.httpClient.post<IVerifyAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.verifyAuthenticator | response:`, response)),
@@ -244,7 +243,7 @@ export class AccountService {
   async resetAuthenticator(request: IEmailOnlyRequest): Promise<IResponse> {
     this.logger.debug(`account.service.resetAuthenticator | email: ${request.email}`);
 
-    let url = `${this.apiUrl}/resetauthenticator`;
+    const url = `${this.apiUrl}/resetauthenticator`;
 
     return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
       tap(response => this.logger.trace(`account.service.resetAuthenticator | response:`, response)),
@@ -257,9 +256,9 @@ export class AccountService {
    * Test method for testing secure endpoints
    * @returns
    */
-  async testSecure() : Promise<any> {
+  async testSecure() : Promise<string> {
     this.logger.debug(`account.service.testSecure`);
-    let url = `${this.apiUrl}/secure`;
+    const url = `${this.apiUrl}/secure`;
     // return lastValueFrom(this.httpClient.get(url, {responseType: 'text'}));
     return lastValueFrom(this.httpClient.get(url, {responseType: 'text'}));
   }

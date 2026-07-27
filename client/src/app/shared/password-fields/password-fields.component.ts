@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { AbstractControl, ControlContainer, FormGroup, FormGroupDirective, ReactiveFormsModule } from '@angular/forms';
 
 import { faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
@@ -24,23 +24,23 @@ import { NgClass, NgTemplateOutlet } from '@angular/common';
   imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgClass, NgTemplateOutlet, FaIconComponent]
 })
 export class PasswordFieldsComponent {
+  private readonly controlContainer = inject(ControlContainer);
 
-  constructor(private readonly controlContainer: ControlContainer) { }
 
   /** Label for the new-password field. Defaults to "Password" (register/reset); pass "New Password" for the change-password form. */
-  @Input() newPasswordLabel: string = 'Password';
+  @Input() newPasswordLabel = 'Password';
 
   /** Message shown when the new-password field is required but empty. */
-  @Input() requiredErrorMessage: string = 'Password is required';
+  @Input() requiredErrorMessage = 'Password is required';
 
   /** Bootstrap width utility class applied to both mat-form-fields. */
-  @Input() fieldWidthClass: string = 'w-75';
+  @Input() fieldWidthClass = 'w-75';
 
   /** Whether the new-password field should have the autofocus attribute. */
-  @Input() autofocusNewPassword: boolean = false;
+  @Input() autofocusNewPassword = false;
 
   /** Whether the strength checklist is centered (auth-flow cards) or left-aligned (profile tab). */
-  @Input() centered: boolean = true;
+  @Input() centered = true;
 
   @Output() confirmPasswordEnter: EventEmitter<void> = new EventEmitter<void>();
 

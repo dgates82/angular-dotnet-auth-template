@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 
 import { AuthGuard } from './auth.guard';
 import { AccountService } from '@data/services/account.service';
@@ -29,7 +29,9 @@ describe('AuthGuard', () => {
   it('allows navigation when the user is authenticated', () => {
     accountService.isUserAuthenticated.mockReturnValue(true);
 
-    const result = guard.canActivate({} as any, { url: '/home' } as any);
+    const result = guard.canActivate(
+      {} as unknown as ActivatedRouteSnapshot,
+      { url: '/home' } as unknown as RouterStateSnapshot);
 
     expect(result).toBe(true);
     expect(router.navigate).not.toHaveBeenCalled();
@@ -38,7 +40,9 @@ describe('AuthGuard', () => {
   it('redirects to login with a returnUrl when the user is not authenticated', () => {
     accountService.isUserAuthenticated.mockReturnValue(false);
 
-    const result = guard.canActivate({} as any, { url: '/admin/users' } as any);
+    const result = guard.canActivate(
+      {} as unknown as ActivatedRouteSnapshot,
+      { url: '/admin/users' } as unknown as RouterStateSnapshot);
 
     expect(result).toBe(false);
     expect(router.navigate).toHaveBeenCalledWith(['login'], { queryParams: { returnUrl: '/admin/users' } });

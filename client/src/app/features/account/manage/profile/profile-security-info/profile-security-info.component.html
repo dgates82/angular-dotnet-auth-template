@@ -11,7 +11,7 @@
       }
       @if (isUpdatingPassword) {
         <div>
-          <app-update-password (passwordUpdated)="onPasswordUpdated($event)" (passwordUpdateCancelled)="onPasswordUpdateCancelled($event)"></app-update-password>
+          <app-update-password (passwordUpdated)="onPasswordUpdated()" (passwordUpdateCancelled)="onPasswordUpdateCancelled()"></app-update-password>
         </div>
       }
     </mat-card-content>

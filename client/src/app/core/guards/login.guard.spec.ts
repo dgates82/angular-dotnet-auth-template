@@ -29,7 +29,7 @@ describe('LoginGuard', () => {
   it('allows navigation to login/register pages when the user is not authenticated', () => {
     accountService.isUserAuthenticated.mockReturnValue(false);
 
-    const result = guard.canActivate({} as any, {} as any);
+    const result = guard.canActivate();
 
     expect(result).toBe(true);
     expect(router.navigate).not.toHaveBeenCalled();
@@ -38,7 +38,7 @@ describe('LoginGuard', () => {
   it('redirects an already-authenticated user to home instead', () => {
     accountService.isUserAuthenticated.mockReturnValue(true);
 
-    const result = guard.canActivate({} as any, {} as any);
+    const result = guard.canActivate();
 
     expect(result).toBe(false);
     expect(router.navigate).toHaveBeenCalledWith(['home']);

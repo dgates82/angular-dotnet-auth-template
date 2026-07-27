@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
 
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/material/card';
 import { MatButton, MatMiniFabButton } from '@angular/material/button';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
     selector: 'app-list-users',
@@ -24,10 +24,10 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
     imports: [MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatButton, FaIconComponent, MatSlideToggle, MatMiniFabButton, MatTableModule, MatSortModule, MatPaginatorModule, MatFormField, MatLabel, MatInput]
 })
 export class ListUsersComponent implements OnInit, AfterViewInit {
+  private readonly logger = inject(LoggerService);
+  private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly userService: UserService,
-              private readonly router: Router) { }
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -35,7 +35,7 @@ export class ListUsersComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['email', 'firstName', 'lastName', 'status', 'actions'];
   dataSource = new MatTableDataSource<IApplicationUser>([]);
 
-  includeInactiveUsers: boolean = false;
+  includeInactiveUsers = false;
 
   icons = {
     edit: faUserEdit,
@@ -60,7 +60,7 @@ export class ListUsersComponent implements OnInit, AfterViewInit {
         case 'status':
           return user.isActive ? 1 : 0;
         default:
-          return (user as any)[columnName] ?? '';
+          return (user as unknown as Record<string, string | number>)[columnName] ?? '';
       }
     };
 
@@ -103,7 +103,7 @@ export class ListUsersComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/admin/edit-user', userId]);
   }
 
-  onIncludeInactiveUsersChanged(event: any): void {
+  onIncludeInactiveUsersChanged(event: MatSlideToggleChange): void {
     this.logger.debug(`list-users.component.onIncludeInatciveUsersChanged | event: ${event.checked}`)
     this.includeInactiveUsers = event.checked;
     this.reloadData();

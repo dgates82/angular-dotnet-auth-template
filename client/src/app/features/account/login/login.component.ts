@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import { Validators, FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject } from '@angular/core';
+import { Validators, FormBuilder, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -27,39 +27,39 @@ import { LoginTwoFactorComponent } from './login-two-factor/login-two-factor.com
     imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatInput, MatButton, MatIcon, MatProgressSpinner, RouterLink, LoginTwoFactorComponent]
 })
 export class LoginComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly obfuscateEmailPipe = inject(ObfuscateEmailPipe);
+  private readonly obfuscatePhonePipe = inject(ObfuscatePhonePipe);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly accountService: AccountService,
-              private readonly route: ActivatedRoute,
-              private readonly router: Router,
-              private readonly formBuilder: FormBuilder,
-              private readonly obfuscateEmailPipe: ObfuscateEmailPipe,
-              private readonly obfuscatePhonePipe: ObfuscatePhonePipe) { }
 
-  private returnUrl: string = '';
+  private returnUrl = '';
 
   allowSelfRegister: boolean = Constants.allowSelfRegister;
 
-  isSubmitting: boolean = false;
+  isSubmitting = false;
   isInvalidLogin = false;
-  errorMessage: string = '';
-  subtitle: string = 'Enter your details to get started.'
+  errorMessage = '';
+  subtitle = 'Enter your details to get started.'
 
   is2FaRequired: boolean = Constants.is2FaRequired;
-  is2FaEnabled: boolean = false;
-  twoFactorMethod: string = '';
+  is2FaEnabled = false;
+  twoFactorMethod = '';
 
   loginForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]]
   });
 
-  get email(): any {
-    return this.loginForm.get('email');
+  get email(): FormControl {
+    return this.loginForm.get('email') as FormControl;
   }
 
-  get password(): any {
-    return this.loginForm.get('password')
+  get password(): FormControl {
+    return this.loginForm.get('password') as FormControl;
   }
   ngOnInit(): void {
     this.logger.debug(`login.component.ngOnInit`)
@@ -89,7 +89,7 @@ export class LoginComponent implements OnInit {
     this.accountService.login(authRequest).then(response => {
       this.logger.trace(`account.login | response:`, response)
 
-      this.onLoginResponse(response).then(() => {});
+      void this.onLoginResponse(response);
 
     }).catch(error => {
       // Display failed login message to user

@@ -1,9 +1,9 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { ITwoFaAuthRequest } from '@interfaces/account/two-fa-auth-request';
-import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IAuthResponse } from '@interfaces/account/auth-response';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -17,13 +17,13 @@ import { MatButton } from '@angular/material/button';
     imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgxMaskDirective, MatError, MatButton]
 })
 export class LoginTwoFactorComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
+  private readonly formBuilder = inject(FormBuilder);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly accountService: AccountService,
-              private readonly formBuilder: FormBuilder) { }
 
-  @Input() email: string = '';
-  @Input() twoFactorMethod: string = '';
+  @Input() email = '';
+  @Input() twoFactorMethod = '';
 
   @Output() loginResponse: EventEmitter<IAuthResponse> = new EventEmitter<IAuthResponse>();
 
@@ -34,8 +34,8 @@ export class LoginTwoFactorComponent implements OnInit {
       Validators.maxLength(6)]]
   });
 
-  get twoFaCode(): any {
-    return this.login2FaForm.get('twoFaCode');
+  get twoFaCode(): FormControl {
+    return this.login2FaForm.get('twoFaCode') as FormControl;
   }
 
   @ViewChild("twoFaCodeInput") twoFaCodeInput: ElementRef | undefined;

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { LoggerService } from '@core/services/logger.service';
 
@@ -9,14 +9,27 @@ import { lastValueFrom } from 'rxjs';
 import { HttpErrorService } from '@core/services/http-error.service';
 import { IZippoResponse } from '@interfaces/address/zippo-response';
 
+interface IZippoPlaceRaw {
+  'place name': string;
+  longitude: string;
+  state: string;
+  'state abbreviation': string;
+  latitude: string;
+}
+
+interface IZippoResponseRaw {
+  'post code': string;
+  places: IZippoPlaceRaw[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AddressService {
+  private logger = inject(LoggerService);
+  private httpClient = inject(HttpClient);
+  private errorService = inject(HttpErrorService);
 
-  constructor(private logger: LoggerService,
-    private httpClient: HttpClient,
-    private errorService: HttpErrorService) { }
 
   getStates(): Promise<IState[]> {
     const url = '../assets/data/states.json';
@@ -29,11 +42,11 @@ export class AddressService {
   getPlaceByZipCode(zipCode: string): Promise<IZippoResponse> {
     const url = `https://api.zippopotam.us/us/${zipCode}`;
     
-    return lastValueFrom(this.httpClient.get<IZippoResponse>(url).pipe(
+    return lastValueFrom(this.httpClient.get<IZippoResponseRaw>(url).pipe(
       tap(response => { this.logger.trace(`address.service.getPlaceByZipCode | response:`, response) }),
-      map((response: any) => ({
-        postCode: response['post code'],                
-        places: response.places.map((place: any) => ({
+      map((response: IZippoResponseRaw) => ({
+        postCode: response['post code'],
+        places: response.places.map((place: IZippoPlaceRaw) => ({
           placeName: place['place name'],
           longitude: place.longitude,
           state: place.state,

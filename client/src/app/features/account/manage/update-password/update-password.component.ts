@@ -1,5 +1,5 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -20,11 +20,11 @@ import { PasswordFieldsComponent } from '@shared/password-fields/password-fields
     styleUrls: ['./update-password.component.scss'],
     imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, FaIconComponent, MatButton, PasswordFieldsComponent]
 })
-export class UpdatePasswordComponent implements OnInit {
+export class UpdatePasswordComponent {
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
+  private readonly formBuilder = inject(FormBuilder);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly accountService: AccountService,
-              private readonly formBuilder: FormBuilder) { }
 
   @Output() passwordUpdated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() passwordUpdateCancelled: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -40,15 +40,12 @@ export class UpdatePasswordComponent implements OnInit {
     confirmPassword: ['', [Validators.required]]
   }, {validators: PasswordValidators.matchValidator});
 
-  get currentPassword(): any {
-    return this.passwordUpdateForm.get('currentPassword')
+  get currentPassword(): FormControl {
+    return this.passwordUpdateForm.get('currentPassword') as FormControl;
   }
 
-  get newPassword(): any {
-    return this.passwordUpdateForm.get('newPassword')
-  }
-
-  ngOnInit(): void {
+  get newPassword(): FormControl {
+    return this.passwordUpdateForm.get('newPassword') as FormControl;
   }
 
   onCancel() {

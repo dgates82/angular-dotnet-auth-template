@@ -9,7 +9,7 @@ export function roleGuard(roles: string[])
     const router: Router = inject(Router);
 
     // For each role in the roles array, check if the user has that role. return true if any does
-    for (let role of roles) {
+    for (const role of roles) {
       if (accountService.isInRole(role)) {
         return true;
       }

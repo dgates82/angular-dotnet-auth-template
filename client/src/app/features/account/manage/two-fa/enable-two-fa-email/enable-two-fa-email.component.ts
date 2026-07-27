@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import {LoggerService} from "@core/services/logger.service";
 import {AccountService} from "@data/services/account.service";
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -15,30 +15,30 @@ import { MatButton } from '@angular/material/button';
     imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, NgxMaskDirective, MatError, MatButton]
 })
 export class EnableTwoFaEmailComponent implements OnInit{
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly accountService: AccountService) { }
 
-  @Input() email: string = '';
-  @Input() showBack: boolean = false;
+  @Input() email = '';
+  @Input() showBack = false;
 
   @Output() backClicked: EventEmitter<void> = new EventEmitter<void>();
   @Output() twoFaEnabled: EventEmitter<string> = new EventEmitter<string>();
 
-  isVerified: boolean = false;
+  isVerified = false;
 
   ngOnInit() {
     this.logger.debug(`enable-two-fa-email.component.ngOnInit | email: ${this.email}`);
 
-    this.sendCode().then(() => {});
+    void this.sendCode();
   }
 
   verifyEmailForm = new FormGroup({
     code: new FormControl('', [Validators.required])
   });
 
-  get code(): any {
-    return this.verifyEmailForm.get('code');
+  get code(): FormControl {
+    return this.verifyEmailForm.get('code') as FormControl;
   }
 
   async sendCode() {
@@ -84,7 +84,7 @@ export class EnableTwoFaEmailComponent implements OnInit{
   resendCode() {
     this.logger.debug(`enable-two-fa-email.component.resendCode`);
 
-    this.sendCode().then(() => {});
+    void this.sendCode();
 
   }
 }

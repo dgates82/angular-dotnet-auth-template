@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -27,17 +27,17 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     imports: [MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgxMaskDirective, MatSelect, MatOption, MatIconButton, MatIcon, MatButton, FaIconComponent]
 })
 export class AdminPersonalInfoComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly addressService = inject(AddressService);
+  private readonly userService = inject(UserService);
+  private readonly formBuilder = inject(FormBuilder);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly addressService: AddressService,
-              private readonly userService: UserService,
-              private readonly formBuilder: FormBuilder) { }
 
   @Input() user!: IApplicationUser;
 
   availableRoles: string[] = Constants.availableRoles;
 
-  isEditMode: boolean = false;
+  isEditMode = false;
 
   states!: IState[];
 
@@ -254,7 +254,7 @@ export class AdminPersonalInfoComponent implements OnInit {
     });
   }
 
-  onZipCodeChange(event: any) {
+  onZipCodeChange() {
     this.logger.debug(`admin-personal-info.component.onZipCodeChange | zipCode: ${this.zipCode?.value}`);
     this.addressService.getPlaceByZipCode(this.zipCode?.value ?? '').then(zippoResponse => {
       const place = zippoResponse.places[0];
@@ -277,7 +277,11 @@ export class AdminPersonalInfoComponent implements OnInit {
     }
 
     // Enable/disable the Add Role field
-    enableForm ? this.addRoleControl?.enable() : this.addRoleControl?.disable();
+    if (enableForm) {
+      this.addRoleControl?.enable();
+    } else {
+      this.addRoleControl?.disable();
+    }
 
     // Ensure roles are always disabled
     this.roles.controls.forEach(control => control.disable());
