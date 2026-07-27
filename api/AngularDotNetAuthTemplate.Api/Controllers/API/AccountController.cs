@@ -66,7 +66,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
         /// <returns>
         /// The matching <see cref="ApplicationUserDto"/> with <c>Roles</c> populated,
         /// or a <see cref="ResponseDto"/> with <c>IsSuccess = false</c> if no user
-        /// with that email exists.
+        /// with that email exists; 400 if the caller is neither the target user nor an admin.
         /// </returns>
         [HttpGet]
         [Authorize]
@@ -81,7 +81,15 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                 {
                     return Ok(new ResponseDto { IsSuccess = false });
                 }
-                
+
+                var currentUser = GetCurrentUser();
+                var isSelf = currentUser != null && currentUser.Id == user.Id;
+                var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
+                if (!isSelf && !isAdmin)
+                {
+                    return BadRequest("You can only look up your own account. Looking up another account requires the Admin role.");
+                }
+
                 // Add roles to user dto object for client side
                 var roles = await _userManager.GetRolesAsync(user);
                 user.Roles = roles.ToList();
