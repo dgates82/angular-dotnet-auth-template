@@ -59,14 +59,6 @@ export class AccountService {
 
     this.logger.trace(`account.service.getAuthResponse | authResponse:`, authResponse)
 
-    // HACK: Finish decoding user from token and remove user from authResponse so it is not stored in plain text in local storage
-    /*
-    const decodedToken = this.jwtHelper.decodeToken(authResponse.token ?? "");
-    this.logger.trace(`account.service.getAuthResponse | decodedToken: ${JSON.stringify(decodedToken)}`)
-    const user = decodedToken?.user as IApplicationUser;
-    this.logger.trace(`account.service.getAuthResponse | user: ${JSON.stringify(user)}`);
-    */
-
     return authResponse
 
   }
