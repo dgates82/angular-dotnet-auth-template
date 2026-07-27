@@ -32,8 +32,6 @@ namespace AngularDotNetAuthTemplate.Api
                 options.IncludeXmlComments(xmlPath);
             });
 
-            
-
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -73,12 +71,12 @@ namespace AngularDotNetAuthTemplate.Api
             builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => 
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-
             // Default sender: SMTP pointed at the Mailpit container from docker-compose.yml,
             // so a fresh clone has a working email path with no external account/API key.
             // Swap to SendGrid/PostMark below (and supply your own key via
             // appsettings.Development.json or user-secrets) for a real provider.
             builder.Services.AddSmtpEmailSender(builder.Configuration);
+            
             // builder.Services.AddSendGridEmailSender(builder.Configuration);
             // builder.Services.AddPostMarkEmailSender(builder.Configuration);
 
@@ -122,17 +120,8 @@ namespace AngularDotNetAuthTemplate.Api
 
             app.MapControllers();
 
-            // SPA fallback: any GET request that doesn't match a controller or
-            // Razor route falls through to the Angular app's index.html, so
-            // client-side routes (e.g. a hard refresh on /profile) load the SPA
-            // shell instead of a raw 404. Real /api/* 404s are preserved.
-            //
-            // Uses an explicit "{**path}" pattern rather than the parameterless
-            // MapFallback(handler) overload: that overload applies an implicit
-            // ":nonfile" constraint that excludes any path whose last segment
-            // contains a dot (to avoid swallowing missing-static-file 404s), but
-            // this app has real client routes with a dotted last segment (e.g.
-            // /enable2fa/:email), which that constraint would incorrectly 404.
+            // SPA fallback: explicit "{**path}" pattern, not MapFallback(handler) - that
+            // overload's implicit :nonfile constraint breaks dotted routes like /enable2fa/:email.
             app.MapFallback("/{**path}", async context =>
             {
                 if (context.Request.Path.StartsWithSegments("/api"))
