@@ -311,14 +311,6 @@ docker run -p 8080:8080 \
 The app listens on HTTP only inside the container (port 8080, matching the
 .NET base image's default).
 
-## Troubleshooting
-
-**Port already in use.** A previous run may still be alive in the
-background (e.g. a terminal or IDE session that got closed without
-stopping the process cleanly) and still holding the port. Find and stop
-it: `lsof -i :<port>` then `kill <pid>` (Linux/macOS), or on Windows
-`Get-Process -Id (Get-NetTCPConnection -LocalPort <port>).OwningProcess | Stop-Process`.
-
 ## Options
 
 This template offers several configurable options to customize the authentication flow:
@@ -336,6 +328,14 @@ This template offers several configurable options to customize the authenticatio
 
 To modify these options, adjust the corresponding settings in the configuration files
 (`client/src/environments/environment.ts` and `environment.prod.ts`).
+
+## Troubleshooting
+
+**Port already in use.** A previous run may still be alive in the
+background (e.g. a terminal or IDE session that got closed without
+stopping the process cleanly) and still holding the port. Find and stop
+it: `lsof -i :<port>` then `kill <pid>` (Linux/macOS), or on Windows
+`Get-Process -Id (Get-NetTCPConnection -LocalPort <port>).OwningProcess | Stop-Process`.
 
 ## License
 This project is licensed under the MIT License.
