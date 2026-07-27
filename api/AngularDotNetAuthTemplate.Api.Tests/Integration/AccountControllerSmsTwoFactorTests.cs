@@ -24,7 +24,7 @@ public class AccountControllerSmsTwoFactorTests
         var client = _factory.CreateClient();
         var email = TestUsers.NewEmail();
         const string phoneNumber = "5551234567";
-        await AccountTestHelper.RegisterAndConfirmAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
+        await AccountTestHelper.RegisterConfirmAndAuthenticateAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
 
         var sendResponse = await client.PostAsJsonAsync("/api/account/SendTwoFaCode",
             new { Email = email, Method = "Phone", PhoneNumber = phoneNumber }, AccountTestHelper.JsonOptions);
@@ -42,8 +42,13 @@ public class AccountControllerSmsTwoFactorTests
             .ReadFromJsonAsync<VerifyAuthenticatorResponseDto>(AccountTestHelper.JsonOptions);
         Assert.True(verifyResult!.IsVerified);
 
+        // Rest of the flow (re-login, 2FA prompt, code send/verify) happens before the
+        // client ever holds a token, so use a fresh anonymous client - proves the login
+        // path still works without the Authorization header the enrollment steps needed.
+        var anonClient = _factory.CreateClient();
+
         // 2FA is now on, so a normal password login should stop short of issuing a token.
-        var loginResponse = await client.PostAsJsonAsync("/api/account/login",
+        var loginResponse = await anonClient.PostAsJsonAsync("/api/account/login",
             new { Email = email, Password = TestUsers.DefaultPassword }, AccountTestHelper.JsonOptions);
         loginResponse.EnsureSuccessStatusCode();
         var loginResult = await loginResponse.Content.ReadFromJsonAsync<AuthResponseDto>(AccountTestHelper.JsonOptions);
@@ -54,12 +59,12 @@ public class AccountControllerSmsTwoFactorTests
         // Login sends its own fresh code (using the now-enrolled phone number) rather than
         // reusing the enrollment one - matches the real client's login flow.
         await smsMock.DeleteAllMessagesAsync();
-        var loginSendResponse = await client.PostAsJsonAsync("/api/account/SendTwoFaCode",
+        var loginSendResponse = await anonClient.PostAsJsonAsync("/api/account/SendTwoFaCode",
             new { Email = email, Method = "Phone" }, AccountTestHelper.JsonOptions);
         loginSendResponse.EnsureSuccessStatusCode();
         var loginCode = await ExtractCodeAsync(smsMock, phoneNumber);
 
-        var login2FaResponse = await client.PostAsJsonAsync("/api/account/login2fa",
+        var login2FaResponse = await anonClient.PostAsJsonAsync("/api/account/login2fa",
             new { Email = email, TwoFactorProvider = "Phone", TwoFactorCode = loginCode },
             AccountTestHelper.JsonOptions);
         login2FaResponse.EnsureSuccessStatusCode();
@@ -76,7 +81,7 @@ public class AccountControllerSmsTwoFactorTests
         var client = _factory.CreateClient();
         var email = TestUsers.NewEmail();
         const string phoneNumber = "5559876543";
-        await AccountTestHelper.RegisterAndConfirmAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
+        await AccountTestHelper.RegisterConfirmAndAuthenticateAsync(client, _factory.Services, email, TestUsers.DefaultPassword);
 
         var sendResponse = await client.PostAsJsonAsync("/api/account/SendTwoFaCode",
             new { Email = email, Method = "Phone", PhoneNumber = phoneNumber }, AccountTestHelper.JsonOptions);
