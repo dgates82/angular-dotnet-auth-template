@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using AngularDotNetAuthTemplate.Api.Models;
 using AngularDotNetAuthTemplate.Api.Models.DataTransferObjects.Account;
 using AngularDotNetAuthTemplate.Api.Data;
+using System.Security.Cryptography;
 using System.Text;
 
 
@@ -45,9 +46,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             {
                 _logger.LogDebug($"Getting user by id: {id}");
 
-                var currentUser = GetCurrentUser();
-                var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
-                if (!isAdmin)
+                if (!await IsCurrentUserAdminAsync())
                 {
                     return Forbid();
                 }
@@ -79,9 +78,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             {
                 _logger.LogDebug($"Getting all users");
 
-                var currentUser = GetCurrentUser();
-                var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
-                if (!isAdmin)
+                if (!await IsCurrentUserAdminAsync())
                 {
                     return Forbid();
                 }
@@ -119,13 +116,12 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             {
                 _logger.LogInformation($"Creating new user | email: {newUser.Email}");
 
-                // Get update user to track who updated                                              
-                var currentUser = GetCurrentUser();
-
-                if (currentUser == null)
+                if (!await IsCurrentUserAdminAsync())
                 {
-                    return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                    return Forbid();
                 }
+
+                var currentUser = GetCurrentUser()!;
 
                 var user = new ApplicationUser
                 {
@@ -189,6 +185,11 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             {
                 _logger.LogInformation($"Updating user: {updateUser.Id}");
 
+                if (!await IsCurrentUserAdminAsync())
+                {
+                    return Forbid();
+                }
+
                 var user = await _userRepository.GetAsync(updateUser.Id);
 
                 if (user == null)
@@ -196,13 +197,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
                     return NotFound();
                 }
 
-                // Get update user to track who updated                                              
-                var currentUser = GetCurrentUser();
-
-                if (currentUser == null)
-                {
-                    return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
-                }
+                var currentUser = GetCurrentUser()!;
 
                 user.FirstName = updateUser.FirstName;
                 user.LastName = updateUser.LastName;
@@ -258,13 +253,12 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             {
                 _logger.LogInformation($"Deactivating user: {id}");
 
-                // Get update user to track who updated                                              
-                var currentUser = GetCurrentUser();
-
-                if (currentUser == null)
+                if (!await IsCurrentUserAdminAsync())
                 {
-                    return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                    return Forbid();
                 }
+
+                var currentUser = GetCurrentUser()!;
 
                 var user = await _userRepository.GetAsync(id);
 
@@ -295,13 +289,12 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             {
                 _logger.LogInformation($"Activating user: {id}");
 
-                // Get update user to track who updated                                              
-                var currentUser = GetCurrentUser();
-
-                if (currentUser == null)
+                if (!await IsCurrentUserAdminAsync())
                 {
-                    return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                    return Forbid();
                 }
+
+                var currentUser = GetCurrentUser()!;
 
                 var user = await _userRepository.GetAsync(id);
 
@@ -332,12 +325,9 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             {
                 _logger.LogInformation($"Unlocking user: {id}");
 
-                // Get update user to track who updated                                              
-                var currentUser = GetCurrentUser();
-
-                if (currentUser == null)
+                if (!await IsCurrentUserAdminAsync())
                 {
-                    return BadRequest("Authenticated user token could not be decoded. Please re-login and try again");
+                    return Forbid();
                 }
 
                 var user = await _userRepository.GetAsync(id);
@@ -360,15 +350,21 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
         }
 
 
+        /// <summary>Whether the caller (from the JWT's embedded user claim) is in the Admin role.</summary>
+        private async Task<bool> IsCurrentUserAdminAsync()
+        {
+            var currentUser = GetCurrentUser();
+            return currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
+        }
+
         /// <summary>Generates a random string of uppercase (or lowercase) letters, used to build a random initial password.</summary>
-        private string RandomString(int size, bool lowerCase)
+        private static string RandomString(int size, bool lowerCase)
         {
             var builder = new StringBuilder();
-            var random = new Random();
             char ch;
             for (var i = 0; i < size; i++)
             {
-                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                ch = Convert.ToChar(RandomNumberGenerator.GetInt32(65, 91));
                 builder.Append(ch);
             }
             if (lowerCase)
@@ -377,10 +373,9 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
         }
 
         /// <summary>Generates a random number in <c>[min, max)</c>, used to build a random initial password.</summary>
-        private int RandomNumber(int min, int max)
+        private static int RandomNumber(int min, int max)
         {
-            var random = new Random();
-            return random.Next(min, max);
+            return RandomNumberGenerator.GetInt32(min, max);
         }
 
     }
