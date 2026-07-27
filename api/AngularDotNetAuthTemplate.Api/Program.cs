@@ -46,6 +46,14 @@ namespace AngularDotNetAuthTemplate.Api
 
             var jwtSettings = builder.Configuration.GetSection(JwtOptions.ConfigSection);
 
+            // AddIdentity must come before AddAuthentication().AddJwtBearer()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+            })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
             builder.Services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -64,13 +72,6 @@ namespace AngularDotNetAuthTemplate.Api
                     .GetBytes(jwtSettings.GetSection("securityKey").Value))
                 };
             });
-
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.SignIn.RequireConfirmedAccount = true;
-            })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
             builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => 
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 

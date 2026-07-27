@@ -63,13 +63,25 @@ export class TwoFaRootComponent implements OnInit {
         }).then((result) => {
           if (result.isConfirmed) {
             this.logger.debug(`two-fa-root.component.onEnabledChanged | Disabling 2fa`);
-            this.isTwoFaEnabled = false;
-            this.isTwoFaEnabling = false;
-            this.isTwoFaEnabledString = "Disabled";
             const request = {
               email: this.user.email
             }
-            this.accountService.resetAuthenticator(request).then(() => {});
+            this.accountService.resetAuthenticator(request).then(response => {
+              this.logger.trace(`two-fa-root.component.onEnabledChanged | response:`, response);
+              this.isTwoFaEnabled = false;
+              this.isTwoFaEnabling = false;
+              this.isTwoFaEnabledString = "Disabled";
+            }).catch(err => {
+              this.logger.error(`two-fa-root.component.onEnabledChanged | Failed to disable 2fa:`, err);
+              this.isTwoFaEnabled = true;
+              this.isTwoFaEnabledString = "Enabled";
+              Swal.fire({
+                title: 'Error',
+                text: 'Two-factor authentication could not be disabled. Please try again.',
+                icon: 'error',
+                heightAuto: false
+              });
+            });
           } else {
             this.logger.debug(`two-fa-root.component.onEnabledChanged | Cancelled disabling 2fa`);
             this.isTwoFaEnabled = true;
