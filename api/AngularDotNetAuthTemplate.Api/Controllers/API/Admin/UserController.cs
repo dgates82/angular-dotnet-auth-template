@@ -20,19 +20,16 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
     public class UserController : CustomControllerBase
     {
         private readonly ILogger _logger;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationUserRepository _userRepository;
 
         /// <summary>Creates the controller with its injected Identity and repository dependencies.</summary>
         public UserController(ILogger<UserController> logger,
-            SignInManager<ApplicationUser> signInManager, 
             UserManager<ApplicationUser> userManager,
-            ApplicationUserRepository userRepository            
+            ApplicationUserRepository userRepository
             )
         {
             _logger = logger;
-            _signInManager = signInManager;
             _userManager = userManager;
             _userRepository = userRepository;
         }
@@ -40,12 +37,20 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
         /// <summary>Gets a single user by ID, including their assigned roles.</summary>
         /// <param name="id">The user's ID.</param>
         [HttpGet]
+        [Authorize]
         [Route("get/{id?}")]
         public async Task<IActionResult> Get([FromQuery] string id)
         {
             try
             {
                 _logger.LogDebug($"Getting user by id: {id}");
+
+                var currentUser = GetCurrentUser();
+                var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
+                if (!isAdmin)
+                {
+                    return Forbid();
+                }
 
                 var user = await _userRepository.GetAsync(id);
                 if (user == null)
@@ -67,14 +72,22 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
 
         /// <summary>Lists all users, including each user's assigned roles.</summary>
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Get()
         {
             try
             {
                 _logger.LogDebug($"Getting all users");
 
-                var users = await _userRepository.GetAsync();
-                
+                var currentUser = GetCurrentUser();
+                var isAdmin = currentUser != null && await _userManager.IsInRoleAsync(currentUser, "Admin");
+                if (!isAdmin)
+                {
+                    return Forbid();
+                }
+
+                var users = (await _userRepository.GetAsync()).ToList();
+
                 // add roles to user
                 foreach (var user in users)
                 {
@@ -147,7 +160,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
                 }
                 
                 // Add user roles
-                if (newUser.Roles?.Count > 0)
+                if (newUser.Roles.Count > 0)
                 {
                     foreach (var role in newUser.Roles)
                     {
