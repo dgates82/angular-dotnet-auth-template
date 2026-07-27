@@ -12,10 +12,7 @@ import { Constants } from '@core/constants';
 import {IResponse} from "@interfaces/response";
 import { SKIP_ERROR_DIALOG } from '@core/interceptors/error.interceptor';
 
-// getById/createUser/deactivate/activate/unlock already show their own
-// specific error feedback at every current call site - opt out of the
-// interceptor's generic dialog so failures aren't reported twice. get()
-// and update() are left on the default (interceptor-handled) path.
+// getById/createUser/deactivate/activate/unlock show their own error feedback; get()/update() don't.
 const silentContext = new HttpContext().set(SKIP_ERROR_DIALOG, true);
 
 @Injectable({

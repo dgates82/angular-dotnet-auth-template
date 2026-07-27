@@ -23,9 +23,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimations(),
-    // withInterceptorsFromDi() is load-bearing: JwtModule below registers its
-    // JwtInterceptor (attaches the Authorization header) via the classic
-    // HTTP_INTERCEPTORS DI token, not the functional interceptor API.
+    // withInterceptorsFromDi() is load-bearing: it's what wires up JwtModule's JwtInterceptor below.
     provideHttpClient(withInterceptors([errorInterceptor]), withInterceptorsFromDi()),
     provideNgxMask(),
     provideSweetAlert2(),

@@ -10,9 +10,7 @@ import { HttpErrorService } from '@core/services/http-error.service';
 import { IZippoResponse } from '@interfaces/address/zippo-response';
 import { SKIP_ERROR_DIALOG } from '@core/interceptors/error.interceptor';
 
-// Both calls in this service are conveniences (populate a dropdown, autofill
-// city/state from a zip code) - a failure shouldn't interrupt the user with a
-// dialog, so every request here opts out of the global error interceptor.
+// Low-stakes conveniences - opt out of the global error interceptor's dialog.
 const silentContext = new HttpContext().set(SKIP_ERROR_DIALOG, true);
 
 interface IZippoPlaceRaw {

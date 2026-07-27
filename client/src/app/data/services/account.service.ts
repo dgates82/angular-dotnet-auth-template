@@ -29,10 +29,7 @@ import {IRegisterRequest} from "@interfaces/account/register-request";
 import {ISendVerificationCodeRequest} from "@interfaces/account/send-verification-code-request";
 import { SKIP_ERROR_DIALOG } from '@core/interceptors/error.interceptor';
 
-// Every method using this already shows its own contextual error feedback
-// (an inline field-level message, or an existing Swal with a specific
-// message) at every current call site - opt out of the interceptor's
-// generic dialog so failures aren't reported twice.
+// Callers already show their own error feedback - opt out of the interceptor's dialog.
 const silentContext = new HttpContext().set(SKIP_ERROR_DIALOG, true);
 
 @Injectable({
