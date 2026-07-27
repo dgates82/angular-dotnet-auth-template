@@ -65,7 +65,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error retrieving user by id: {id}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 
@@ -97,7 +97,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error retrieving all users");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 
@@ -169,7 +169,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error creating new user | email: {newUser.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
 
         }
@@ -237,7 +237,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error updating user: {updateUser.Id}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
 
         }
@@ -274,7 +274,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error deactivating user: {id}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 
@@ -310,7 +310,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error activating user: {id}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
         
@@ -345,7 +345,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error unlocking user: {id}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 

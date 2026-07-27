@@ -99,7 +99,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error retrieving user by email: {email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
         
@@ -157,7 +157,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Account.Register | Error registering user: {registerRequestDto.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 
@@ -240,7 +240,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error logging in user: {userForAuthentication.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 
@@ -301,7 +301,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error logging in user: {request.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
 
         }
@@ -382,7 +382,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error sending 2FA code email to {request.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 
@@ -429,7 +429,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error sending password reset email to {forgotPasswordDto.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
 
         }
@@ -478,7 +478,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error resetting password for {request.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 
@@ -525,7 +525,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error changing password for {request.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
         
@@ -582,7 +582,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error sending email confirmation to {request.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
 
         }
@@ -622,7 +622,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error confirming email for {request.UserId}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
 
         }
@@ -676,7 +676,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error enabling 2FA for {request.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
                 
@@ -767,7 +767,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error verifying 2FA for {request.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 
@@ -826,7 +826,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error resetting authenticator for {request.Email}");
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
 
