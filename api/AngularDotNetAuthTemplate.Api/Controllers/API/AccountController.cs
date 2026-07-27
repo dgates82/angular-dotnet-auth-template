@@ -322,12 +322,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API
                     return Ok(new ResponseDto { IsSuccess = false });
                 }
 
-                // Anonymous callers are only trusted when 2FA is already enabled, since
-                // the delivery target is then always the on-file phone/email, never the
-                // request's own values - that's what the login-2FA-code-resend flow
-                // relies on, before a JWT exists. Setting up a new method is the only
-                // path that trusts request.PhoneNumber as the delivery target, so it
-                // requires the caller to be authenticated as this user or an admin.
+                // Only the not-yet-enrolled case trusts request.PhoneNumber as the delivery target, so only it needs auth.
                 if (!user.TwoFactorEnabled)
                 {
                     var currentUser = GetCurrentUser();
