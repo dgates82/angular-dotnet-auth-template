@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoggerService } from '@core/services/logger.service';
 import { throwError } from 'rxjs';
@@ -7,11 +7,11 @@ import { throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class HttpErrorService {
+  private readonly logger = inject(LoggerService);
 
-  constructor(private readonly logger: LoggerService) { }
 
   handleError(err: HttpErrorResponse) {
-    let errorMessage = '';
+    let errorMessage: string;
 
     if (err.error instanceof ErrorEvent) {
       errorMessage = `An error occurred: ${err.error.message}`;

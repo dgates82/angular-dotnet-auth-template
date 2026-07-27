@@ -9,6 +9,7 @@ import { LoggerService } from '@core/services/logger.service';
 import { HttpErrorService } from '@core/services/http-error.service';
 import { IAuthRequest } from '@interfaces/account/auth-request';
 import { IAuthResponse } from '@interfaces/account/auth-response';
+import { IRegisterRequest } from '@interfaces/account/register-request';
 
 describe('AccountService', () => {
   let service: AccountService;
@@ -76,7 +77,7 @@ describe('AccountService', () => {
 
   describe('register', () => {
     it('posts the request and resolves with the response body', async () => {
-      const request = { email: 'new@example.com', password: 'Password1!' } as any;
+      const request: IRegisterRequest = { email: 'new@example.com', password: 'Password1!' };
       const promise = service.register(request);
 
       const req = httpMock.expectOne('/api/account/register');

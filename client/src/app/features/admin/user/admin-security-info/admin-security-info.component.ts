@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 
 import { LoggerService } from '@core/services/logger.service';
 import { UserService } from '@data/services/user.service';
@@ -17,14 +17,14 @@ import { MatIcon } from '@angular/material/icon';
     imports: [MatCard, MatCardTitle, MatButton, MatIcon]
 })
 export class AdminSecurityInfoComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly userService = inject(UserService);
+  private readonly accountService = inject(AccountService);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly userService: UserService,
-              private readonly accountService: AccountService) { }
 
   @Input() user!: IApplicationUser;
 
-  isLockedOut: boolean = false;
+  isLockedOut = false;
 
   ngOnInit(): void {
     this.logger.debug(`admin-security-info.component.ngOnInit | email: ${this.user?.email}`)

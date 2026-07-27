@@ -7,7 +7,7 @@ export class PasswordValidators {
   constructor(private readonly logger: LoggerService) { }
 
   static patternValidator(regex: RegExp, error: ValidationErrors): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } | null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value) {
         return null;
       }

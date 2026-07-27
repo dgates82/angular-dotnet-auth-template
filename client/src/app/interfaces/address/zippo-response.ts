@@ -5,8 +5,8 @@ export interface IZippoResponse {
 
 export interface IPlace {
   placeName: string;
-  longitude: number;
+  longitude: string;
   state: string;
   stateAbbreviation: string;
-  latitude: number;
+  latitude: string;
 }

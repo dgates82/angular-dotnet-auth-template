@@ -1,10 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import {LoggerService} from "@core/services/logger.service";
 import {Constants} from "@core/constants";
 import {AccountService} from "@data/services/account.service";
-import {IApplicationUser} from "@interfaces/account/application-user";
 import { ActivatedRoute, RouterLink } from "@angular/router";
-import {TWO} from "@angular/cdk/keycodes";
 import { MatCard } from '@angular/material/card';
 import { EnableTwoFaMethodsComponent } from '../enable-two-fa-methods/enable-two-fa-methods.component';
 import { EnableAuthenticatorComponent } from '../enable-authenticator/enable-authenticator.component';
@@ -18,26 +16,25 @@ import { EnableTwoFaPhoneComponent } from '../enable-two-fa-phone/enable-two-fa-
     imports: [MatCard, EnableTwoFaMethodsComponent, EnableAuthenticatorComponent, EnableTwoFaEmailComponent, EnableTwoFaPhoneComponent, RouterLink]
 })
 export class EnableTwoFaRootComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
+  private readonly route = inject(ActivatedRoute);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly accountService: AccountService,
-              private readonly route: ActivatedRoute) {
-  }
 
-  @Input() email: string = '';
+  @Input() email = '';
   @Output() twoFaEnabled: EventEmitter<string> = new EventEmitter<string>();
 
   twoFaMethods: string[] = Constants.twoFaMethods;
   isMultipleMethods: boolean = this.twoFaMethods.length > 1;
-  showMethods: boolean = false;
+  showMethods = false;
 
-  showEnableTwoFaEmail: boolean = false;
-  showEnableTwoFaAuthenticator: boolean = false;
-  showEnableTwoFaSms: boolean = false;
+  showEnableTwoFaEmail = false;
+  showEnableTwoFaAuthenticator = false;
+  showEnableTwoFaSms = false;
 
-  isRouted: boolean = false;
+  isRouted = false;
 
-  isTwoFaEnabled: boolean = false;
+  isTwoFaEnabled = false;
 
   ngOnInit() {
     this.logger.debug(`enable-two-fa-root.component.ngOnInit`);

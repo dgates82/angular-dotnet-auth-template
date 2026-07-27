@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import {AccountService} from "@data/services/account.service";
 import {LoggerService} from "@core/services/logger.service";
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from "@angular/router";
@@ -28,12 +28,17 @@ import { MatButton } from '@angular/material/button';
     imports: [MatSidenavContainer, MatSidenav, NgClass, MatNavList, MatListItem, RouterLink, FaIconComponent, MatDivider, MatButton, MatSidenavContent, RouterOutlet]
 })
 export class NavigationSidenavComponent implements OnInit{
+  private readonly accountService = inject(AccountService);
+  private readonly logger = inject(LoggerService);
+  private readonly router = inject(Router);
+  private breakpointObserver = inject(BreakpointObserver);
 
-  constructor(private readonly accountService: AccountService,
-              private readonly logger: LoggerService,
-              private readonly router: Router,
-              private breakpointObserver: BreakpointObserver) {
-    router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
+
+  constructor() {
+    const logger = this.logger;
+    const router = this.router;
+
+    router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       logger.trace(`app.component | url: ${router.url}`);
 
       // Check route. If user is going to application page close sidenav
@@ -51,7 +56,7 @@ export class NavigationSidenavComponent implements OnInit{
   authResponse?: IAuthResponse;
   isAdmin = false;
 
-  @ViewChild('sidenav') sidenav: any;
+  @ViewChild('sidenav') sidenav!: MatSidenav;
 
   toggleSidebar() {
     this.isExpanded = !this.isExpanded;

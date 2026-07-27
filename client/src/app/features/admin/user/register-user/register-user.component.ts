@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormArray, FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -11,7 +11,7 @@ import { IApplicationUser } from '@interfaces/account/application-user';
 import { IState } from '@interfaces/address/state';
 import Swal from 'sweetalert2';
 
-import { faCancel, faEdit, faSave, faUserPlus, faUserTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCancel, faSave } from '@fortawesome/free-solid-svg-icons';
 import { IEmailOnlyRequest } from '@interfaces/account/email-only-request';
 import { AccountService } from '@data/services/account.service';
 import { ProfileFieldValidators } from '@core/validators/profile-field-validators';
@@ -31,13 +31,13 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     imports: [MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgxMaskDirective, MatSelect, MatOption, MatIconButton, MatIcon, MatButton, FaIconComponent]
 })
 export class RegisterUserComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly addressService = inject(AddressService);
+  private readonly userService = inject(UserService);
+  private readonly accountService = inject(AccountService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly router = inject(Router);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly addressService: AddressService,
-              private readonly userService: UserService,
-              private readonly accountService: AccountService,
-              private readonly formBuilder: FormBuilder,
-              private readonly router: Router) { }
 
   availableRoles: string[] = Constants.availableRoles;
 
@@ -83,7 +83,7 @@ export class RegisterUserComponent implements OnInit {
     });
   }
 
-  onZipCodeChange(event: any): void {
+  onZipCodeChange(): void {
     this.logger.debug(`register-user.component.onZipCodeChange | zipCode: ${this.zipCode?.value}`);
     this.addressService.getPlaceByZipCode(this.zipCode?.value ?? '').then(zippoResponse => {
       const place = zippoResponse.places[0];

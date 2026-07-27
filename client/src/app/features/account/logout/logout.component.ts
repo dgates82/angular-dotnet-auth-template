@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { AccountService } from '@data/services/account.service';
@@ -13,11 +13,11 @@ import { MatButton } from '@angular/material/button';
     imports: [MatCard, MatCardTitle, MatCardSubtitle, MatCardContent, MatButton]
 })
 export class LogoutComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly location = inject(Location);
+  private readonly router = inject(Router);
+  private readonly accountService = inject(AccountService);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly location: Location,
-              private readonly router: Router,
-              private readonly accountService: AccountService) { }
 
   ngOnInit(): void {
     this.logger.debug(`logout.component.ngOnInit`);

@@ -10,7 +10,10 @@
             <div
               class="card auth-method-card p-3 mb-3 border cursor-pointer"
               [ngClass]="{ 'selected': selectedMethod === method.value }"
+              role="button"
+              tabindex="0"
               (click)="selectMethod(method.value)"
+              (keyup.enter)="selectMethod(method.value)"
               >
               <div class="d-flex align-items-start">
                 <mat-radio-button [value]="method.value" class="me-3"></mat-radio-button>

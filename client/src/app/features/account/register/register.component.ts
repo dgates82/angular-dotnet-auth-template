@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -6,7 +6,6 @@ import { AccountService } from '@data/services/account.service';
 
 import { PasswordValidators } from '@core/validators/password-validators';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IResponse } from '@interfaces/response';
 import { IRegisterRequest } from '../../../interfaces/account/register-request';
 import { MatCard, MatCardContent, MatCardTitle } from '@angular/material/card';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
@@ -22,16 +21,16 @@ import { PasswordFieldsComponent } from '@shared/password-fields/password-fields
     styleUrls: ['./register.component.scss'],
     imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatError, MatFormField, MatLabel, MatInput, MatButton, MatIcon, MatProgressSpinner, PasswordFieldsComponent]
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
+  private readonly router = inject(Router);
 
-  constructor(private readonly logger: LoggerService,
-    private readonly accountService: AccountService,
-    private readonly router: Router) { }
 
-  isSubmitting: boolean = false;
-  isComplete: boolean = false;
-  isInvalidAttempt: boolean = false;
-  errorMessage: string = "";
+  isSubmitting = false;
+  isComplete = false;
+  isInvalidAttempt = false;
+  errorMessage = "";
 
   registerForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -39,12 +38,12 @@ export class RegisterComponent implements OnInit {
     confirmPassword: new FormControl('', [Validators.required])
   }, { validators: PasswordValidators.matchValidator})
 
-  get email(): any {
-    return this.registerForm.get('email');
+  get email(): FormControl {
+    return this.registerForm.get('email') as FormControl;
   }
 
-  get newPassword(): any {
-    return this.registerForm.get('newPassword')
+  get newPassword(): FormControl {
+    return this.registerForm.get('newPassword') as FormControl;
   }
 
   onRegister(): void {
@@ -63,24 +62,20 @@ export class RegisterComponent implements OnInit {
     }
 
     this.accountService.register(request).then(
-      (result: IResponse) => {
+      () => {
         this.logger.info("RegisterComponent: onRegister() success");
 
         this.isComplete = true;
         this.isSubmitting = false;
 
       },
-      (error: any) => {
+      () => {
         this.logger.error("RegisterComponent: onRegister() error");
         this.isInvalidAttempt = true;
         this.isSubmitting = false;
         this.errorMessage = "An error occurred with your registration";
       }
     );
-
-  }
-
-  ngOnInit(): void {
 
   }
 

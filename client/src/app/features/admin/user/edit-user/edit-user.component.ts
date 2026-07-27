@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -17,10 +17,10 @@ import { AdminSecurityInfoComponent } from '../admin-security-info/admin-securit
     imports: [MatTabGroup, MatTab, MatTabLabel, FaIconComponent, AdminPersonalInfoComponent, AdminSecurityInfoComponent]
 })
 export class EditUserComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly userService = inject(UserService);
+  private readonly route = inject(ActivatedRoute);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly userService: UserService,
-              private readonly route: ActivatedRoute) { }
 
   user!: IApplicationUser;
 

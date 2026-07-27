@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
@@ -20,24 +20,24 @@ import { PasswordFieldsComponent } from '@shared/password-fields/password-fields
     imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatInput, MatButton, MatIcon, MatProgressSpinner, RouterLink, PasswordFieldsComponent]
 })
 export class PasswordResetComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly router = inject(Router);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly accountService: AccountService,
-              private readonly route: ActivatedRoute,
-              private readonly formBuilder: FormBuilder,
-              private readonly router: Router) { }
 
-  token: string = "";
+  token = "";
 
-  isInvalidAttempt: boolean = false;
-  errorMessage: string = "";
+  isInvalidAttempt = false;
+  errorMessage = "";
 
-  isFirstLogin: boolean = false;
-  subtitle: string = "";
+  isFirstLogin = false;
+  subtitle = "";
 
-  isSubmitting: boolean = false;
+  isSubmitting = false;
 
-  isComplete: boolean = false;
+  isComplete = false;
 
   resetPasswordForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
@@ -45,12 +45,12 @@ export class PasswordResetComponent implements OnInit {
     confirmPassword: ['', [Validators.required]]
   }, {validators: PasswordValidators.matchValidator});
 
-  get email(): any {
-    return this.resetPasswordForm.get('email');
+  get email(): FormControl {
+    return this.resetPasswordForm.get('email') as FormControl;
   }
 
-  get newPassword(): any {
-    return this.resetPasswordForm.get('newPassword')
+  get newPassword(): FormControl {
+    return this.resetPasswordForm.get('newPassword') as FormControl;
   }
 
   public resetPassword(): void {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -13,14 +13,14 @@ import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular
     imports: [MatCard, MatCardContent, MatCardTitle, MatCardSubtitle, RouterLink]
 })
 export class EmailConfirmationComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly accountService: AccountService,
-              private readonly router: Router,
-              private readonly route: ActivatedRoute) { }
 
-  isConfirmed: boolean = false;
-  emailAddress: string = '';
+  isConfirmed = false;
+  emailAddress = '';
 
   ngOnInit(): void {
     this.logger.debug(`email-confirmation.component.ngOnInit`);

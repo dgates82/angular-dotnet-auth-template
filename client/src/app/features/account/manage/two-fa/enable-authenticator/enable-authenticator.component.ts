@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -21,23 +21,23 @@ import { RecoveryCodesListComponent } from '../recovery-codes-list/recovery-code
     imports: [FormsModule, ReactiveFormsModule, QRCodeComponent, MatError, MatFormField, MatLabel, MatInput, NgxMaskDirective, MatButton, RecoveryCodesListComponent]
 })
 export class EnableAuthenticatorComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
+  private readonly route = inject(ActivatedRoute);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly accountService: AccountService,
-              private readonly route: ActivatedRoute) { }
 
-  @Input() email: string = '';
-  @Input() showBack: boolean = false;
+  @Input() email = '';
+  @Input() showBack = false;
   @Output() authenticatorEnabled: EventEmitter<string> = new EventEmitter<string>();
   @Output() backClicked: EventEmitter<void> = new EventEmitter<void>();
 
   is2FaRequired = Constants.is2FaRequired;
 
-  authenticatorUri: string = '';
-  sharedKey: string = '';
+  authenticatorUri = '';
+  sharedKey = '';
 
-  errorMessage: string = '';
-  isVerified: boolean = false;
+  errorMessage = '';
+  isVerified = false;
   recoveryCodes!: string[] | null;
 
   verifyAuthenticatorForm = new UntypedFormGroup({
@@ -45,8 +45,8 @@ export class EnableAuthenticatorComponent implements OnInit {
     password: new UntypedFormControl('', [Validators.required])
   })
 
-  get code(): any {
-    return this.verifyAuthenticatorForm.get('code');
+  get code(): UntypedFormControl {
+    return this.verifyAuthenticatorForm.get('code') as UntypedFormControl;
   }
 
 
@@ -59,7 +59,7 @@ export class EnableAuthenticatorComponent implements OnInit {
       this.email = this.route.snapshot.paramMap.get('email') ?? '';
     }
 
-    var enableAuthenticatorRequest: IEmailOnlyRequest = {
+    const enableAuthenticatorRequest: IEmailOnlyRequest = {
       email: this.email
     };
 

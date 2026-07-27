@@ -12,7 +12,6 @@ import { PasswordResetComponent } from '@features/account/password-reset/passwor
 import { EmailConfirmationComponent } from '@features/account/email-confirmation/email-confirmation.component';
 
 import { ProfileRootComponent } from '@app/features/account/manage/profile/profile-root/profile-root.component';
-import { EnableAuthenticatorComponent } from '@features/account/manage/two-fa/enable-authenticator/enable-authenticator.component';
 import { EditUserComponent } from '@features/admin/user/edit-user/edit-user.component';
 import { RegisterUserComponent } from '@features/admin/user/register-user/register-user.component';
 import {

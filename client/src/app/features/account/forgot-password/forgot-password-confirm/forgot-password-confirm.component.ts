@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
 
 @Component({
@@ -7,11 +7,5 @@ import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular
     styleUrls: ['./forgot-password-confirm.component.scss'],
     imports: [MatCard, MatCardContent, MatCardTitle, MatCardSubtitle]
 })
-export class ForgotPasswordConfirmComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class ForgotPasswordConfirmComponent {
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { UntypedFormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -6,7 +6,7 @@ import { AddressService } from '@core/services/address.service';
 import { UserService } from '@data/services/user.service';
 import { AccountService } from '@data/services/account.service';
 import { Constants } from '@core/constants';
-import { faCancel, faEdit, faSave, faUserPlus, faUserTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCancel, faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
 import { ProfileFieldValidators } from '@core/validators/profile-field-validators';
 
 import { IApplicationUser } from '@interfaces/account/application-user';
@@ -27,19 +27,19 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     imports: [MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgxMaskDirective, MatSelect, MatOption, MatButton, FaIconComponent]
 })
 export class ProfilePersonalInfoComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly addressService = inject(AddressService);
+  private readonly userService = inject(UserService);
+  private readonly accountService = inject(AccountService);
+  private readonly formBuilder = inject(UntypedFormBuilder);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly addressService: AddressService,
-              private readonly userService: UserService,
-              private readonly accountService: AccountService,
-              private readonly formBuilder: UntypedFormBuilder) { }
 
   states!: IState[];
 
   // Fetched once by ProfileRootComponent instead of independently here.
   @Input() user!: IApplicationUser;
 
-  isEditMode: boolean = false;
+  isEditMode = false;
 
   allowEdit: boolean = Constants.allowUserEdit;
 
@@ -183,7 +183,7 @@ export class ProfilePersonalInfoComponent implements OnInit {
     });
   }
 
-  onZipCodeChange(event: any) {
+  onZipCodeChange() {
     this.logger.debug(`profile-personal-info.component.onZipCodeChange | zipCode: ${this.zipCode?.value}`);
     this.addressService.getPlaceByZipCode(this.zipCode?.value).then(zippoResponse => {
       const place = zippoResponse.places[0];

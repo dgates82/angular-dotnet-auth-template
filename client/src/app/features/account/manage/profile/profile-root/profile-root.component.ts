@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { MatTabGroup, MatTab, MatTabLabel } from '@angular/material/tabs';
@@ -16,9 +16,9 @@ import { IApplicationUser } from '@interfaces/account/application-user';
     imports: [MatTabGroup, MatTab, MatTabLabel, FaIconComponent, ProfilePersonalInfoComponent, ProfileSecurityInfoComponent]
 })
 export class ProfileRootComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly accountService: AccountService) { }
 
   icons = {
     personal: faUser,

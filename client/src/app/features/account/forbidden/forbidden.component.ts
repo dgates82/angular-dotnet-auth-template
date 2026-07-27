@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
 
 @Component({
@@ -7,11 +7,5 @@ import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
     styleUrls: ['./forbidden.component.scss'],
     imports: [MatCard, MatCardTitle, MatCardContent]
 })
-export class ForbiddenComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class ForbiddenComponent {
 }

@@ -6,6 +6,7 @@ import { LocationStrategy } from '@angular/common';
 import { UserService } from './user.service';
 import { LoggerService } from '@core/services/logger.service';
 import { HttpErrorService } from '@core/services/http-error.service';
+import { IApplicationUser } from '@interfaces/account/application-user';
 
 describe('UserService', () => {
   let service: UserService;
@@ -52,7 +53,7 @@ describe('UserService', () => {
   });
 
   it('creates a user via POST', async () => {
-    const newUser = { email: 'created@example.com' } as any;
+    const newUser = { email: 'created@example.com' } as IApplicationUser;
     const promise = service.createUser(newUser);
 
     const req = httpMock.expectOne('/api/admin/user');

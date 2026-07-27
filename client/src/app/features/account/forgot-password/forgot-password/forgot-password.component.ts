@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -16,20 +16,20 @@ import { MatButton } from '@angular/material/button';
     styleUrls: ['./forgot-password.component.scss'],
     imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatFormField, MatLabel, MatInput, MatError, MatButton]
 })
-export class ForgotPasswordComponent implements OnInit {
+export class ForgotPasswordComponent {
+  private readonly logger = inject(LoggerService);
+  private readonly accountService = inject(AccountService);
+  private readonly router = inject(Router);
+  private readonly formBuilder = inject(FormBuilder);
 
-  constructor(private readonly logger: LoggerService,
-              private readonly accountService: AccountService,
-              private readonly router: Router,
-              private readonly formBuilder: FormBuilder) { }
 
   forgotPasswordForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]]
   });
 
 
-  get email(): any {
-    return this.forgotPasswordForm.get('email');
+  get email(): FormControl {
+    return this.forgotPasswordForm.get('email') as FormControl;
   }
 
   sendPasswordReset() {
@@ -46,11 +46,6 @@ export class ForgotPasswordComponent implements OnInit {
       this.router.navigate(['/forgot-password/confirm']);
 
     });
-  }
-
-
-  ngOnInit(): void {
-
   }
 
 }
