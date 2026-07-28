@@ -418,4 +418,5 @@ FodyWeavers.xsd
 
 # Local NuGet Config
 NuGet.config
+nuget.config
 

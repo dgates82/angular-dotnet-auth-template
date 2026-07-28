@@ -7,6 +7,8 @@ using AngularDotNetAuthTemplate.Api.Data;
 using AngularDotNetAuthTemplate.Api.Models;
 using AngularDotNetAuthTemplate.Api.Models.Options;
 using AngularDotNetAuthTemplate.Api.Services;
+using DGates.Identity.NotificationProviders.Providers.Email;
+using DGates.Identity.NotificationProviders.Providers.Sms;
 using System.Reflection;
 using System.Text;
 

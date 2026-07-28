@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using AngularDotNetAuthTemplate.Api.Models.DataTransferObjects;
 using AngularDotNetAuthTemplate.Api.Services;
+using DGates.Identity.NotificationProviders.Abstractions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Encodings.Web;
 using System.Text;
