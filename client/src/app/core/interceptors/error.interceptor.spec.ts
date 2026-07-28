@@ -1,7 +1,3 @@
-vi.mock('sweetalert2', () => ({
-  default: { fire: vi.fn() }
-}));
-
 import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpContext, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
@@ -13,6 +9,7 @@ import { errorInterceptor, SKIP_ERROR_DIALOG } from './error.interceptor';
 describe('errorInterceptor', () => {
   let httpClient: HttpClient;
   let httpMock: HttpTestingController;
+  let swalFireSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -24,10 +21,13 @@ describe('errorInterceptor', () => {
 
     httpClient = TestBed.inject(HttpClient);
     httpMock = TestBed.inject(HttpTestingController);
-    vi.mocked(Swal.fire).mockClear();
+    swalFireSpy = vi.spyOn(Swal, 'fire').mockResolvedValue({} as never);
   });
 
-  afterEach(() => httpMock.verify());
+  afterEach(() => {
+    httpMock.verify();
+    swalFireSpy.mockRestore();
+  });
 
   it('shows a generic error dialog when a request fails', async () => {
     const promise = firstValueFrom(httpClient.get('/api/whatever')).catch(() => undefined);
@@ -35,7 +35,7 @@ describe('errorInterceptor', () => {
     httpMock.expectOne('/api/whatever').flush(null, { status: 500, statusText: 'Server Error' });
     await promise;
 
-    expect(Swal.fire).toHaveBeenCalledTimes(1);
+    expect(swalFireSpy).toHaveBeenCalledTimes(1);
   });
 
   it('does not show a dialog when the request opts out via SKIP_ERROR_DIALOG', async () => {
@@ -45,7 +45,7 @@ describe('errorInterceptor', () => {
     httpMock.expectOne('/api/whatever').flush(null, { status: 500, statusText: 'Server Error' });
     await promise;
 
-    expect(Swal.fire).not.toHaveBeenCalled();
+    expect(swalFireSpy).not.toHaveBeenCalled();
   });
 
   it('rethrows the original error so callers can still handle it', async () => {
