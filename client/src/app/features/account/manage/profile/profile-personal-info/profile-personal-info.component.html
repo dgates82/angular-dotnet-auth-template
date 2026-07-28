@@ -61,6 +61,8 @@
               }
               @if (zipLookupFailed) {
                 <mat-hint>Couldn't look up that zip code - enter city and state manually.</mat-hint>
+              } @else {
+                <mat-hint>We'll use this to fill in your city and state.</mat-hint>
               }
             </mat-form-field>
           </div>
