@@ -3,6 +3,9 @@
   <div class="mt-3 mb-4 col-xxl-9 col-lg-10">
     <h2>Validate Phone Number</h2>
     <div [formGroup]="verifyPhoneForm">
+      @if (errorMessage) {
+        <mat-error class="mb-2">{{ errorMessage }}</mat-error>
+      }
       @if (!isCodeSent) {
         <div>
           <mat-form-field class="w-100 mt-2">
@@ -19,9 +22,6 @@
       }
       @if (isCodeSent) {
         <div>
-          @if (errorMessage) {
-            <mat-error class="mb-2">{{ errorMessage }}</mat-error>
-          }
           <mat-form-field class="w-100 mt-2">
             <mat-label>Verification Code</mat-label>
             <input matInput formControlName="code" required mask="000 000" (keyup.enter)="verifyCode()">

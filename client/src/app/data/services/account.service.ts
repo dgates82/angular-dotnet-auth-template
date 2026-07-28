@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { LocationStrategy } from '@angular/common';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -27,7 +27,10 @@ import { IVerifyAuthenticatorResponse } from '@interfaces/account/verify-authent
 import { IChangePasswordRequest } from '@interfaces/account/change-password-request';
 import {IRegisterRequest} from "@interfaces/account/register-request";
 import {ISendVerificationCodeRequest} from "@interfaces/account/send-verification-code-request";
+import { SKIP_ERROR_DIALOG } from '@core/interceptors/error.interceptor';
 
+// Callers already show their own error feedback - opt out of the interceptor's dialog.
+const silentContext = new HttpContext().set(SKIP_ERROR_DIALOG, true);
 
 @Injectable({
   providedIn: 'root'
@@ -110,7 +113,7 @@ export class AccountService {
 
     const url = `${this.apiUrl}/register`;
 
-    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, { ...Constants.postOptions, context: silentContext }).pipe(
       tap(response => this.logger.trace(`account.service.register | response: `, response)),
       catchError(err => this.errorService.handleError(err))));
 
@@ -121,7 +124,7 @@ export class AccountService {
 
     const url = `${this.apiUrl}/getuserbyemail?email=${email}`;
 
-    return lastValueFrom(this.httpClient.get<IApplicationUser>(url).pipe(
+    return lastValueFrom(this.httpClient.get<IApplicationUser>(url, { context: silentContext }).pipe(
       tap(response => this.logger.trace(`account.service.getUserByEmail | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
   }
@@ -131,7 +134,7 @@ export class AccountService {
 
     const url = `${this.apiUrl}/login`;
 
-    return lastValueFrom(this.httpClient.post<IAuthResponse>(url, authRequest, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IAuthResponse>(url, authRequest, { ...Constants.postOptions, context: silentContext }).pipe(
       tap(response => this.logger.trace(`account.service.login | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
   }
@@ -141,7 +144,7 @@ export class AccountService {
 
     const url = `${this.apiUrl}/login2fa`;
 
-    return lastValueFrom(this.httpClient.post<IAuthResponse>(url, authRequest, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IAuthResponse>(url, authRequest, { ...Constants.postOptions, context: silentContext }).pipe(
       tap(response => this.logger.trace(`account.service.login2fa | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
 
@@ -162,7 +165,7 @@ export class AccountService {
     this.logger.debug(`account.service.resetPassword | email: ${request.email}`);
 
     const url = `${this.apiUrl}/resetpassword`;
-    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, { ...Constants.postOptions, context: silentContext }).pipe(
       tap(response => this.logger.trace(`account.service.resetPassword | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
   }
@@ -183,7 +186,7 @@ export class AccountService {
 
     const url = `${this.apiUrl}/sendemailconfirmation`;
 
-    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, { ...Constants.postOptions, context: silentContext }).pipe(
       tap(response => this.logger.trace(`account.service.sendConfirmEmail | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
 
@@ -205,7 +208,7 @@ export class AccountService {
 
     const url = `${this.apiUrl}/SendTwoFaCode`;
 
-    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, { ...Constants.postOptions, context: silentContext }).pipe(
       tap(response => this.logger.trace(`account.service.sendVerificationCode | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
   }
@@ -215,7 +218,7 @@ export class AccountService {
 
     const url = `${this.apiUrl}/enableauthenticator`;
 
-    return lastValueFrom(this.httpClient.post<IEnableAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IEnableAuthenticatorResponse>(url, request, { ...Constants.postOptions, context: silentContext }).pipe(
       tap(response => this.logger.trace(`account.service.enableAuthenticator | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
 
@@ -226,7 +229,7 @@ export class AccountService {
 
     const url = `${this.apiUrl}/verifyauthenticator`;
 
-    return lastValueFrom(this.httpClient.post<IVerifyAuthenticatorResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IVerifyAuthenticatorResponse>(url, request, { ...Constants.postOptions, context: silentContext }).pipe(
       tap(response => this.logger.trace(`account.service.verifyAuthenticator | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
 
@@ -237,7 +240,7 @@ export class AccountService {
 
     const url = `${this.apiUrl}/resetauthenticator`;
 
-    return lastValueFrom(this.httpClient.post<IResponse>(url, request, Constants.postOptions).pipe(
+    return lastValueFrom(this.httpClient.post<IResponse>(url, request, { ...Constants.postOptions, context: silentContext }).pipe(
       tap(response => this.logger.trace(`account.service.resetAuthenticator | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
 
@@ -251,8 +254,7 @@ export class AccountService {
   async testSecure() : Promise<string> {
     this.logger.debug(`account.service.testSecure`);
     const url = `${this.apiUrl}/secure`;
-    // return lastValueFrom(this.httpClient.get(url, {responseType: 'text'}));
-    return lastValueFrom(this.httpClient.get(url, {responseType: 'text'}));
+    return lastValueFrom(this.httpClient.get(url, {responseType: 'text', context: silentContext}));
   }
 
 }

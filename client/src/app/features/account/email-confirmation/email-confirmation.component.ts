@@ -38,6 +38,7 @@ export class EmailConfirmationComponent implements OnInit {
         code: emailCode
       }
 
+      // Network failures surface via the global error interceptor.
       this.accountService.confirmEmail(emailConfirmationRequest).then(response => {
         this.logger.trace(`email-confirmation.component.ngOnInit | response:`, response);
 

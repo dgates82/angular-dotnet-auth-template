@@ -23,6 +23,7 @@ export class EditUserComponent implements OnInit {
 
 
   user!: IApplicationUser;
+  loadError = false;
 
   icons = {
     personal: faUser,
@@ -41,6 +42,9 @@ export class EditUserComponent implements OnInit {
         this.userService.getById(id).then(user => {
           this.logger.trace(`edit-user.component.ngOnInit: user:`, user)
           this.user = user;
+        }).catch(err => {
+          this.logger.error(`edit-user.component.ngOnInit | Failed to load user:`, err);
+          this.loadError = true;
         });
       }
     });

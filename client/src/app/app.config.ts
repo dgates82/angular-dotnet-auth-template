@@ -1,6 +1,6 @@
 import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { APP_BASE_HREF } from '@angular/common';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -12,6 +12,7 @@ import { provideSweetAlert2 } from '@sweetalert2/ngx-sweetalert2';
 
 import { routes } from './app.routes';
 import { tokenGetter } from '@core/token-getter';
+import { errorInterceptor } from '@core/interceptors/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,7 +23,8 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(withInterceptorsFromDi()),
+    // withInterceptorsFromDi() is load-bearing: it's what wires up JwtModule's JwtInterceptor below.
+    provideHttpClient(withInterceptors([errorInterceptor]), withInterceptorsFromDi()),
     provideNgxMask(),
     provideSweetAlert2(),
     importProvidersFrom(

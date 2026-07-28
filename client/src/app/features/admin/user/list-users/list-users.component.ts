@@ -73,6 +73,7 @@ export class ListUsersComponent implements OnInit, AfterViewInit {
   }
 
   reloadData(): void {
+    // Network failures surface via the global error interceptor.
     this.userService.get().then(response => {
       this.logger.trace(`list-users.component.ngOnInit | response:`, response)
 

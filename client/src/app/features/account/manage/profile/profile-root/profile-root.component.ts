@@ -30,6 +30,7 @@ export class ProfileRootComponent implements OnInit {
   // and security-info tabs (and from there to TwoFaRootComponent), instead of
   // each independently calling getUserByEmail() for the same logged-in user.
   user: IApplicationUser | null = null;
+  loadError = false;
 
   ngOnInit(): void {
     this.logger.debug(`profile-root.component.ngOnInit`);
@@ -37,6 +38,9 @@ export class ProfileRootComponent implements OnInit {
     const authUser = this.accountService.getLoggedInUser();
     this.accountService.getUserByEmail(authUser?.email ?? '').then(response => {
       this.user = response;
+    }).catch(err => {
+      this.logger.error(`profile-root.component.ngOnInit | Failed to load user:`, err);
+      this.loadError = true;
     });
   }
 

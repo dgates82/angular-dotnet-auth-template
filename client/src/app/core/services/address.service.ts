@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
 import { LoggerService } from '@core/services/logger.service';
@@ -8,6 +8,10 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
 import { HttpErrorService } from '@core/services/http-error.service';
 import { IZippoResponse } from '@interfaces/address/zippo-response';
+import { SKIP_ERROR_DIALOG } from '@core/interceptors/error.interceptor';
+
+// Low-stakes conveniences - opt out of the global error interceptor's dialog.
+const silentContext = new HttpContext().set(SKIP_ERROR_DIALOG, true);
 
 interface IZippoPlaceRaw {
   'place name': string;
@@ -34,7 +38,7 @@ export class AddressService {
   getStates(): Promise<IState[]> {
     const url = '../assets/data/states.json';
 
-    return lastValueFrom(this.httpClient.get<IState[]>(url).pipe(
+    return lastValueFrom(this.httpClient.get<IState[]>(url, { context: silentContext }).pipe(
       tap(response => this.logger.trace(`address.service.getStates | response:`, response)),
       catchError(err => this.errorService.handleError(err))));
   }
@@ -42,7 +46,7 @@ export class AddressService {
   getPlaceByZipCode(zipCode: string): Promise<IZippoResponse> {
     const url = `https://api.zippopotam.us/us/${zipCode}`;
     
-    return lastValueFrom(this.httpClient.get<IZippoResponseRaw>(url).pipe(
+    return lastValueFrom(this.httpClient.get<IZippoResponseRaw>(url, { context: silentContext }).pipe(
       tap(response => { this.logger.trace(`address.service.getPlaceByZipCode | response:`, response) }),
       map((response: IZippoResponseRaw) => ({
         postCode: response['post code'],

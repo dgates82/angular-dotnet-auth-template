@@ -69,6 +69,9 @@ export class EnableAuthenticatorComponent implements OnInit {
       // Load QR code
       this.authenticatorUri = response.authenticatorUri;
       this.sharedKey = response.sharedKey;
+    }).catch(err => {
+      this.logger.error(`enable-authenticator.component.ngOnInit | Failed to load authenticator setup:`, err);
+      this.errorMessage = 'Could not load authenticator setup. Please refresh the page to try again.';
     });
 
   }
@@ -96,6 +99,9 @@ export class EnableAuthenticatorComponent implements OnInit {
         this.errorMessage = response.message ?? 'An error occurred';
       }
 
+    }).catch(err => {
+      this.logger.error(`enable-authenticator.component.verifyCode | error:`, err);
+      this.errorMessage = 'Something went wrong. Please try again.';
     });
 
   }

@@ -39,6 +39,7 @@ export class ForgotPasswordComponent {
       email: this.email.value
     };
 
+    // Network failures surface via the global error interceptor.
     this.accountService.sendForgotPassword(forgotPasswordRequest).then(response => {
       this.logger.trace(`forgot-password.component.sendPasswordReset | response:`, response)
 

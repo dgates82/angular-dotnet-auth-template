@@ -92,8 +92,8 @@ export class UpdatePasswordComponent {
         icon: 'error',
         heightAuto: false
       });
-    })
-
+    });
+    // Network failures surface via the global error interceptor.
   }
 
 }

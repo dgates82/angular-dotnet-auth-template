@@ -26,6 +26,7 @@ export class EnableTwoFaEmailComponent implements OnInit{
   @Output() twoFaEnabled: EventEmitter<string> = new EventEmitter<string>();
 
   isVerified = false;
+  errorMessage = '';
 
   ngOnInit() {
     this.logger.debug(`enable-two-fa-email.component.ngOnInit | email: ${this.email}`);
@@ -49,8 +50,12 @@ export class EnableTwoFaEmailComponent implements OnInit{
       method: 'Email'
     }
 
-    await this.accountService.sendTwoFaCode(request);
-
+    try {
+      await this.accountService.sendTwoFaCode(request);
+    } catch (err) {
+      this.logger.error(`enable-two-fa-email.component.sendCode | error:`, err);
+      this.errorMessage = 'Could not send a verification code. Please try again.';
+    }
   }
 
   verifyCode() {
@@ -72,6 +77,9 @@ export class EnableTwoFaEmailComponent implements OnInit{
 
       }
 
+    }).catch(err => {
+      this.logger.error(`enable-two-fa-email.component.verifyCode | error:`, err);
+      this.errorMessage = 'Something went wrong. Please try again.';
     });
 
   }

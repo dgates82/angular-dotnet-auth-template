@@ -21,4 +21,7 @@
       }
     </mat-tab>
   </mat-tab-group>
+  @if (loadError) {
+    <p class="text-danger">This user could not be loaded. Please refresh the page to try again.</p>
+  }
 </div>
