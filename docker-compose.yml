@@ -48,6 +48,8 @@ services:
       smsmock:
         condition: service_started
     environment:
+      # This compose file is local-dev tooling only - don't carry Development into a real deployment config (#6).
+      ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=AuthTemplate;User=webapp;Password=mypass"
       SmtpEmailConfigs__Host: mailpit
       TwilioSmsConfigs__BaseUrlOverride: "http://smsmock:3030"

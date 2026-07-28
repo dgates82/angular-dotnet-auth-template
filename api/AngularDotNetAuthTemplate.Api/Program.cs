@@ -107,6 +107,7 @@ namespace AngularDotNetAuthTemplate.Api
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
+                app.UseSwagger();
                 app.UseSwaggerUI();
             }
             else
