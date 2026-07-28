@@ -12,8 +12,13 @@ using System.Text;
 
 namespace AngularDotNetAuthTemplate.Api
 {
+    /// <summary>
+    /// The application entry point. Declared public (rather than the default top-level-statement
+    /// internal class) so <c>WebApplicationFactory&lt;Program&gt;</c> in the test project can reference it.
+    /// </summary>
     public class Program
     {
+        /// <summary>Configures and runs the web host.</summary>
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(new WebApplicationOptions

@@ -7,10 +7,6 @@
     <UserSecretsId>aspnet-Authentication-Template-228b1fe5-fdf7-4535-a113-9f01eda11e1f</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <!-- CS1591: missing XML comment for publicly visible type/member. Suppressed
-         globally rather than documenting scaffolded/generated code (EF migrations,
-         Identity UI page code-behinds) purely to silence the warning. -->
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

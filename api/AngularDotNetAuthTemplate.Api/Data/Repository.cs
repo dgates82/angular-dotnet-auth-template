@@ -7,9 +7,12 @@ namespace AngularDotNetAuthTemplate.Api.Data
     /// <summary>Default EF Core-backed <see cref="IRepository{T}"/> implementation, shared across entity types.</summary>
     public class Repository<T> : IRepository<T> where T : class, IEntity
     {
+        /// <summary>Logger for this repository instance.</summary>
         protected readonly ILogger<Repository<T>> Logger;
 
+        /// <summary>The EF Core context this repository operates against.</summary>
         protected readonly ApplicationDbContext Context;
+        /// <summary>The <typeparamref name="T"/> <see cref="DbSet{T}"/> this repository operates against.</summary>
         protected readonly DbSet<T> Entities;
 
         /// <summary>Creates the repository, resolving its <see cref="DbSet{T}"/> from the given context.</summary>
