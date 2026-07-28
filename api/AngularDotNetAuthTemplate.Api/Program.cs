@@ -12,8 +12,15 @@ using System.Text;
 
 namespace AngularDotNetAuthTemplate.Api
 {
+    /// <summary>
+    /// The application entry point. Declared public, rather than internal + InternalsVisibleTo, because
+    /// the test project's <c>WebApplicationFactory&lt;Program&gt;</c>-based fixture and xUnit test classes
+    /// referencing it must themselves be public (xUnit's analyzers enforce this) - a public class can't
+    /// list an internal type in its base-type list even with InternalsVisibleTo, so Program has to be public too.
+    /// </summary>
     public class Program
     {
+        /// <summary>Configures and runs the web host.</summary>
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(new WebApplicationOptions
