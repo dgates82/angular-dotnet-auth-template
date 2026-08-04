@@ -96,6 +96,9 @@ services:
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=AuthTemplate;User=webapp;Password=mypass"
       SmtpEmailConfigs__Host: mailpit
       TwilioSmsConfigs__BaseUrlOverride: "http://smsmock:3030"
+      SendGridEmailConfigs__BaseUrlOverride: "http://sendgridmock:3040"
+      PostMarkEmailConfigs__BaseUrlOverride: "http://postmarkmock:3050"
+      SnsSmsConfigs__ServiceUrlOverride: "http://localstack:4566"
     ports:
       - "8080:8080"
 

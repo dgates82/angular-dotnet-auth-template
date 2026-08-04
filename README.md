@@ -275,16 +275,30 @@ docker compose up -d sendgridmock postmarkmock localstack
 - `sendgridmock` — [`sendgrid-mock`](https://github.com/dgates82/dgates-mock-servers/tree/main/sendgrid-mock),
   a SendGrid-compatible REST API. `SendGridEmailConfigs.BaseUrlOverride`
   already points at it (`http://localhost:3040`) — uncomment
-  `AddSendGridEmailSender` in `Program.cs` to use it.
+  `AddSendGridEmailSender` in `Program.cs` to use it. View sent messages at
+  `http://localhost:3040`, or `curl http://localhost:3040/api/messages`.
 - `postmarkmock` — [`postmark-mock`](https://github.com/dgates82/dgates-mock-servers/tree/main/postmark-mock),
   a Postmark-compatible REST API. `PostMarkEmailConfigs.BaseUrlOverride`
   already points at it (`http://localhost:3050`) — uncomment
-  `AddPostMarkEmailSender` in `Program.cs` to use it.
+  `AddPostMarkEmailSender` in `Program.cs` to use it. View sent messages at
+  `http://localhost:3050`, or `curl http://localhost:3050/api/messages`.
 - `localstack` — the official [LocalStack](https://www.localstack.cloud/) image, running only
   the SNS service, for AWS SNS SMS sending. `SnsSmsConfigs.ServiceUrlOverride`
   already points at it (`http://localhost:4566`) with LocalStack's standard
   `test`/`test` fake credentials — uncomment `AddSnsSmsSender` in
-  `Program.cs` to use it.
+  `Program.cs` to use it. LocalStack has no web UI for this; view sent
+  messages with `curl http://localhost:4566/_aws/sns/sms-messages`
+  (LocalStack's own introspection endpoint — SNS SMS has no real delivery to
+  observe, even against LocalStack).
+
+If you're running the `api` service itself via Docker Compose (not
+`dotnet run` on the host), the `BaseUrlOverride`/`ServiceUrlOverride` values
+above won't resolve — `localhost` inside that container means the container
+itself, not a sibling mock container. `docker-compose.yml`'s `api` service
+already overrides each one to the mock's Compose service name
+(e.g. `http://postmarkmock:3050`) so this works out of the box; the
+`http://localhost:PORT` values above are what to use from the host machine
+(e.g. from a browser, or `dotnet run`).
 
 See [Notification Senders](#notification-senders) above for how to swap
 providers, and never commit real provider credentials.
