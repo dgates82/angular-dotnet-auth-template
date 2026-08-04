@@ -105,10 +105,16 @@ The default `IEmailSender`/`ISmsSender` registrations in `Program.cs` are
 marked `TODO(template)`. Email defaults to SMTP (pointed at the Mailpit
 container so a fresh clone works with no external account), with
 `SendGridEmailSender`/`PostMarkEmailSender` already implemented but
-commented out — swap the registration and supply your own API key via
-`appsettings.Development.json` or user-secrets to switch providers. SMS only
-has one implementation, `TwilioSmsSender`; swap it out entirely if you need
-a different provider. Never commit real provider credentials.
+commented out. SMS defaults to `TwilioSmsSender`, with `SnsSmsSender` (AWS
+SNS) already implemented but commented out. Swap the registration and
+supply your own API key/credentials via `appsettings.Development.json` or
+user-secrets to switch providers. Each alternative provider's
+`BaseUrlOverride`/`ServiceUrlOverride` in `appsettings.json` already points
+at that provider's mock (see [Notification Provider
+Mocks](#notification-provider-mocks) below), so switching a provider in
+`Program.cs` works against the mock with no further config changes — only
+clear the override and supply real credentials once you're ready to hit the
+real service. Never commit real provider credentials.
 
 ### Database Provider
 
@@ -256,6 +262,32 @@ cd your-generated-repo
    export SeedAdmin__Email="admin@example.com"
    export SeedAdmin__Password="ChangeMe123!"
    ```
+
+#### Notification Provider Mocks
+
+`mysql`, `mailpit`, and `smsmock` (above) back the providers wired up by
+default. `docker-compose.yml` also defines mocks for every other provider
+this template implements, so you can develop against any of them without a
+real account — start whichever ones you need alongside the services above:
+```bash
+docker compose up -d sendgridmock postmarkmock localstack
+```
+- `sendgridmock` — [`sendgrid-mock`](https://github.com/dgates82/dgates-mock-servers/tree/main/sendgrid-mock),
+  a SendGrid-compatible REST API. `SendGridEmailConfigs.BaseUrlOverride`
+  already points at it (`http://localhost:3040`) — uncomment
+  `AddSendGridEmailSender` in `Program.cs` to use it.
+- `postmarkmock` — [`postmark-mock`](https://github.com/dgates82/dgates-mock-servers/tree/main/postmark-mock),
+  a Postmark-compatible REST API. `PostMarkEmailConfigs.BaseUrlOverride`
+  already points at it (`http://localhost:3050`) — uncomment
+  `AddPostMarkEmailSender` in `Program.cs` to use it.
+- `localstack` — the official [LocalStack](https://www.localstack.cloud/) image, running only
+  the SNS service, for AWS SNS SMS sending. `SnsSmsConfigs.ServiceUrlOverride`
+  already points at it (`http://localhost:4566`) with LocalStack's standard
+  `test`/`test` fake credentials — uncomment `AddSnsSmsSender` in
+  `Program.cs` to use it.
+
+See [Notification Senders](#notification-senders) above for how to swap
+providers, and never commit real provider credentials.
 
 ### Frontend Setup
 

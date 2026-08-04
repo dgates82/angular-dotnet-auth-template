@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Notification sender registration switched to an `AddXyz()` DI pattern
 - Local SMS mock (`smsmock`) now pulls the prebuilt `twilio-mock` image from
   `dgates-mock-servers` instead of building a hand-rolled mock in this repo
+- Added optional `sendgridmock`/`postmarkmock`/`localstack` (SNS) services to
+  `docker-compose.yml`, with matching `BaseUrlOverride`/`ServiceUrlOverride`
+  defaults, so every implemented notification provider can be developed
+  against locally, not just the two wired up by default
 
 ### Removed
 
