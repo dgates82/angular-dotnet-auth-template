@@ -209,9 +209,9 @@ cd your-generated-repo
    a real provider instead, see [Notification Senders](#notification-senders)
    below.
 
-   `smsmock` plays the same role for SMS 2FA: a containerized
-   [`twillio-sms-mock`](https://www.npmjs.com/package/twillio-sms-mock)
-   server (`docker/sms-mock/`) implementing the Twilio REST API. The app's
+   `smsmock` plays the same role for SMS 2FA: the prebuilt
+   [`twilio-mock`](https://github.com/dgates82/dgates-mock-servers/tree/main/twilio-mock)
+   image implementing the Twilio REST API. The app's
    default `TwilioSmsConfigs.BaseUrlOverride` in `appsettings.json` points
    `TwilioSmsSender` at it, so 2FA codes sent via SMS are caught instead of
    going through a real Twilio account — view them at `http://localhost:3030`.
