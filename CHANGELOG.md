@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-08-04
+
 ### Added
 
 - SMS-based 2FA (Twilio), with a local mock for testing without a real account
@@ -19,7 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   nested-SPA-template layout
 - Upgraded to .NET 10 and Angular 21 (standalone components)
 - Replaced DataTables with Angular Material's `MatTable`
-- Notification sender registration switched to an `AddXyz()` DI pattern
+- Notification sender registration switched to an `AddXyz()` DI pattern,
+  backed by the extracted `DGates.Identity.NotificationProviders` package
+  (now on its stable `1.0.0` release)
 - Local SMS mock (`smsmock`) now pulls the prebuilt `twilio-mock` image from
   `dgates-mock-servers` instead of building a hand-rolled mock in this repo
 - Added optional `sendgridmock`/`postmarkmock`/`localstack` (SNS) services to
