@@ -101,20 +101,27 @@ export JwtConfigs__validAudience="https://localhost:7249"
 
 ### Notification Senders
 
-The default `IEmailSender`/`ISmsSender` registrations in `Program.cs` are
-marked `TODO(template)`. Email defaults to SMTP (pointed at the Mailpit
-container so a fresh clone works with no external account), with
-`SendGridEmailSender`/`PostMarkEmailSender` already implemented but
-commented out. SMS defaults to `TwilioSmsSender`, with `SnsSmsSender` (AWS
-SNS) already implemented but commented out. Swap the registration and
-supply your own API key/credentials via `appsettings.Development.json` or
-user-secrets to switch providers. Each alternative provider's
-`BaseUrlOverride`/`ServiceUrlOverride` in `appsettings.json` already points
-at that provider's mock (see [Notification Provider
-Mocks](#notification-provider-mocks) below), so switching a provider in
-`Program.cs` works against the mock with no further config changes — only
-clear the override and supply real credentials once you're ready to hit the
-real service. Never commit real provider credentials.
+Email and SMS sending are provided by
+[`DGates.Identity.NotificationProviders`](https://github.com/dgates82/DGates.Identity.NotificationProviders),
+a NuGet package referenced from `AngularDotNetAuthTemplate.Api.csproj`, not
+implemented in this repo. Fixes and new providers land in the package and
+reach generated repos via an ordinary package update, not a template
+re-sync.
+
+The default registrations in `Program.cs` are marked `TODO(template)`.
+Email defaults to `AddSmtpEmailSender` (pointed at the Mailpit container so
+a fresh clone works with no external account), with
+`AddSendGridEmailSender`/`AddPostMarkEmailSender` already called but
+commented out. SMS defaults to `AddTwilioSmsSender`, with `AddSnsSmsSender`
+(AWS SNS) already called but commented out. Uncomment the extension method
+for the provider you want and supply your own API key/credentials via
+`appsettings.Development.json` or user-secrets to switch providers. Each
+alternative provider's `BaseUrlOverride`/`ServiceUrlOverride` in
+`appsettings.json` already points at that provider's mock (see [Notification
+Provider Mocks](#notification-provider-mocks) below), so switching a
+provider in `Program.cs` works against the mock with no further config
+changes — only clear the override and supply real credentials once you're
+ready to hit the real service. Never commit real provider credentials.
 
 ### Database Provider
 
