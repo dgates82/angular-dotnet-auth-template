@@ -226,8 +226,9 @@ cd your-generated-repo
    [`twilio-mock`](https://github.com/dgates82/dgates-mock-servers/tree/main/twilio-mock)
    image implementing the Twilio REST API. The app's
    default `TwilioSmsConfigs.BaseUrlOverride` in `appsettings.json` points
-   `TwilioSmsSender` at it, so 2FA codes sent via SMS are caught instead of
-   going through a real Twilio account — view them at `http://localhost:3030`.
+   the sender registered via `AddTwilioSmsSender` at it, so 2FA codes sent
+   via SMS are caught instead of going through a real Twilio account — view
+   them at `http://localhost:3030`.
    To use a real Twilio account instead, set `TwilioSmsConfigs.AccountSid`/
    `AuthToken`/`FromNumber` to real values and clear `BaseUrlOverride` via
    `appsettings.Development.json` or user-secrets — never commit real
@@ -273,9 +274,14 @@ cd your-generated-repo
 #### Notification Provider Mocks
 
 `mysql`, `mailpit`, and `smsmock` (above) back the providers wired up by
-default. `docker-compose.yml` also defines mocks for every other provider
-this template implements, so you can develop against any of them without a
-real account — start whichever ones you need alongside the services above:
+default. Everything below except `localstack` (the official LocalStack
+image) is published from
+[`dgates-mock-servers`](https://github.com/dgates82/dgates-mock-servers), a
+shared repo of GHCR-published mock servers used by both this template and
+`DGates.Identity.NotificationProviders`. `docker-compose.yml` here defines
+mocks for every other provider this template implements, so you can develop
+against any of them without a real account — start whichever ones you need
+alongside the services above:
 ```bash
 docker compose up -d sendgridmock postmarkmock localstack
 ```
