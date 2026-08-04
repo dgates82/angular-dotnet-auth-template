@@ -7,6 +7,8 @@ using AngularDotNetAuthTemplate.Api.Data;
 using AngularDotNetAuthTemplate.Api.Models;
 using AngularDotNetAuthTemplate.Api.Models.Options;
 using AngularDotNetAuthTemplate.Api.Services;
+using DGates.Identity.NotificationProviders.Providers.Email;
+using DGates.Identity.NotificationProviders.Providers.Sms;
 using System.Reflection;
 using System.Text;
 
@@ -89,9 +91,13 @@ namespace AngularDotNetAuthTemplate.Api
             // builder.Services.AddSendGridEmailSender(builder.Configuration);
             // builder.Services.AddPostMarkEmailSender(builder.Configuration);
 
-            // TODO(template): TwilioSmsSender is the only ISmsSender implementation - swap it
-            // out entirely if you need a different SMS provider (see README).
+            // Default sender: Twilio, pointed at the twilio-mock container from
+            // docker-compose.yml so a fresh clone has a working SMS path with no external account.
+            // TODO(template): swap to SNS below (and supply your own credentials via
+            // appsettings.Development.json or user-secrets) for a real provider - see README's
+            // "Customizing for Your Project" section.
             builder.Services.AddTwilioSmsSender(builder.Configuration);
+            // builder.Services.AddSnsSmsSender(builder.Configuration);
             
             builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigSection));
             builder.Services.AddScoped<JwtHandler>();

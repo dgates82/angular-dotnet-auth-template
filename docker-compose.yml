@@ -27,12 +27,55 @@ services:
       - "8025:8025" # web UI
 
   smsmock:
-    build:
-      context: docker/sms-mock
+    image: ghcr.io/dgates82/twilio-mock:1.0.0
     container_name: auth-template-sms-mock
     restart: unless-stopped
     ports:
       - "3030:3030" # web UI + Twilio-compatible REST API
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3030/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  sendgridmock:
+    image: ghcr.io/dgates82/sendgrid-mock:1.0.0
+    container_name: auth-template-sendgrid-mock
+    restart: unless-stopped
+    ports:
+      - "3040:3040" # web UI + SendGrid-compatible REST API
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3040/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postmarkmock:
+    image: ghcr.io/dgates82/postmark-mock:1.0.0
+    container_name: auth-template-postmark-mock
+    restart: unless-stopped
+    ports:
+      - "3050:3050" # web UI + Postmark-compatible REST API
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3050/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  localstack:
+    image: localstack/localstack:3
+    container_name: auth-template-localstack
+    restart: unless-stopped
+    environment:
+      - SERVICES=sns
+      - DEBUG=0
+    ports:
+      - "4566:4566" # LocalStack edge port (SNS)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   api:
     build:
@@ -53,6 +96,9 @@ services:
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=AuthTemplate;User=webapp;Password=mypass"
       SmtpEmailConfigs__Host: mailpit
       TwilioSmsConfigs__BaseUrlOverride: "http://smsmock:3030"
+      SendGridEmailConfigs__BaseUrlOverride: "http://sendgridmock:3040"
+      PostMarkEmailConfigs__BaseUrlOverride: "http://postmarkmock:3050"
+      SnsSmsConfigs__ServiceUrlOverride: "http://localstack:4566"
     ports:
       - "8080:8080"
 

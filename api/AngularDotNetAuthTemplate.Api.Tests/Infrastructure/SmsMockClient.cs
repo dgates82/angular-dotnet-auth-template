@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace AngularDotNetAuthTemplate.Api.Tests.Infrastructure;
 
-// Thin wrapper over the twillio-sms-mock REST API (docker-compose's smsmock service,
+// Thin wrapper over the twilio-mock REST API (docker-compose's smsmock service,
 // port 3030) so tests can assert an SMS was actually sent and extract its body - unlike
 // Mailpit, the list endpoint already includes the full message body, no second call needed.
 public class SmsMockClient
