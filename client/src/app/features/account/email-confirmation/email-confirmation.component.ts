@@ -20,7 +20,6 @@ export class EmailConfirmationComponent implements OnInit {
 
 
   isConfirmed = false;
-  emailAddress = '';
 
   ngOnInit(): void {
     this.logger.debug(`email-confirmation.component.ngOnInit`);
@@ -29,7 +28,6 @@ export class EmailConfirmationComponent implements OnInit {
       const userId = params['userId'];
       const emailCode = params['emailCode'];
       const isFirstLogin = params['isFirstLogin']
-      this.emailAddress = params['emailAddress'];
 
       this.logger.trace(`email-confirmation.component.ngOnInit | emailCode: ${emailCode} | isFirstLogin: ${isFirstLogin}`);
 

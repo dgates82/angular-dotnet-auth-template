@@ -106,6 +106,12 @@ export class LoginComponent implements OnInit {
     this.logger.debug(`account.onLoginResponse | response:`, response)
 
     if (response.isAuthSuccessful) {
+      this.isInvalidLogin = false;
+
+      // Set login token - must happen before the 2fa-setup-required branch below,
+      // since /enable2fa requires an authenticated session to actually enroll a method.
+      writeAuthResponse(response);
+      this.accountService.sendAuthStateChangeNotification(true);
 
       if (!response.requiresTwoFactor && this.is2FaRequired) {
         this.logger.trace(`account.onLoginResponse | 2fa required but not enabled`);
@@ -113,11 +119,6 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/enable2fa', this.email.value]);
         return;
       }
-      this.isInvalidLogin = false;
-
-      // Set login token
-      writeAuthResponse(response);
-      this.accountService.sendAuthStateChangeNotification(true);
 
       // Test secure endpoint
       this.accountService.testSecure().then(secureResponse => {
