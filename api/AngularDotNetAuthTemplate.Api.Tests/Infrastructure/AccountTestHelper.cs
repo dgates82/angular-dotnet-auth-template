@@ -3,8 +3,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using AngularDotNetAuthTemplate.Api.Models;
-using AngularDotNetAuthTemplate.Api.Models.DataTransferObjects;
-using AngularDotNetAuthTemplate.Api.Models.DataTransferObjects.Account;
+using DGates.Identity.Jwt2Fa.Dtos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +29,7 @@ public static class AccountTestHelper
     // account for tests that need one as a precondition.
     public static async Task RegisterAndConfirmAsync(HttpClient client, IServiceProvider services, string email, string password)
     {
-        var registerResponse = await client.PostAsJsonAsync("/api/account/register",
+        var registerResponse = await client.PostAsJsonAsync("/api/auth/register",
             new { Email = email, Password = password }, JsonOptions);
         registerResponse.EnsureSuccessStatusCode();
 
@@ -42,7 +41,7 @@ public static class AccountTestHelper
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
         var code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-        var confirmResponse = await client.PostAsJsonAsync("/api/account/confirmEmail",
+        var confirmResponse = await client.PostAsJsonAsync("/api/auth/confirmEmail",
             new { UserId = user.Id, Code = code }, JsonOptions);
         confirmResponse.EnsureSuccessStatusCode();
 
@@ -82,7 +81,7 @@ public static class AccountTestHelper
 
     private static async Task LoginAndAttachTokenAsync(HttpClient client, string email, string password)
     {
-        var loginResponse = await client.PostAsJsonAsync("/api/account/login",
+        var loginResponse = await client.PostAsJsonAsync("/api/auth/login",
             new { Email = email, Password = password }, JsonOptions);
         loginResponse.EnsureSuccessStatusCode();
 

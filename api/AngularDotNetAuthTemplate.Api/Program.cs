@@ -1,16 +1,14 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using AngularDotNetAuthTemplate.Api.Data;
 using AngularDotNetAuthTemplate.Api.Models;
-using AngularDotNetAuthTemplate.Api.Models.Options;
-using AngularDotNetAuthTemplate.Api.Services;
+using AngularDotNetAuthTemplate.Api.Models.DataTransferObjects.Account;
+using DGates.Identity.Jwt2Fa.Extensions;
+using DGates.Identity.Jwt2Fa.Jwt;
 using DGates.Identity.NotificationProviders.Providers.Email;
 using DGates.Identity.NotificationProviders.Providers.Sms;
 using System.Reflection;
-using System.Text;
 
 namespace AngularDotNetAuthTemplate.Api
 {
@@ -48,11 +46,8 @@ namespace AngularDotNetAuthTemplate.Api
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            builder.Services.AddScoped<ApplicationUserRepository, ApplicationUserRepository>();
 
-            var jwtSettings = builder.Configuration.GetSection(JwtOptions.ConfigSection);
-
-            // AddIdentity must come before AddAuthentication().AddJwtBearer()
+            // AddIdentity must come before AddAuthCore (which wires up AddAuthentication().AddJwtBearer())
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
@@ -60,26 +55,12 @@ namespace AngularDotNetAuthTemplate.Api
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            builder.Services.AddAuthentication(opt =>
-            {
-                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings["validIssuer"],
-                    ValidAudience = jwtSettings["validAudience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                    .GetBytes(jwtSettings.GetSection("securityKey").Value
-                        ?? throw new InvalidOperationException($"'{JwtOptions.ConfigSection}:securityKey' not found.")))
-                };
-            });
-            builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => 
+            Jwt2FaUserProjector<ApplicationUser> userProjector = user => new ApplicationUserDto(user);
+            builder.Services.AddAuthCore<ApplicationUser>(builder.Configuration, userProjector);
+            builder.Services.AddDefaultActivationPolicy<ApplicationUser>();
+            builder.Services.Add2Fa<ApplicationUser>();
+
+            builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             // Default sender: SMTP pointed at the Mailpit container from docker-compose.yml,
@@ -98,9 +79,6 @@ namespace AngularDotNetAuthTemplate.Api
             // "Customizing for Your Project" section.
             builder.Services.AddTwilioSmsSender(builder.Configuration);
             // builder.Services.AddSnsSmsSender(builder.Configuration);
-            
-            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.ConfigSection));
-            builder.Services.AddScoped<JwtHandler>();
 
             var app = builder.Build();
 
@@ -137,6 +115,10 @@ namespace AngularDotNetAuthTemplate.Api
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.MapControllers();
+
+            app.MapAuthCore<ApplicationUser>("api/auth");
+            app.Map2Fa<ApplicationUser>("api/auth");
+            app.MapDefaultActivationPolicy<ApplicationUser>("api/auth");
 
             // SPA fallback: explicit "{**path}" pattern, not MapFallback(handler) - that
             // overload's implicit :nonfile constraint breaks dotted routes like /enable2fa/:email.

@@ -43,7 +43,7 @@ export class AccountService {
   private readonly jwtHelper = inject(JwtHelperService);
 
 
-  private apiUrl = `${this.locationStrategy.getBaseHref()}api/account`
+  private apiUrl = `${this.locationStrategy.getBaseHref()}api/auth`
 
   public authChanged: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 

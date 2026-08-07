@@ -99,6 +99,7 @@ services:
       SendGridEmailConfigs__BaseUrlOverride: "http://sendgridmock:3040"
       PostMarkEmailConfigs__BaseUrlOverride: "http://postmarkmock:3050"
       SnsSmsConfigs__ServiceUrlOverride: "http://localstack:4566"
+      Jwt2FaAuthCoreConfig__FrontendBaseUrl: "http://localhost:8080"
     ports:
       - "8080:8080"
 

@@ -8,9 +8,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers
     /// Backs the production error handler
     /// (<c>app.UseExceptionHandler("/Home/Error")</c> in <c>Program.cs</c>).
     /// The Angular SPA shell and all API behavior are served elsewhere — the
-    /// SPA fallback in <c>Program.cs</c> and
-    /// <see cref="AngularDotNetAuthTemplate.Api.Controllers.API.AccountController"/>,
-    /// respectively.
+    /// SPA fallback and auth endpoint mapping, both in <c>Program.cs</c>.
     /// </summary>
     public class HomeController : Controller
     {
