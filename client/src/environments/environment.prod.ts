@@ -15,6 +15,4 @@ export const environment = {
     zipCode: false,
     state: false,
   },
-
-  availableRoles: ['Admin', 'Tech', 'Manager'],
 };

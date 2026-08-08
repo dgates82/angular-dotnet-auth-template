@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Assignable roles now come from `GET api/admin/roles` (backed by `RoleManager`)
+  instead of a hardcoded list in `environment.ts`. The two had drifted: the admin
+  role dropdown offered "Tech"/"Manager", but `DbSeeder` only ever created "Admin",
+  so assigning either threw an unhandled error. `DbSeeder` now seeds the app's
+  business roles too, and is the one place to edit them.
+
 ## [1.0.0] - 2026-08-04
 
 ### Added

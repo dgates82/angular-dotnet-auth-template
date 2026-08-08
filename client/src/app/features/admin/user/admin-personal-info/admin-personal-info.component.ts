@@ -4,9 +4,9 @@ import { FormArray, FormBuilder, FormControl, Validators, FormsModule, ReactiveF
 import { LoggerService } from '@core/services/logger.service';
 import { AddressService } from '@core/services/address.service';
 import { UserService } from '@data/services/user.service';
+import { RoleService } from '@data/services/role.service';
 import { faCancel, faEdit, faSave, faUserPlus, faUserTimes } from '@fortawesome/free-solid-svg-icons';
 import { ProfileFieldValidators } from '@core/validators/profile-field-validators';
-import { Constants } from '@core/constants';
 
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { IState } from '@interfaces/address/state';
@@ -30,12 +30,13 @@ export class AdminPersonalInfoComponent implements OnInit {
   private readonly logger = inject(LoggerService);
   private readonly addressService = inject(AddressService);
   private readonly userService = inject(UserService);
+  private readonly roleService = inject(RoleService);
   private readonly formBuilder = inject(FormBuilder);
 
 
   @Input() user!: IApplicationUser;
 
-  availableRoles: string[] = Constants.availableRoles;
+  availableRoles: string[] = [];
 
   isEditMode = false;
 
@@ -84,6 +85,12 @@ export class AdminPersonalInfoComponent implements OnInit {
       this.states = states;
     }).catch(err => {
       this.logger.error(`admin-personal-info.component.ngOnInit | Failed to load states:`, err);
+    });
+
+    this.roleService.get().then(roles => {
+      this.availableRoles = roles;
+    }).catch(err => {
+      this.logger.error(`admin-personal-info.component.ngOnInit | Failed to load roles:`, err);
     });
 
     this.handleFormState(false);
