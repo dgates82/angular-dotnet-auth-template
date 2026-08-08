@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   role dropdown offered "Tech"/"Manager", but `DbSeeder` only ever created "Admin",
   so assigning either threw an unhandled error. `DbSeeder` now seeds the app's
   business roles too, and is the one place to edit them.
+- An admin-created user setting their password for the first time is no longer
+  routed to 2FA enrollment when `is2FaRequired` is `false` - that redirect ignored
+  the flag entirely, unlike the equivalent nudge in `login.component.ts`, which
+  already gated it correctly.
 
 ## [1.0.0] - 2026-08-04
 

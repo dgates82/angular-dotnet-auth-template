@@ -12,6 +12,7 @@ import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { PasswordFieldsComponent } from '@shared/password-fields/password-fields.component';
+import { Constants } from '@core/constants';
 
 @Component({
     selector: 'app-password-reset',
@@ -82,9 +83,9 @@ export class PasswordResetComponent implements OnInit {
         this.isComplete = true;
         this.isSubmitting = false;
 
-        // If this is the user's first login, route to enable 2fa
-        if (this.isFirstLogin) {
-          // Route to enable 2fa
+        // If this is the user's first login and 2FA is required, route to enable it -
+        // matches the equivalent gate in login.component.ts's onLoginResponse().
+        if (this.isFirstLogin && Constants.is2FaRequired) {
           this.router.navigate(['/enable2fa', this.email.value]);
         }
       }
