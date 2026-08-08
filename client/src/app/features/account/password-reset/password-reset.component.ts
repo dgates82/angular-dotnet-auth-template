@@ -114,6 +114,11 @@ export class PasswordResetComponent implements OnInit {
     this.token = this.route.snapshot.queryParams['code'] ?? this.route.snapshot.queryParams['passwordResetCode']
     this.isFirstLogin = this.route.snapshot.queryParams['isFirstLogin'] ?? false;
 
+    const email = this.route.snapshot.queryParams['email'];
+    if (email) {
+      this.email.setValue(email);
+    }
+
     this.logger.trace(`password-reset.component.ngOnInit | token: ${this.token} isFirstLogin: ${this.isFirstLogin}`)
     if (this.isFirstLogin) {
       this.subtitle = "Create a password to continue.";
