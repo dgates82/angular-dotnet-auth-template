@@ -80,7 +80,7 @@ describe('AccountService', () => {
       const request: IRegisterRequest = { email: 'new@example.com', password: 'Password1!' };
       const promise = service.register(request);
 
-      const req = httpMock.expectOne('/api/account/register');
+      const req = httpMock.expectOne('/api/auth/register');
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(request);
       req.flush({ isSuccess: true });
@@ -95,7 +95,7 @@ describe('AccountService', () => {
       const authResponse = { isAuthSuccessful: true, requiresTwoFactor: false } as IAuthResponse;
       const promise = service.login(authRequest);
 
-      const req = httpMock.expectOne('/api/account/login');
+      const req = httpMock.expectOne('/api/auth/login');
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(authRequest);
       req.flush(authResponse);
