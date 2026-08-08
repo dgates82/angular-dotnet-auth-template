@@ -37,7 +37,10 @@
                   <div class="mt-2">
                     <mat-form-field class="w-75">
                       <mat-label>Password</mat-label>
-                      <input matInput formControlName="password" required type="password" (keyup.enter)="login()" autocomplete="on"/>
+                      <input matInput formControlName="password" required [type]="hidePassword ? 'password' : 'text'" (keyup.enter)="login()" autocomplete="on"/>
+                      <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'">
+                        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                      </button>
                       @if (password.invalid && (password.dirty || password.touched)) {
                         <mat-error class="mb-1">
                           Password is required
