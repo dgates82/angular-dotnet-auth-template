@@ -5,6 +5,7 @@ import { LoginComponent } from './login.component';
 import { AccountService } from '@data/services/account.service';
 import { LoggerService } from '@core/services/logger.service';
 import { IAuthResponse } from '@interfaces/account/auth-response';
+import { Constants } from '@core/constants';
 
 describe('LoginComponent', () => {
   let accountService: {
@@ -69,6 +70,37 @@ describe('LoginComponent', () => {
 
     expect(accountService.sendAuthStateChangeNotification).toHaveBeenCalledWith(true);
     expect(router.navigate).toHaveBeenCalledWith(['/']);
+  });
+
+  it('redirects to /enable2fa instead of the return url when 2FA is required but not configured', async () => {
+    const originalIs2FaRequired = Constants.is2FaRequired;
+    Constants.is2FaRequired = true;
+    try {
+      // is2FaRequired is read via a property initializer, so it must be set before
+      // the component (and its constructor) is created.
+      const fixture = TestBed.createComponent(LoginComponent);
+      fixture.detectChanges();
+
+      const authResponse = {
+        isAuthSuccessful: true,
+        requiresTwoFactor: false,
+      } as IAuthResponse;
+      accountService.login.mockResolvedValue(authResponse);
+
+      fixture.componentInstance.loginForm.setValue({ email: 'admin@example.com', password: 'Password1!' });
+      fixture.componentInstance.login();
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // The session still has to be written before the redirect - /enable2fa needs
+      // an authenticated caller to actually enroll a method.
+      expect(accountService.sendAuthStateChangeNotification).toHaveBeenCalledWith(true);
+      expect(router.navigate).toHaveBeenCalledWith(['/enable2fa', 'admin@example.com']);
+    } finally {
+      Constants.is2FaRequired = originalIs2FaRequired;
+    }
   });
 
   it('shows an invalid-login message when the credentials are rejected', async () => {

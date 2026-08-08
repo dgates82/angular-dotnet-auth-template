@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   role dropdown offered "Tech"/"Manager", but `DbSeeder` only ever created "Admin",
   so assigning either threw an unhandled error. `DbSeeder` now seeds the app's
   business roles too, and is the one place to edit them.
+- A user required to complete 2FA setup (`is2FaRequired: true`) can no longer bypass
+  it by clicking Home/Profile/Users in the sidebar. `login.component.ts` already
+  redirected to `/enable2fa` on login, but nothing stopped navigating away from there
+  afterward - a new `twoFaRequiredGuard`, applied alongside `AuthGuard` on `/home`,
+  `/profile`, and the admin routes, now bounces back to `/enable2fa/:email` until the
+  account actually has 2FA configured. `/logout` is deliberately left unguarded so a
+  user can still back out.
 
 ## [1.0.0] - 2026-08-04
 
