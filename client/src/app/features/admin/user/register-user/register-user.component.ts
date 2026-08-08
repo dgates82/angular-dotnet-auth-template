@@ -5,7 +5,7 @@ import { FormArray, FormBuilder, FormControl, Validators, FormsModule, ReactiveF
 import { LoggerService } from '@core/services/logger.service';
 import { AddressService } from '@core/services/address.service';
 import { UserService } from '@data/services/user.service';
-import { Constants } from '@core/constants';
+import { RoleService } from '@data/services/role.service';
 
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { IState } from '@interfaces/address/state';
@@ -32,11 +32,12 @@ export class RegisterUserComponent implements OnInit {
   private readonly logger = inject(LoggerService);
   private readonly addressService = inject(AddressService);
   private readonly userService = inject(UserService);
+  private readonly roleService = inject(RoleService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
 
 
-  availableRoles: string[] = Constants.availableRoles;
+  availableRoles: string[] = [];
 
   states!: IState[];
 
@@ -81,6 +82,13 @@ export class RegisterUserComponent implements OnInit {
       this.states = states;
     }).catch(err => {
       this.logger.error(`register-user.component.ngOnInit | Failed to load states:`, err);
+    });
+
+    this.roleService.get().then(roles => {
+      this.logger.trace(`register-user.component.ngOnInit | roles:`, roles);
+      this.availableRoles = roles;
+    }).catch(err => {
+      this.logger.error(`register-user.component.ngOnInit | Failed to load roles:`, err);
     });
   }
 

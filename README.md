@@ -66,9 +66,13 @@ What's currently marked:
   (`"angular"`); harmless to leave, but worth renaming if you're publishing
   this as its own project.
 - **Angular feature flags** — `is2FaRequired`, `allowUserEdit`,
-  `allowSelfRegister`, `twoFaMethods`, `requiredProfileFields`, and
-  `availableRoles` in `client/src/environments/environment.ts` /
-  `environment.prod.ts` — see [Options](#options) below.
+  `allowSelfRegister`, `twoFaMethods`, and `requiredProfileFields` in
+  `client/src/environments/environment.ts` / `environment.prod.ts` — see
+  [Options](#options) below.
+- **Business roles** — `BusinessRoleNames` in
+  `api/AngularDotNetAuthTemplate.Api/Data/DbSeeder.cs` (`"Tech"`/`"Manager"`
+  by default); the admin role-assignment UI reads whatever's actually in the
+  database via `GET api/admin/roles`, so this is the one place to edit them.
 - **`LICENSE`'s copyright holder**, **`CONTRIBUTING.md`**, and
   **`docs/LOCAL_DEV.md`** — all still placeholders from the template itself.
 - **JWT config** — see [JWT Configuration](#jwt-configuration) below.
