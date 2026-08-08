@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A dismissible nudge on login suggesting 2FA setup, for accounts that don't have it
+  configured and aren't required to (`is2FaRequired: true` already has its own,
+  separate forced-setup flow, unaffected by this). Previously the only place this was
+  ever surfaced was a since-removed, unconditional link on the email-confirmation page
+  that never actually worked. Controlled by a new `show2FaBanner` flag alongside
+  `is2FaRequired`, so a template consumer has a real third option: mandatory, optional
+  with a nudge, or optional and silent. Dismissing persists via localStorage so it
+  doesn't reappear every login once acknowledged.
+
 ### Fixed
 
 - Assignable roles now come from `GET api/admin/roles` (backed by `RoleManager`)
