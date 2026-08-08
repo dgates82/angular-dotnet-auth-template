@@ -9,11 +9,11 @@ export const environment = {
   requiredProfileFields: {
     firstName: true,
     lastName: true,
-    phoneNumber: true,
-    streetAddress: true,
-    city: true,
-    zipCode: true,
-    state: true,
+    phoneNumber: false,
+    streetAddress: false,
+    city: false,
+    zipCode: false,
+    state: false,
   },
 
   availableRoles: ['Admin', 'Tech', 'Manager'],
