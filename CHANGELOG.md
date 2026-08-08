@@ -14,10 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   role dropdown offered "Tech"/"Manager", but `DbSeeder` only ever created "Admin",
   so assigning either threw an unhandled error. `DbSeeder` now seeds the app's
   business roles too, and is the one place to edit them.
-- An admin-created user setting their password for the first time is no longer
-  routed to 2FA enrollment when `is2FaRequired` is `false` - that redirect ignored
-  the flag entirely, unlike the equivalent nudge in `login.component.ts`, which
-  already gated it correctly.
+- Setting a password for the first time (admin-created user) no longer redirects to
+  2FA enrollment. That redirect never had anything to authenticate with -
+  `ResetPasswordAsync` doesn't establish a session the way login does - so it was
+  removed rather than gated: `login.component.ts`'s `onLoginResponse()` already
+  enforces `is2FaRequired` correctly, with a real session, the next time this user
+  actually logs in.
 
 ## [1.0.0] - 2026-08-04
 

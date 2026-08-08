@@ -38,10 +38,10 @@ describe('PasswordResetComponent', () => {
     expect(fixture.componentInstance.token).toBe('reset-code-123');
   });
 
-  // Constants.is2FaRequired is baked in from environment.ts at import time (false in
-  // this build), so a first-login reset should never redirect to /enable2fa here -
-  // that gate is what stops the redirect from firing regardless of isFirstLogin.
-  it('does not route to enable-2fa after a first-login reset when 2FA is not required', async () => {
+  // This page never establishes a session (unlike login), so it never redirects
+  // anywhere on its own - login.component.ts's onLoginResponse() is what enforces
+  // is2FaRequired, with a real session, the next time this user actually logs in.
+  it('shows the completion message after a first-login reset, without redirecting anywhere', async () => {
     activatedRoute.snapshot.queryParams = { code: 'abc', isFirstLogin: true };
     const fixture = createFixture();
 

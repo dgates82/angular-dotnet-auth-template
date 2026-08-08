@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { IResetPasswordRequest } from '@interfaces/account/reset-password-request';
@@ -12,7 +12,6 @@ import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { PasswordFieldsComponent } from '@shared/password-fields/password-fields.component';
-import { Constants } from '@core/constants';
 
 @Component({
     selector: 'app-password-reset',
@@ -25,7 +24,6 @@ export class PasswordResetComponent implements OnInit {
   private readonly accountService = inject(AccountService);
   private readonly route = inject(ActivatedRoute);
   private readonly formBuilder = inject(FormBuilder);
-  private readonly router = inject(Router);
 
 
   token = "";
@@ -83,11 +81,11 @@ export class PasswordResetComponent implements OnInit {
         this.isComplete = true;
         this.isSubmitting = false;
 
-        // If this is the user's first login and 2FA is required, route to enable it -
-        // matches the equivalent gate in login.component.ts's onLoginResponse().
-        if (this.isFirstLogin && Constants.is2FaRequired) {
-          this.router.navigate(['/enable2fa', this.email.value]);
-        }
+        // Not redirecting to /enable2fa here even on a first login: this page never
+        // establishes a session (ResetPasswordAsync doesn't issue one, unlike login),
+        // so that redirect never had anything to authenticate with. login.component.ts's
+        // onLoginResponse() already enforces is2FaRequired correctly, with a real
+        // session, the moment this user actually logs in via the link below.
       }
       else {
         this.logger.debug(`password-reset.component.resetPassword | password reset failed`)
