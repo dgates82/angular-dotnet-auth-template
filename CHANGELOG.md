@@ -10,11 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - A Playwright end-to-end suite (`/e2e`), running in CI against the real, containerized
-  app rather than mocks - covers registration/email confirmation and the route guards
-  to start, with more flows to follow. Several regressions from the Jwt2Fa swap (stale
-  API routes, a broken 2FA-required redirect, a bypassable 2FA-required guard) were
-  only ever caught by manual testing; nothing committed to the repo exercised the
-  client's routing/guard/session wiring end to end the way this does.
+  app rather than mocks. Covers registration/email confirmation, the route guards,
+  password management (change while authenticated, forgot-password reset via email),
+  all three 2FA enrollment/login flows (Authenticator, Email, SMS), and admin user
+  management (paginated list, profile/role edits sourced from the live roles endpoint,
+  deactivate/reactivate). Several regressions from the Jwt2Fa swap (stale API routes, a
+  broken 2FA-required redirect, a bypassable 2FA-required guard) were only ever caught
+  by manual testing; nothing committed to the repo exercised the client's
+  routing/guard/session wiring end to end the way this does. Switching to SMS from an
+  already-enabled 2FA method and the `is2FaRequired: true` build path are intentionally
+  left out of this batch - the former needs a released fix from `DGates.Identity.Jwt2Fa`,
+  the latter a second CI build config.
 
 ### Fixed
 
