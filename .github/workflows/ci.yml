@@ -107,6 +107,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -114,9 +119,35 @@ jobs:
           cache: "npm"
           cache-dependency-path: e2e/package-lock.json
 
+      - name: Start MySQL, Mailpit & SMS mock
+        run: docker compose up -d mysql mailpit smsmock
+
+      - name: Wait for MySQL to be healthy
+        run: |
+          for i in $(seq 1 40); do
+            status=$(docker inspect --format='{{.State.Health.Status}}' auth-template-mysql 2>/dev/null || echo "starting")
+            if [ "$status" = "healthy" ]; then
+              echo "MySQL is healthy"
+              exit 0
+            fi
+            echo "Waiting for MySQL... ($i/40)"
+            sleep 3
+          done
+          echo "MySQL did not become healthy in time"
+          docker logs auth-template-mysql
+          exit 1
+
+      # The api container doesn't run migrations itself (see README's Backend Setup) -
+      # a fresh MySQL instance here has no schema at all until this runs.
+      - name: Apply database migrations
+        working-directory: api
+        run: |
+          dotnet tool restore
+          cd AngularDotNetAuthTemplate.Api
+          dotnet ef database update
+
       # Builds and starts the full SPA + API in one container, the same way the app is
-      # actually deployed - not a bare `dotnet run`/`ng serve` port. mysql/mailpit/smsmock
-      # come up automatically via api's depends_on in docker-compose.yml.
+      # actually deployed - not a bare `dotnet run`/`ng serve` port.
       - name: Build and start the full stack
         run: docker compose up -d --build api
 
