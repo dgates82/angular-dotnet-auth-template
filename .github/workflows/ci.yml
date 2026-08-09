@@ -102,6 +102,12 @@ jobs:
   e2e:
     name: End-to-end (Playwright)
     runs-on: ubuntu-latest
+    env:
+      # Adds throwaway SeedAdmin credentials on top of docker-compose.yml - local dev
+      # gets these from a gitignored appsettings.Development.json that doesn't exist
+      # in a fresh CI checkout. See docker-compose.ci.yml for why this isn't just
+      # added to docker-compose.yml directly.
+      COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
 
     steps:
       - name: Checkout
