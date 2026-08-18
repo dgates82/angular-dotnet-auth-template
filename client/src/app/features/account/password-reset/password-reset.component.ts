@@ -5,7 +5,7 @@ import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { IResetPasswordRequest } from '@interfaces/account/reset-password-request';
 import { PasswordValidators } from '@core/validators/password-validators';
-import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
+import { MatCard, MatCardContent, MatCardTitle } from '@angular/material/card';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
@@ -17,7 +17,7 @@ import { PasswordFieldsComponent } from '@shared/password-fields/password-fields
     selector: 'app-password-reset',
     templateUrl: './password-reset.component.html',
     styleUrls: ['./password-reset.component.scss'],
-    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatInput, MatButton, MatIcon, MatProgressSpinner, RouterLink, PasswordFieldsComponent]
+    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatError, MatFormField, MatLabel, MatInput, MatButton, MatIcon, MatProgressSpinner, RouterLink, PasswordFieldsComponent]
 })
 export class PasswordResetComponent implements OnInit {
   private readonly logger = inject(LoggerService);
@@ -32,7 +32,6 @@ export class PasswordResetComponent implements OnInit {
   errorMessage = "";
 
   isFirstLogin = false;
-  subtitle = "";
 
   isSubmitting = false;
 
@@ -107,10 +106,12 @@ export class PasswordResetComponent implements OnInit {
     this.token = this.route.snapshot.queryParams['code'] ?? this.route.snapshot.queryParams['passwordResetCode']
     this.isFirstLogin = this.route.snapshot.queryParams['isFirstLogin'] ?? false;
 
-    this.logger.trace(`password-reset.component.ngOnInit | token: ${this.token} isFirstLogin: ${this.isFirstLogin}`)
-    if (this.isFirstLogin) {
-      this.subtitle = "Create a password to continue.";
+    const email = this.route.snapshot.queryParams['email'];
+    if (email) {
+      this.email.setValue(email);
     }
+
+    this.logger.trace(`password-reset.component.ngOnInit | token: ${this.token} isFirstLogin: ${this.isFirstLogin}`)
 
   }
 
