@@ -80,12 +80,6 @@ export class PasswordResetComponent implements OnInit {
         // On success display a success message and provide link to login page
         this.isComplete = true;
         this.isSubmitting = false;
-
-        // Not redirecting to /enable2fa here even on a first login: this page never
-        // establishes a session (ResetPasswordAsync doesn't issue one, unlike login),
-        // so that redirect never had anything to authenticate with. login.component.ts's
-        // onLoginResponse() already enforces is2FaRequired correctly, with a real
-        // session, the moment this user actually logs in via the link below.
       }
       else {
         this.logger.debug(`password-reset.component.resetPassword | password reset failed`)
