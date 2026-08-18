@@ -44,7 +44,7 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard, twoFaRequiredGuard], title: "Home - [Application Name]" },
   /* Profile */
   { path: 'profile', component: ProfileRootComponent, canActivate: [AuthGuard, twoFaRequiredGuard], title: "Profile - [Application Name]" },
-  { path: 'enable2fa/:email', component: EnableTwoFaRootComponent },
+  { path: 'enable2fa/:email', component: EnableTwoFaRootComponent, canActivate: [AuthGuard] },
   /* Admin */
   { path: 'admin/users', component: ListUsersComponent, canActivate: [AuthGuard, twoFaRequiredGuard, roleGuard(["Admin"])], title: "Users - [Application Name]" },
   { path: 'admin/edit-user/:id', component: EditUserComponent, canActivate: [AuthGuard, twoFaRequiredGuard, roleGuard(["Admin"])]},
