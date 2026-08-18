@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   role dropdown offered "Tech"/"Manager", but `DbSeeder` only ever created "Admin",
   so assigning either threw an unhandled error. `DbSeeder` now seeds the app's
   business roles too, and is the one place to edit them.
+- The admin-created-user first-login page now shows "Create Your Password" instead
+  of "Password Reset", and pre-fills the email field instead of leaving it blank.
+  The header was hardcoded regardless of `isFirstLogin`, and the email field was
+  never populated because `EmailConfirmationPath` never asked for the `{email}`
+  token Jwt2Fa's `BuildUrl` supports - the link never carried an email address to
+  begin with.
 
 ## [1.0.0] - 2026-08-04
 
