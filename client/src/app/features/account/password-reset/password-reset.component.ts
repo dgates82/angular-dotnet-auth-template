@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
 import { IResetPasswordRequest } from '@interfaces/account/reset-password-request';
@@ -24,7 +24,6 @@ export class PasswordResetComponent implements OnInit {
   private readonly accountService = inject(AccountService);
   private readonly route = inject(ActivatedRoute);
   private readonly formBuilder = inject(FormBuilder);
-  private readonly router = inject(Router);
 
 
   token = "";
@@ -80,12 +79,6 @@ export class PasswordResetComponent implements OnInit {
         // On success display a success message and provide link to login page
         this.isComplete = true;
         this.isSubmitting = false;
-
-        // If this is the user's first login, route to enable 2fa
-        if (this.isFirstLogin) {
-          // Route to enable 2fa
-          this.router.navigate(['/enable2fa', this.email.value]);
-        }
       }
       else {
         this.logger.debug(`password-reset.component.resetPassword | password reset failed`)
