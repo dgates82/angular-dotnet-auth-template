@@ -13,13 +13,14 @@ import { MatInput } from '@angular/material/input';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { PasswordFieldsComponent } from '@shared/password-fields/password-fields.component';
+import { PasswordFieldsComponent } from '@shared/features/password-fields/password-fields.component';
+import { PasswordVisibilityDirective } from '@shared/directives/password-visibility.directive';
 
 @Component({
     selector: 'app-update-password',
     templateUrl: './update-password.component.html',
     styleUrls: ['./update-password.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSuffix, MatInput, MatError, FaIconComponent, MatButton, MatIconButton, MatIcon, PasswordFieldsComponent]
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatSuffix, MatInput, MatError, FaIconComponent, MatButton, MatIconButton, MatIcon, PasswordFieldsComponent, PasswordVisibilityDirective]
 })
 export class UpdatePasswordComponent {
   private readonly logger = inject(LoggerService);
@@ -29,8 +30,6 @@ export class UpdatePasswordComponent {
 
   @Output() passwordUpdated: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() passwordUpdateCancelled: EventEmitter<boolean> = new EventEmitter<boolean>();
-
-  hideCurrentPassword = true;
 
   icons = {
     cancel: faCancel,

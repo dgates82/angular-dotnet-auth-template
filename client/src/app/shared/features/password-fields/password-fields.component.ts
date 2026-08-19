@@ -8,6 +8,7 @@ import { MatInput } from '@angular/material/input';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { PasswordVisibilityDirective } from '@shared/directives/password-visibility.directive';
 
 // Renders the "new password" + "confirm password" fields and strength
 // checklist shared by register, password-reset, and update-password. Reads
@@ -23,7 +24,7 @@ import { NgClass, NgTemplateOutlet } from '@angular/common';
   viewProviders: [
     { provide: ControlContainer, useExisting: FormGroupDirective }
   ],
-  imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatIconButton, MatIcon, NgClass, NgTemplateOutlet, FaIconComponent]
+  imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatIconButton, MatIcon, NgClass, NgTemplateOutlet, FaIconComponent, PasswordVisibilityDirective]
 })
 export class PasswordFieldsComponent {
   private readonly controlContainer = inject(ControlContainer);
@@ -45,9 +46,6 @@ export class PasswordFieldsComponent {
   @Input() centered = true;
 
   @Output() confirmPasswordEnter: EventEmitter<void> = new EventEmitter<void>();
-
-  hideNewPassword = true;
-  hideConfirmPassword = true;
 
   icons = {
     invalid: faSquareXmark,

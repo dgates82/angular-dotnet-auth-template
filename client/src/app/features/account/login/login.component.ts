@@ -18,13 +18,14 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { LoginTwoFactorComponent } from './login-two-factor/login-two-factor.component';
+import { PasswordVisibilityDirective } from '@shared/directives/password-visibility.directive';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     providers: [ObfuscateEmailPipe, ObfuscatePhonePipe],
-    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatSuffix, MatInput, MatButton, MatIconButton, MatIcon, MatProgressSpinner, RouterLink, LoginTwoFactorComponent]
+    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatSuffix, MatInput, MatButton, MatIconButton, MatIcon, MatProgressSpinner, RouterLink, LoginTwoFactorComponent, PasswordVisibilityDirective]
 })
 export class LoginComponent implements OnInit {
   private readonly logger = inject(LoggerService);
@@ -42,7 +43,6 @@ export class LoginComponent implements OnInit {
 
   isSubmitting = false;
   isInvalidLogin = false;
-  hidePassword = true;
   errorMessage = '';
   subtitle = 'Enter your details to get started.'
 
