@@ -1,17 +1,15 @@
 name: CI
 
 on:
+  # Feature branches get coverage via pull_request - open a draft PR on the first commit.
   push:
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 
 concurrency:
-  # head_ref is only set on pull_request events (the PR's source branch, unprefixed);
-  # ref_name is that same unprefixed name for push/workflow_dispatch. Without this,
-  # push and pull_request both fire for every commit on a branch with an open PR and
-  # never share a group (github.ref differs: refs/heads/x vs refs/pull/N/merge), so
-  # both run in full instead of the second cancelling the first.
-  group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
