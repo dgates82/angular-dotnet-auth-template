@@ -38,7 +38,7 @@ describe('PasswordResetComponent', () => {
     expect(fixture.componentInstance.token).toBe('reset-code-123');
   });
 
-  it('routes to enable-2fa after a first-login reset succeeds', async () => {
+  it('shows the completion message after a first-login reset, without redirecting anywhere', async () => {
     activatedRoute.snapshot.queryParams = { code: 'abc', isFirstLogin: true };
     const fixture = createFixture();
 
@@ -55,7 +55,7 @@ describe('PasswordResetComponent', () => {
     await Promise.resolve();
 
     expect(fixture.componentInstance.isComplete).toBe(true);
-    expect(router.navigate).toHaveBeenCalledWith(['/enable2fa', 'admin@example.com']);
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 
   it('surfaces an error message when the reset request fails', async () => {

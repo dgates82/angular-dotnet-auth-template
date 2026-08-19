@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   role dropdown offered "Tech"/"Manager", but `DbSeeder` only ever created "Admin",
   so assigning either threw an unhandled error. `DbSeeder` now seeds the app's
   business roles too, and is the one place to edit them.
+- The admin-created-user first-login page now shows "Create Your Password" instead
+  of "Password Reset", and pre-fills the email field instead of leaving it blank.
+  The header was hardcoded regardless of `isFirstLogin`, and the email field was
+  never populated because `EmailConfirmationPath` never asked for the `{email}`
+  token Jwt2Fa's `BuildUrl` supports - the link never carried an email address to
+  begin with.
+- Setting a password for the first time (admin-created user) no longer redirects to
+  2FA enrollment. That redirect never had anything to authenticate with -
+  `ResetPasswordAsync` doesn't establish a session the way login does - so it was
+  removed rather than gated: `login.component.ts`'s `onLoginResponse()` already
+  enforces `is2FaRequired` correctly, with a real session, the next time this user
+  actually logs in.
 - A user required to complete 2FA setup (`is2FaRequired: true`) can no longer bypass
   it by clicking Home/Profile/Users in the sidebar. `login.component.ts` already
   redirected to `/enable2fa` on login, but nothing stopped navigating away from there
