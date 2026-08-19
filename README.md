@@ -26,6 +26,7 @@ This repository provides a template for an authentication system built with Angu
 ## Project Structure
 - `/api` — the .NET backend solution (`AngularDotNetAuthTemplate.sln`, `AngularDotNetAuthTemplate.Api/`)
 - `/client` — the Angular frontend
+- `/e2e` — a [Playwright](https://playwright.dev) suite covering full auth flows (registration, login, 2FA, admin user management) end to end against the real, containerized app - see [Running the End-to-End Suite](#running-the-end-to-end-suite)
 
 The app runs as a single process: the API serves the Angular build output directly, so there's nothing to configure for cross-origin requests.
 
@@ -373,6 +374,32 @@ docker run -p 8080:8080 \
 ```
 The app listens on HTTP only inside the container (port 8080, matching the
 .NET base image's default).
+
+### Running the End-to-End Suite
+
+`/e2e` exercises full auth flows through a real browser against the actual containerized
+app - not mocks, and not a bare `dotnet run`/`ng serve` port. Start the full stack first:
+```bash
+docker compose up -d --build api
+```
+Then, from `/e2e`:
+```bash
+npm install
+npx playwright install --with-deps chromium
+npm test
+```
+Runs headless, against Chromium, by default - the same suite that runs in CI on every
+push/PR. For interactive debugging, call Playwright directly rather than through `npm
+test`: npm only forwards flags placed after a bare `npm test` if you separate them with
+`--`, so `npm test --headed` silently runs as `playwright test headed`, which finds no
+matching test files instead of doing what you'd expect.
+```bash
+npx playwright test --headed
+npx playwright test --ui
+```
+If Chromium isn't installable on your machine, `npx playwright install --with-deps
+firefox` plus `npx playwright test --project firefox` is a local-only fallback - CI
+always installs and runs Chromium only.
 
 ## Options
 

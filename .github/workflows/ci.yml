@@ -1,7 +1,10 @@
 name: CI
 
 on:
+  # Feature branches get coverage via pull_request - open a draft PR on the first commit.
   push:
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 
@@ -16,6 +19,7 @@ jobs:
   api:
     name: API build & test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -69,8 +73,9 @@ jobs:
           path: api/**/TestResults/*.trx
 
   client:
-    name: Client build
+    name: Client build & test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -98,3 +103,101 @@ jobs:
       - name: Test
         working-directory: client
         run: npm test
+
+  e2e:
+    name: End-To-End Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Adds throwaway SeedAdmin credentials on top of docker-compose.yml - local dev
+      # gets these from a gitignored appsettings.Development.json that doesn't exist
+      # in a fresh CI checkout. See docker-compose.ci.yml for why this isn't just
+      # added to docker-compose.yml directly.
+      COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Start MySQL, Mailpit & SMS mock
+        run: docker compose up -d mysql mailpit smsmock
+
+      - name: Wait for MySQL to be healthy
+        run: |
+          for i in $(seq 1 40); do
+            status=$(docker inspect --format='{{.State.Health.Status}}' auth-template-mysql 2>/dev/null || echo "starting")
+            if [ "$status" = "healthy" ]; then
+              echo "MySQL is healthy"
+              exit 0
+            fi
+            echo "Waiting for MySQL... ($i/40)"
+            sleep 3
+          done
+          echo "MySQL did not become healthy in time"
+          docker logs auth-template-mysql
+          exit 1
+
+      # The api container doesn't run migrations itself (see README's Backend Setup) -
+      # a fresh MySQL instance here has no schema at all until this runs.
+      - name: Apply database migrations
+        working-directory: api
+        run: |
+          dotnet tool restore
+          cd AngularDotNetAuthTemplate.Api
+          dotnet ef database update
+
+      # Builds and starts the full SPA + API in one container, the same way the app is
+      # actually deployed - not a bare `dotnet run`/`ng serve` port.
+      - name: Build and start the full stack
+        run: docker compose up -d --build api
+
+      - name: Wait for the app to be reachable
+        run: |
+          for i in $(seq 1 40); do
+            if curl -sf http://localhost:8080/ > /dev/null; then
+              echo "App is reachable"
+              exit 0
+            fi
+            echo "Waiting for the app... ($i/40)"
+            sleep 3
+          done
+          echo "App did not become reachable in time"
+          docker compose logs api
+          exit 1
+
+      - name: Install dependencies
+        working-directory: e2e
+        run: npm ci
+
+      # --with-deps also apt-get installs OS-level shared libraries, which hung on a
+      # flaky GitHub Actions apt mirror (azure.archive.ubuntu.com) and burned a full
+      # timeout-minutes run. GitHub's ubuntu-latest runners already ship what Chromium
+      # needs, so plain `install chromium` (binary download only, no apt/network-mirror
+      # involved) should avoid that flakiness entirely.
+      - name: Install Chromium
+        working-directory: e2e
+        run: npx playwright install chromium
+
+      - name: Test
+        working-directory: e2e
+        run: npm test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 7
