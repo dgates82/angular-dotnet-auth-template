@@ -69,7 +69,7 @@ jobs:
           path: api/**/TestResults/*.trx
 
   client:
-    name: Client build
+    name: Client build & test
     runs-on: ubuntu-latest
 
     steps:
@@ -100,7 +100,7 @@ jobs:
         run: npm test
 
   e2e:
-    name: End-to-end (Playwright)
+    name: End-To-End Test
     runs-on: ubuntu-latest
     env:
       # Adds throwaway SeedAdmin credentials on top of docker-compose.yml - local dev
