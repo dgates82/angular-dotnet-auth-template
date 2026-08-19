@@ -388,8 +388,18 @@ npm install
 npx playwright install --with-deps chromium
 npm test
 ```
-Runs headless by default; add `--headed` or `--ui` for interactive debugging. This is
-the same suite that runs in CI on every push/PR.
+Runs headless, against Chromium, by default - the same suite that runs in CI on every
+push/PR. For interactive debugging, call Playwright directly rather than through `npm
+test`: npm only forwards flags placed after a bare `npm test` if you separate them with
+`--`, so `npm test --headed` silently runs as `playwright test headed`, which finds no
+matching test files instead of doing what you'd expect.
+```bash
+npx playwright test --headed
+npx playwright test --ui
+```
+If Chromium isn't installable on your machine, `npx playwright install --with-deps
+firefox` plus `npx playwright test --project firefox` is a local-only fallback - CI
+always installs and runs Chromium only.
 
 ## Options
 

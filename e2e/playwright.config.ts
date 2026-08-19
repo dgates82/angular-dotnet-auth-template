@@ -18,5 +18,11 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    // Local-only fallback for machines without Chromium installed - CI only ever
+    // installs/runs chromium (see ci.yml), so this stays out of that run entirely.
+    ...(process.env.CI ? [] : [{
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    }]),
   ],
 });
