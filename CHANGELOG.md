@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `is2FaRequired`, so a template consumer has a real third option: mandatory, optional
   with a nudge, or optional and silent. Dismissing persists via localStorage so it
   doesn't reappear every login once acknowledged.
+- The 2FA nudge banner's link now takes the user straight into 2FA setup - deep-linking
+  to the Profile page's "Password and Security" tab and auto-starting the enable flow,
+  instead of dropping them on the default "Personal" tab with no indication of where to
+  click. Deliberately doesn't reuse the `/enable2fa/:email` route: that page is also the
+  forced first-login flow for accounts where 2FA is mandatory, and assumes a fresh
+  re-login on completion (its "Click here to login" link) - wrong assumptions for an
+  already-authenticated user optionally enabling 2FA from their profile.
 
 ### Fixed
 
