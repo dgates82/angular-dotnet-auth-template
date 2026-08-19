@@ -13,19 +13,20 @@ import { IAuthRequest } from '@interfaces/account/auth-request';
 import {ObfuscateEmailPipe} from "@core/pipes/obfuscate-email.pipe";
 import {ObfuscatePhonePipe} from "@core/pipes/obfuscate-phone.pipe";
 import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
-import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { LoginTwoFactorComponent } from './login-two-factor/login-two-factor.component';
+import { PasswordVisibilityDirective } from '@shared/directives/password-visibility.directive';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     providers: [ObfuscateEmailPipe, ObfuscatePhonePipe],
-    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatInput, MatButton, MatIcon, MatProgressSpinner, RouterLink, LoginTwoFactorComponent]
+    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatSuffix, MatInput, MatButton, MatIconButton, MatIcon, MatProgressSpinner, RouterLink, LoginTwoFactorComponent, PasswordVisibilityDirective]
 })
 export class LoginComponent implements OnInit {
   private readonly logger = inject(LoggerService);

@@ -3,9 +3,12 @@ import { AbstractControl, ControlContainer, FormGroup, FormGroupDirective, React
 
 import { faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { PasswordVisibilityDirective } from '@shared/directives/password-visibility.directive';
 
 // Renders the "new password" + "confirm password" fields and strength
 // checklist shared by register, password-reset, and update-password. Reads
@@ -21,7 +24,7 @@ import { NgClass, NgTemplateOutlet } from '@angular/common';
   viewProviders: [
     { provide: ControlContainer, useExisting: FormGroupDirective }
   ],
-  imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, NgClass, NgTemplateOutlet, FaIconComponent]
+  imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatIconButton, MatIcon, NgClass, NgTemplateOutlet, FaIconComponent, PasswordVisibilityDirective]
 })
 export class PasswordFieldsComponent {
   private readonly controlContainer = inject(ControlContainer);
