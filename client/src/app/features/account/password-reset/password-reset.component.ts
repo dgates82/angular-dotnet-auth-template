@@ -11,7 +11,7 @@ import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { PasswordFieldsComponent } from '@shared/password-fields/password-fields.component';
+import { PasswordFieldsComponent } from '@shared/features/password-fields/password-fields.component';
 
 @Component({
     selector: 'app-password-reset',

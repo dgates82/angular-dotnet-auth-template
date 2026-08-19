@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Show/hide toggle on every password field (login, register, password reset,
+  update-password) - useful on its own, and makes the strength checklist next to
+  the new-password field actually easy to verify against.
+
 ### Fixed
 
 - Assignable roles now come from `GET api/admin/roles` (backed by `RoleManager`)
