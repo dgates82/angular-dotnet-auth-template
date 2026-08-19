@@ -183,9 +183,14 @@ jobs:
         working-directory: e2e
         run: npm ci
 
+      # --with-deps also apt-get installs OS-level shared libraries, which hung on a
+      # flaky GitHub Actions apt mirror (azure.archive.ubuntu.com) and burned a full
+      # timeout-minutes run. GitHub's ubuntu-latest runners already ship what Chromium
+      # needs, so plain `install chromium` (binary download only, no apt/network-mirror
+      # involved) should avoid that flakiness entirely.
       - name: Install Chromium
         working-directory: e2e
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Test
         working-directory: e2e
