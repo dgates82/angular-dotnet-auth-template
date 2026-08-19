@@ -6,7 +6,12 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  # head_ref is only set on pull_request events (the PR's source branch, unprefixed);
+  # ref_name is that same unprefixed name for push/workflow_dispatch. Without this,
+  # push and pull_request both fire for every commit on a branch with an open PR and
+  # never share a group (github.ref differs: refs/heads/x vs refs/pull/N/merge), so
+  # both run in full instead of the second cancelling the first.
+  group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
@@ -16,6 +21,7 @@ jobs:
   api:
     name: API build & test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -71,6 +77,7 @@ jobs:
   client:
     name: Client build & test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -102,6 +109,7 @@ jobs:
   e2e:
     name: End-To-End Test
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       # Adds throwaway SeedAdmin credentials on top of docker-compose.yml - local dev
       # gets these from a gitignored appsettings.Development.json that doesn't exist
