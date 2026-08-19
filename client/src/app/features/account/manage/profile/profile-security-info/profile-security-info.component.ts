@@ -20,6 +20,9 @@ export class ProfileSecurityInfoComponent {
   // ProfileRootComponent instead of independently here.
   @Input() user!: IApplicationUser;
 
+  // Passed straight through to TwoFaRootComponent.
+  @Input() autoStartTwoFa = false;
+
   isUpdatingPassword = false;
 
   is2FaRequired = Constants.is2FaRequired;

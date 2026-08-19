@@ -3,6 +3,7 @@ import { Validators, FormBuilder, FormControl, FormsModule, ReactiveFormsModule 
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
+import { TwoFaNudgeService } from '@core/services/two-fa-nudge.service';
 import { Constants } from '@core/constants';
 import { writeAuthResponse } from '@core/auth-storage';
 
@@ -30,6 +31,7 @@ import { PasswordVisibilityDirective } from '@shared/directives/password-visibil
 export class LoginComponent implements OnInit {
   private readonly logger = inject(LoggerService);
   private readonly accountService = inject(AccountService);
+  private readonly twoFaNudgeService = inject(TwoFaNudgeService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(FormBuilder);
@@ -120,6 +122,10 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/enable2fa', this.email.value]);
         return;
       }
+
+      // Not required, so this doesn't block anything - just decides whether the
+      // dismissible nudge banner shows on whatever page the user lands on next.
+      this.twoFaNudgeService.notifyLoginSuccess(response.requiresTwoFactor);
 
       // Test secure endpoint
       this.accountService.testSecure().then(secureResponse => {
