@@ -3,6 +3,7 @@ import { Validators, FormBuilder, FormControl, FormsModule, ReactiveFormsModule 
 
 import { LoggerService } from '@core/services/logger.service';
 import { AccountService } from '@data/services/account.service';
+import { TwoFaNudgeService } from '@core/services/two-fa-nudge.service';
 import { Constants } from '@core/constants';
 import { writeAuthResponse } from '@core/auth-storage';
 
@@ -12,23 +13,25 @@ import { IAuthRequest } from '@interfaces/account/auth-request';
 import {ObfuscateEmailPipe} from "@core/pipes/obfuscate-email.pipe";
 import {ObfuscatePhonePipe} from "@core/pipes/obfuscate-phone.pipe";
 import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
-import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { LoginTwoFactorComponent } from './login-two-factor/login-two-factor.component';
+import { PasswordVisibilityDirective } from '@shared/directives/password-visibility.directive';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     providers: [ObfuscateEmailPipe, ObfuscatePhonePipe],
-    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatInput, MatButton, MatIcon, MatProgressSpinner, RouterLink, LoginTwoFactorComponent]
+    imports: [MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatCardTitle, MatCardSubtitle, MatError, MatFormField, MatLabel, MatSuffix, MatInput, MatButton, MatIconButton, MatIcon, MatProgressSpinner, RouterLink, LoginTwoFactorComponent, PasswordVisibilityDirective]
 })
 export class LoginComponent implements OnInit {
   private readonly logger = inject(LoggerService);
   private readonly accountService = inject(AccountService);
+  private readonly twoFaNudgeService = inject(TwoFaNudgeService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(FormBuilder);
@@ -119,6 +122,10 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/enable2fa', this.email.value]);
         return;
       }
+
+      // Not required, so this doesn't block anything - just decides whether the
+      // dismissible nudge banner shows on whatever page the user lands on next.
+      this.twoFaNudgeService.notifyLoginSuccess(response.requiresTwoFactor);
 
       // Test secure endpoint
       this.accountService.testSecure().then(secureResponse => {

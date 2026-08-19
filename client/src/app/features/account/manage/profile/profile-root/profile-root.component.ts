@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { MatTabGroup, MatTab, MatTabLabel } from '@angular/material/tabs';
@@ -18,6 +19,7 @@ import { IApplicationUser } from '@interfaces/account/application-user';
 export class ProfileRootComponent implements OnInit {
   private readonly logger = inject(LoggerService);
   private readonly accountService = inject(AccountService);
+  private readonly route = inject(ActivatedRoute);
 
 
   icons = {
@@ -32,8 +34,17 @@ export class ProfileRootComponent implements OnInit {
   user: IApplicationUser | null = null;
   loadError = false;
 
+  // Set via ?startTwoFa=true on the 2FA nudge banner's deep link into this page.
+  selectedTabIndex = 0;
+  autoStartTwoFa = false;
+
   ngOnInit(): void {
     this.logger.debug(`profile-root.component.ngOnInit`);
+
+    if (this.route.snapshot.queryParamMap.get('startTwoFa')) {
+      this.selectedTabIndex = 1;
+      this.autoStartTwoFa = true;
+    }
 
     const authUser = this.accountService.getLoggedInUser();
     this.accountService.getUserByEmail(authUser?.email ?? '').then(response => {

@@ -1,0 +1,8 @@
+@if (visible$ | async) {
+  <div class="alert alert-info d-flex justify-content-between align-items-center mb-0" role="alert">
+    <span>For a more secure account, consider <a [routerLink]="'/profile'" [queryParams]="{ startTwoFa: true }">enabling two-factor authentication</a>.</span>
+    <button mat-icon-button type="button" (click)="dismiss()" aria-label="Dismiss">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+}

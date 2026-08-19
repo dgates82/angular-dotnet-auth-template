@@ -27,6 +27,9 @@ export class TwoFaRootComponent implements OnInit {
   // Fetched once by ProfileRootComponent instead of independently here.
   @Input() user!: IApplicationUser;
 
+  // Set by ProfileRootComponent when arriving via the 2FA nudge banner's deep link.
+  @Input() autoStartTwoFa = false;
+
   isTwoFaEnabled = false;
   // get isTwoFaEnabledString(): string {return this.isTwoFaEnabled ? 'Enabled' : 'Disabled';}
   isTwoFaEnabledString = "";
@@ -38,6 +41,12 @@ export class TwoFaRootComponent implements OnInit {
   ngOnInit(): void {
     this.isTwoFaEnabled = this.user.twoFactorEnabled;
     this.isTwoFaEnabledString = this.isTwoFaEnabled ? 'Enabled' : 'Disabled';
+
+    if (this.autoStartTwoFa && !this.isTwoFaEnabled) {
+      this.isTwoFaEnabled = true;
+      this.isTwoFaEnabledString = "Enabling...";
+      this.isTwoFaEnabling = true;
+    }
   }
 
   onEnabledChanged(event: MatSlideToggleChange) {

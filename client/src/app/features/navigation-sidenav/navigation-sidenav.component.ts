@@ -20,12 +20,13 @@ import { NgClass } from '@angular/common';
 import { MatNavList, MatListItem, MatDivider } from '@angular/material/list';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatButton } from '@angular/material/button';
+import { TwoFaNudgeBannerComponent } from '@shared/two-fa-nudge-banner/two-fa-nudge-banner.component';
 
 @Component({
     selector: 'app-navigation-sidenav',
     templateUrl: './navigation-sidenav.component.html',
     styleUrl: './navigation-sidenav.component.scss',
-    imports: [MatSidenavContainer, MatSidenav, NgClass, MatNavList, MatListItem, RouterLink, FaIconComponent, MatDivider, MatButton, MatSidenavContent, RouterOutlet]
+    imports: [MatSidenavContainer, MatSidenav, NgClass, MatNavList, MatListItem, RouterLink, FaIconComponent, MatDivider, MatButton, MatSidenavContent, RouterOutlet, TwoFaNudgeBannerComponent]
 })
 export class NavigationSidenavComponent implements OnInit{
   private readonly accountService = inject(AccountService);
@@ -55,6 +56,7 @@ export class NavigationSidenavComponent implements OnInit{
   isLoggedIn = false;
   authResponse?: IAuthResponse;
   isAdmin = false;
+  twoFaSetupRequired = false;
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
 
@@ -127,9 +129,19 @@ export class NavigationSidenavComponent implements OnInit{
         this.authResponse = authResponse;
         this.isAdmin = this.accountService.isInRole('Admin');
       }
+
+      // Mirrors twoFaRequiredGuard's own condition.
+      const user = this.accountService.getLoggedInUser();
+      this.twoFaSetupRequired = Constants.is2FaRequired && !!user && !user.twoFactorEnabled;
+
+      // Make sure the sidenav is closed until 2FA setup is complete
+      if (this.sidenav && this.twoFaSetupRequired) {
+        this.sidenav.close();
+      }
     } else {
       this.authResponse = undefined;
       this.isAdmin = false;
+      this.twoFaSetupRequired = false;
       // Make sure the sidenav is closed if user is not authenticated
       if (this.sidenav) {
         this.sidenav.close();

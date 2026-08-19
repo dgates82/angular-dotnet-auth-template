@@ -9,6 +9,9 @@ export const environment = {
   // hardcoded in component/service code) so a template consumer can toggle
   // them per build without touching application logic.
   is2FaRequired: false,
+  // Only relevant when is2FaRequired is false - shows a dismissible nudge on login
+  // suggesting the user set up 2FA, instead of leaving it entirely unmentioned.
+  show2FaBanner: true,
   allowUserEdit: true,
   allowSelfRegister: true,
   twoFaMethods: ['Email', 'Sms', 'Authenticator'],
