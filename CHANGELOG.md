@@ -26,6 +26,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   removed rather than gated: `login.component.ts`'s `onLoginResponse()` already
   enforces `is2FaRequired` correctly, with a real session, the next time this user
   actually logs in.
+- A user required to complete 2FA setup (`is2FaRequired: true`) can no longer bypass
+  it by clicking Home/Profile/Users in the sidebar. `login.component.ts` already
+  redirected to `/enable2fa` on login, but nothing stopped navigating away from there
+  afterward - a new `twoFaRequiredGuard`, applied alongside `AuthGuard` on `/home`,
+  `/profile`, and the admin routes, now bounces back to `/enable2fa/:email` until the
+  account actually has 2FA configured. The sidebar itself still showed as normal while
+  2FA setup was pending, only to bounce the user straight back on click -
+  `navigation-sidenav.component.ts` now closes it entirely under the same condition
+  the guard checks, the same way it already does while logged out.
+- `/enable2fa/:email` had no route guard at all, so an unauthenticated visitor could
+  land on it directly and see a broken-looking enrollment page (every action on it
+  fails server-side - `enableauthenticator`/`verifyauthenticator` require a valid
+  token, and `sendtwofacode`'s own self-or-admin check rejects an anonymous caller -
+  so nothing was actually exploitable, just a confusing error instead of a redirect).
+  Added `AuthGuard` to the route, matching every other authenticated page.
 
 ## [1.0.0] - 2026-08-04
 

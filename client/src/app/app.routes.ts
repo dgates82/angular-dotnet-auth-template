@@ -18,6 +18,7 @@ import {
   EnableTwoFaRootComponent
 } from "@features/account/manage/two-fa/enable-two-fa-root/enable-two-fa-root.component";
 import { roleGuard } from "@core/guards/role.guard";
+import { twoFaRequiredGuard } from "@core/guards/two-fa-required.guard";
 import { HomeComponent } from "@features/home/home.component";
 
 export const routes: Routes = [
@@ -40,14 +41,14 @@ export const routes: Routes = [
   { path: 'email-confirmation', component: EmailConfirmationComponent, canActivate: [LoginGuard] , title: "Confirm Email - [Application Name]"},
   { path: 'email-confirmation/reset', component: PasswordResetComponent },
   /* Home */
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard], title: "Home - [Application Name]" },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard, twoFaRequiredGuard], title: "Home - [Application Name]" },
   /* Profile */
-  { path: 'profile', component: ProfileRootComponent, canActivate: [AuthGuard], title: "Profile - [Application Name]" },
-  { path: 'enable2fa/:email', component: EnableTwoFaRootComponent },
+  { path: 'profile', component: ProfileRootComponent, canActivate: [AuthGuard, twoFaRequiredGuard], title: "Profile - [Application Name]" },
+  { path: 'enable2fa/:email', component: EnableTwoFaRootComponent, canActivate: [AuthGuard] },
   /* Admin */
-  { path: 'admin/users', component: ListUsersComponent, canActivate: [AuthGuard, roleGuard(["Admin"])], title: "Users - [Application Name]" },
-  { path: 'admin/edit-user/:id', component: EditUserComponent, canActivate: [AuthGuard, roleGuard(["Admin"])]},
-  { path: 'admin/register-user', component: RegisterUserComponent, canActivate: [AuthGuard, roleGuard(["Admin"])]}
+  { path: 'admin/users', component: ListUsersComponent, canActivate: [AuthGuard, twoFaRequiredGuard, roleGuard(["Admin"])], title: "Users - [Application Name]" },
+  { path: 'admin/edit-user/:id', component: EditUserComponent, canActivate: [AuthGuard, twoFaRequiredGuard, roleGuard(["Admin"])]},
+  { path: 'admin/register-user', component: RegisterUserComponent, canActivate: [AuthGuard, twoFaRequiredGuard, roleGuard(["Admin"])]}
 
   // { path: '**', component: ApplicationRootComponent, pathMatch: 'full' }
 ];
