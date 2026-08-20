@@ -56,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   already bound to a specific account server-side), just friction: an admin-created
   user's setup page had it pre-filled, everyone else had to type it in. The account is
   now identified by `userId`, carried on the link the same way it already was for
-  email confirmation. Bumps `DGates.Identity.Jwt2Fa` to `1.0.0-beta.6`.
+  email confirmation. Bumps `DGates.Identity.Jwt2Fa` to `1.0.0-beta.7`.
 
 ### Fixed
 
