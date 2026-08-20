@@ -89,6 +89,10 @@ export class EnableTwoFaRootComponent implements OnInit {
   onTwoFaEnabled(event: string) {
     this.logger.debug(`enable-two-fa-root.component.onTwoFaEnabled | event: ${event}`);
     this.isTwoFaEnabled = event !== '';
+    // Nothing else re-runs the sidenav's twoFaSetupRequired check - without this it stays
+    // closed forever after mandatory 2FA setup completes, since the sidenav is a persistent
+    // app-shell component that only re-checks on authChanged, not on navigation.
+    this.accountService.sendAuthStateChangeNotification(this.accountService.isUserAuthenticated());
     this.twoFaEnabled.emit(event);
   }
 

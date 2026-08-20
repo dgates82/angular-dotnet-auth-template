@@ -101,6 +101,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   nothing checked that value on `/home` before it existed. Each handler now calls
   `updateStoredUser` with the enrolled method, matching the pattern already used for
   the SMS handler's phone-number update.
+- The sidenav no longer stays permanently hidden after completing mandatory 2FA
+  setup. `NavigationSidenavComponent` only recomputes `twoFaSetupRequired` (which
+  drives whether the sidenav is shown) when `AccountService.authChanged` emits, but
+  nothing emitted it after 2FA enrollment completed - the sidenav is a persistent
+  app-shell component that isn't re-instantiated on the `/enable2fa` -> `/home`
+  navigation, so it never re-checked. `EnableTwoFaRootComponent.onTwoFaEnabled` now
+  calls `sendAuthStateChangeNotification` after enrollment succeeds.
+- Completing mandatory 2FA setup no longer routes back through `/login` at all - the
+  "Click here to login" link (harmless once the two fixes above landed, since the
+  existing session is still valid, but still an unnecessary extra hop) now reads
+  "Continue to your account" and links straight to `/home`.
 
 ## [1.0.0] - 2026-08-04
 
