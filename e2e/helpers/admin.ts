@@ -1,5 +1,20 @@
 import { Page, expect } from '@playwright/test';
 
+import { dismissSwal } from './swal';
+
+/** Admin-creates a user via /admin/register-user. Only firstName/lastName/email are filled - the
+ * rest of the profile fields are optional per environment.ts's requiredProfileFields default. */
+export async function adminCreateUser(page: Page, user: { firstName: string; lastName: string; email: string }): Promise<void> {
+  await page.goto('/admin/register-user');
+  await page.locator('input[formcontrolname="email"]').fill(user.email);
+  await page.locator('input[formcontrolname="firstName"]').fill(user.firstName);
+  await page.locator('input[formcontrolname="lastName"]').fill(user.lastName);
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('User created')).toBeVisible();
+  await dismissSwal(page);
+  await page.waitForURL('**/admin/users');
+}
+
 /**
  * The users-list search box only filters on (keyup), which locator.fill() doesn't
  * dispatch - pressSequentially is required, or the list stays unfiltered and "first
