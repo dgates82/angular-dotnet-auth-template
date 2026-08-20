@@ -32,10 +32,33 @@ describe('PasswordResetComponent', () => {
     });
   });
 
-  it('reads the reset code from the query params on init', () => {
+  it('reads the reset code and userId from the query params on init', () => {
+    activatedRoute.snapshot.queryParams = { code: 'reset-code-123', userId: 'user-abc' };
     const fixture = createFixture();
 
     expect(fixture.componentInstance.token).toBe('reset-code-123');
+    expect(fixture.componentInstance.userId).toBe('user-abc');
+  });
+
+  it('sends userId (not email) in the reset-password request', async () => {
+    activatedRoute.snapshot.queryParams = { code: 'reset-code-123', userId: 'user-abc' };
+    const fixture = createFixture();
+
+    accountService.resetPassword.mockResolvedValue({ isSuccess: true });
+
+    fixture.componentInstance.resetPasswordForm.setValue({
+      newPassword: 'Password1!',
+      confirmPassword: 'Password1!',
+    });
+    fixture.componentInstance.resetPassword();
+
+    await Promise.resolve();
+
+    expect(accountService.resetPassword).toHaveBeenCalledWith({
+      userId: 'user-abc',
+      password: 'Password1!',
+      code: 'reset-code-123',
+    });
   });
 
   it('shows the completion message after a first-login reset, without redirecting anywhere', async () => {
@@ -45,7 +68,6 @@ describe('PasswordResetComponent', () => {
     accountService.resetPassword.mockResolvedValue({ isSuccess: true });
 
     fixture.componentInstance.resetPasswordForm.setValue({
-      email: 'admin@example.com',
       newPassword: 'Password1!',
       confirmPassword: 'Password1!',
     });
@@ -64,7 +86,6 @@ describe('PasswordResetComponent', () => {
     accountService.resetPassword.mockResolvedValue({ isSuccess: false });
 
     fixture.componentInstance.resetPasswordForm.setValue({
-      email: 'admin@example.com',
       newPassword: 'Password1!',
       confirmPassword: 'Password1!',
     });
@@ -81,7 +102,6 @@ describe('PasswordResetComponent', () => {
     const fixture = createFixture();
 
     fixture.componentInstance.resetPasswordForm.setValue({
-      email: 'admin@example.com',
       newPassword: 'weak',
       confirmPassword: 'weak',
     });
@@ -96,7 +116,6 @@ describe('PasswordResetComponent', () => {
     const fixture = createFixture();
 
     fixture.componentInstance.resetPasswordForm.setValue({
-      email: 'admin@example.com',
       newPassword: 'Password1!',
       confirmPassword: 'Different1!',
     });

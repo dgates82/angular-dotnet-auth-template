@@ -1,5 +1,5 @@
 export interface IResetPasswordRequest {
-  email: string;
+  userId: string;
   code: string;
-  password: string;  
+  password: string;
 }

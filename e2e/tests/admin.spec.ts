@@ -115,11 +115,6 @@ test.describe('admin user management', () => {
     await page.goto(link);
 
     await expect(page.getByText('Create Your Password')).toBeVisible();
-    // Unlike admincreateuser's own first-login email, the resent forgotpassword link
-    // doesn't carry an email query param to pre-fill this - fill it manually, same as
-    // the plain forgot-password flow already does.
-    await page.locator('input[formcontrolname="email"]').fill(targetEmail);
-
     await page.locator('input[formcontrolname="newPassword"]').fill(PASSWORD);
     await page.locator('input[formcontrolname="confirmPassword"]').fill(PASSWORD);
     await page.getByRole('button', { name: 'Reset Password' }).click();
