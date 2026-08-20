@@ -23,6 +23,17 @@
     <div class="row align-items-center">
       <div class="col-md-4">Password Set?</div>
       <div class="col-md-3">{{ user.hasSetPassword ? 'Yes' : 'No' }}</div>
+      <div class="col-md-5 text-end">
+        @if (!user.hasSetPassword && user.emailConfirmed) {
+          <button
+            mat-raised-button
+            color="primary"
+            class="w-50"
+            (click)="onResendSetupLinkClick()">
+            <mat-icon>email</mat-icon> Resend
+          </button>
+        }
+      </div>
     </div>
   </mat-card-title>
 </mat-card>

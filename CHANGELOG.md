@@ -39,6 +39,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   already-enabled 2FA method and the `is2FaRequired: true` build path are intentionally
   left out of this batch - the former needs a released fix from `DGates.Identity.Jwt2Fa`,
   the latter a second CI build config.
+- A "Resend Setup Link" action on the admin Security tab, shown once an admin-created
+  user's email is confirmed but they never set a password - the account-creation
+  email's own link is single-use, so if it's abandoned partway through (email
+  confirms, password form never submitted), the existing "Resend" button can't help
+  either, since it's gated on the email being unconfirmed. Reuses the existing public
+  `forgotpassword` endpoint rather than needing a new one. Bumped
+  `DGates.Identity.Jwt2Fa` to `1.0.0-beta.5`, which is what makes the resent link carry
+  the same first-login framing (`isFirstLogin=true`) as the original account-creation
+  email, instead of looking like a generic password reset.
 
 ### Fixed
 
