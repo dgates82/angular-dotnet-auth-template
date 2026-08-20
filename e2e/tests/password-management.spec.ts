@@ -45,7 +45,6 @@ test.describe('password management', () => {
     const link = extractLink(resetEmail, 'forgot-password/reset');
     await page.goto(link);
 
-    await page.locator('input[formcontrolname="email"]').fill(email);
     await page.locator('input[formcontrolname="newPassword"]').fill(NEW_PASSWORD);
     await page.locator('input[formcontrolname="confirmPassword"]').fill(NEW_PASSWORD);
     await page.getByRole('button', { name: 'Reset Password' }).click();

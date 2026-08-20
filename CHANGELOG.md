@@ -40,6 +40,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   left out of this batch - the former needs a released fix from `DGates.Identity.Jwt2Fa`,
   the latter a second CI build config.
 
+### Changed
+
+- The password-reset/setup form (`/forgot-password/reset`, `/email-confirmation/reset`)
+  no longer has an email field - it never added any security (the reset token is
+  already bound to a specific account server-side), just friction: an admin-created
+  user's setup page had it pre-filled, everyone else had to type it in. The account is
+  now identified by `userId`, carried on the link the same way it already was for
+  email confirmation. Bumps `DGates.Identity.Jwt2Fa` to `1.0.0-beta.6`.
+
 ### Fixed
 
 - Assignable roles now come from `GET api/admin/roles` (backed by `RoleManager`)
