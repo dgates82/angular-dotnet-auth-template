@@ -92,6 +92,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   token, and `sendtwofacode`'s own self-or-admin check rejects an anonymous caller -
   so nothing was actually exploitable, just a confusing error instead of a redirect).
   Added `AuthGuard` to the route, matching every other authenticated page.
+- Completing mandatory 2FA setup (`is2FaRequired: true`) via email, SMS, or
+  authenticator no longer redirect-loops back to `/enable2fa` when clicking "Click
+  here to login" or refreshing. None of the three enrollment success handlers ever
+  updated the locally cached user's `twoFactorEnabled`/`twoFactorMethod`, so
+  `twoFaRequiredGuard` (added above, for #82) kept reading the stale cached value and
+  bouncing back to setup - a regression that guard exposed rather than caused, since
+  nothing checked that value on `/home` before it existed. Each handler now calls
+  `updateStoredUser` with the enrolled method, matching the pattern already used for
+  the SMS handler's phone-number update.
 
 ## [1.0.0] - 2026-08-04
 
