@@ -103,7 +103,11 @@ export class EnableTwoFaPhoneComponent implements OnInit{
 
       if (response.isVerified){
         this.isVerified = true;
-        this.accountService.updateStoredUser({ phoneNumber: this.phoneNumber.value });
+        this.accountService.updateStoredUser({
+          phoneNumber: this.phoneNumber.value,
+          twoFactorEnabled: true,
+          twoFactorMethod: 'Phone'
+        });
         this.twoFaEnabled.emit('Sms');
       } else {
         this.errorMessage = response.message ?? 'An error occurred';

@@ -1,0 +1,12 @@
+# CI-only override, applied on top of docker-compose.yml (docker compose -f
+# docker-compose.yml -f docker-compose.ci.yml ...). Local dev relies on a gitignored
+# appsettings.Development.json for SeedAdmin credentials, which doesn't exist in a
+# fresh CI checkout - this provides throwaway ones scoped to CI runs only, without
+# touching docker-compose.yml's own defaults (env vars take precedence over
+# appsettings.*.json, so setting these there unconditionally would silently override
+# any local developer's own SeedAdmin configuration).
+services:
+  api:
+    environment:
+      SeedAdmin__Email: "admin@example.com"
+      SeedAdmin__Password: "Password1!"

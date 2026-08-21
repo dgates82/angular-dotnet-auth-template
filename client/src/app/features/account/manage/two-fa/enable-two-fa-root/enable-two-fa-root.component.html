@@ -40,12 +40,6 @@
                 </app-enable-two-fa-phone>
               </div>
             }
-            <!-- link to login again -->
-            @if (isTwoFaEnabled) {
-              <div>
-                <h3>Click here to <a [routerLink]="['/login']">login</a></h3>
-              </div>
-            }
           </div>
         </div>
       </mat-card>

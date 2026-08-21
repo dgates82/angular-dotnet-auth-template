@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using AngularDotNetAuthTemplate.Api.Data;
+using DGates.Identity.Jwt2Fa.Capabilities;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AngularDotNetAuthTemplate.Api.Models
 {
     /// <summary>The Identity user entity, extended with the app's own profile, 2FA, and audit fields.</summary>
-    public class ApplicationUser : IdentityUser, IEntity
+    public class ApplicationUser : IdentityUser, IEntity, IActivatableUser, IAdminProvisionableUser, IMultiFactorMethodUser, IRoleAwareUser
     {
         /// <summary>Whether the user has set their own password, as opposed to still using an admin-assigned one.</summary>
         public bool HasSetPassword { get; set; } = false;

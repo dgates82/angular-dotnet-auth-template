@@ -6,6 +6,7 @@ import { AccountService } from '@data/services/account.service';
 import { IApplicationUser } from '@interfaces/account/application-user';
 import Swal from 'sweetalert2';
 import { IEmailOnlyRequest } from '@interfaces/account/email-only-request';
+import { IForgotPasswordRequest } from '@interfaces/account/forgot-password-request';
 import { MatCard, MatCardTitle } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -107,6 +108,35 @@ export class AdminSecurityInfoComponent implements OnInit {
       Swal.fire({
         title: 'Error',
         text: 'There was an error sending the email confirmation. Please try again.',
+        icon: 'error'
+      });
+
+    });
+
+  }
+
+  onResendSetupLinkClick() {
+    this.logger.debug(`admin-security-info.component.onResendSetupLinkClick`);
+
+    // Resend setup link
+    const request: IForgotPasswordRequest = {
+      email: this.user.email
+    };
+    this.accountService.sendForgotPassword(request).then(response => {
+      this.logger.trace(`admin-security-info.component.onResendSetupLinkClick: response:`, response);
+
+      // Confirm success
+      Swal.fire({
+        title: 'Setup Link Sent',
+        icon: 'success'
+      });
+
+    }).catch(err => {
+      this.logger.error(`admin-security-info.component.onResendSetupLinkClick: error:`, err);
+
+      Swal.fire({
+        title: 'Error',
+        text: 'There was an error sending the setup link. Please try again.',
         icon: 'error'
       });
 

@@ -43,7 +43,7 @@ export class AccountService {
   private readonly jwtHelper = inject(JwtHelperService);
 
 
-  private apiUrl = `${this.locationStrategy.getBaseHref()}api/account`
+  private apiUrl = `${this.locationStrategy.getBaseHref()}api/auth`
 
   public authChanged: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -162,7 +162,7 @@ export class AccountService {
   }
 
   async resetPassword(request: IResetPasswordRequest): Promise<IResponse> {
-    this.logger.debug(`account.service.resetPassword | email: ${request.email}`);
+    this.logger.debug(`account.service.resetPassword | userId: ${request.userId}`);
 
     const url = `${this.apiUrl}/resetpassword`;
     return lastValueFrom(this.httpClient.post<IResponse>(url, request, { ...Constants.postOptions, context: silentContext }).pipe(

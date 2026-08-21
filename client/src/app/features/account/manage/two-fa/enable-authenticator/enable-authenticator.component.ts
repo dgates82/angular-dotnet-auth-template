@@ -92,6 +92,7 @@ export class EnableAuthenticatorComponent implements OnInit {
         // Display recovery
         this.isVerified = true;
         this.recoveryCodes = response.codes;
+        this.accountService.updateStoredUser({ twoFactorEnabled: true, twoFactorMethod: 'Authenticator' });
         this.authenticatorEnabled.emit('Authenticator');
 
       } else {

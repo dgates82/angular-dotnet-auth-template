@@ -5,15 +5,13 @@ import { FormArray, FormBuilder, FormControl, Validators, FormsModule, ReactiveF
 import { LoggerService } from '@core/services/logger.service';
 import { AddressService } from '@core/services/address.service';
 import { UserService } from '@data/services/user.service';
-import { Constants } from '@core/constants';
+import { RoleService } from '@data/services/role.service';
 
 import { IApplicationUser } from '@interfaces/account/application-user';
 import { IState } from '@interfaces/address/state';
 import Swal from 'sweetalert2';
 
 import { faCancel, faSave } from '@fortawesome/free-solid-svg-icons';
-import { IEmailOnlyRequest } from '@interfaces/account/email-only-request';
-import { AccountService } from '@data/services/account.service';
 import { ProfileFieldValidators } from '@core/validators/profile-field-validators';
 import { MatCard, MatCardTitle, MatCardContent } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/form-field';
@@ -34,12 +32,12 @@ export class RegisterUserComponent implements OnInit {
   private readonly logger = inject(LoggerService);
   private readonly addressService = inject(AddressService);
   private readonly userService = inject(UserService);
-  private readonly accountService = inject(AccountService);
+  private readonly roleService = inject(RoleService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
 
 
-  availableRoles: string[] = Constants.availableRoles;
+  availableRoles: string[] = [];
 
   states!: IState[];
 
@@ -84,6 +82,13 @@ export class RegisterUserComponent implements OnInit {
       this.states = states;
     }).catch(err => {
       this.logger.error(`register-user.component.ngOnInit | Failed to load states:`, err);
+    });
+
+    this.roleService.get().then(roles => {
+      this.logger.trace(`register-user.component.ngOnInit | roles:`, roles);
+      this.availableRoles = roles;
+    }).catch(err => {
+      this.logger.error(`register-user.component.ngOnInit | Failed to load roles:`, err);
     });
   }
 
@@ -181,34 +186,14 @@ export class RegisterUserComponent implements OnInit {
   }
 
   onUserCreatedSuccess(response: IApplicationUser): void {
-    // Confirm
+    // admincreateuser already sends the confirmation/first-login email atomically -
+    // no separate sendConfirmEmail call needed here.
+    this.logger.trace(`register-user.component.onUserCreatedSuccess | response:`, response);
+
     Swal.fire({
       title: 'User created',
       icon: 'success',
       heightAuto: false
-    });
-
-    // Send email confirmation
-    const request: IEmailOnlyRequest = {
-      email: response.email
-    };
-    this.accountService.sendConfirmEmail(request).then(response => {
-      this.logger.trace(`register-user.component.onSaveClick | response:`, response);
-      if (!response.isSuccess) {
-        this.logger.error(`register-user.component.onSaveClick | error: ${response.message}`);
-        Swal.fire({
-          title: 'Error',
-          text: 'There was an error sending the email confirmation. Please resend',
-          icon: 'error'
-        });
-      }
-    }).catch(error => {
-      this.logger.error(`register-user.component.onSaveClick | error:`, error);
-      Swal.fire({
-        title: 'Error',
-        text: 'There was an error sending the email confirmation. Please resend',
-        icon: 'error'
-      });
     });
 
     // Route to list

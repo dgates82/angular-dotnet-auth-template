@@ -2,6 +2,7 @@ export const environment = {
   production: true,
 
   is2FaRequired: false,
+  show2FaBanner: true,
   allowUserEdit: true,
   allowSelfRegister: true,
   twoFaMethods: ['Email', 'Sms', 'Authenticator'],
@@ -9,12 +10,10 @@ export const environment = {
   requiredProfileFields: {
     firstName: true,
     lastName: true,
-    phoneNumber: true,
-    streetAddress: true,
-    city: true,
-    zipCode: true,
-    state: true,
+    phoneNumber: false,
+    streetAddress: false,
+    city: false,
+    zipCode: false,
+    state: false,
   },
-
-  availableRoles: ['Admin', 'Tech', 'Manager'],
 };

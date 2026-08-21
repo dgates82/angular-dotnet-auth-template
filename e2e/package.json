@@ -1,0 +1,13 @@
+{
+  "name": "angular-dotnet-auth-template-e2e",
+  "private": true,
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "@types/node": "20.19.43",
+    "otplib": "12.0.1",
+    "typescript": "7.0.2"
+  }
+}

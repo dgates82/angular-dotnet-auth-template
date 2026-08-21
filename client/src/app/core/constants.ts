@@ -13,6 +13,10 @@ export class Constants {
   // consumer can toggle them per build without touching component code.
   public static is2FaRequired = environment.is2FaRequired;
 
+  // Only meaningful when is2FaRequired is false - is2FaRequired: true has its own,
+  // separate forced-setup flow that this doesn't affect either way.
+  public static show2FaBanner = environment.show2FaBanner;
+
   public static allowUserEdit = environment.allowUserEdit;
 
   public static allowSelfRegister = environment.allowSelfRegister;
@@ -21,10 +25,9 @@ export class Constants {
 
   public static requiredProfileFields = environment.requiredProfileFields;
 
-  public static availableRoles = environment.availableRoles;
-
   public static LocalStorageKeys = {
     sideNavExpanded: 'sideNavExpanded',
+    twoFaBannerDismissed: 'twoFaBannerDismissed',
   }
 
 }

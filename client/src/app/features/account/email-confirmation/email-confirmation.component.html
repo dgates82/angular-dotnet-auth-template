@@ -18,12 +18,6 @@
             @if (isConfirmed) {
               <p class="mt-2">Your email has been confirmed. Continue to <a [routerLink]="['/login']">login</a></p>
             }
-            @if (isConfirmed && emailAddress) {
-              <p class="mt-2">
-                For a more secure experience,
-                <a [routerLink]="['/enable2fa', emailAddress]">Enable 2FA</a>
-              </p>
-            }
           </div>
         </div>
       </mat-card-content>

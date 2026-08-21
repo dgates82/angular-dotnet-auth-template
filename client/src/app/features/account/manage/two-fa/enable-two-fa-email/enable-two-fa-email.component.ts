@@ -72,6 +72,7 @@ export class EnableTwoFaEmailComponent implements OnInit{
 
       if (response.isVerified){
         this.isVerified = true;
+        this.accountService.updateStoredUser({ twoFactorEnabled: true, twoFactorMethod: 'Email' });
 
         this.twoFaEnabled.emit('Email');
 

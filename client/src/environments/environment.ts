@@ -9,6 +9,9 @@ export const environment = {
   // hardcoded in component/service code) so a template consumer can toggle
   // them per build without touching application logic.
   is2FaRequired: false,
+  // Only relevant when is2FaRequired is false - shows a dismissible nudge on login
+  // suggesting the user set up 2FA, instead of leaving it entirely unmentioned.
+  show2FaBanner: true,
   allowUserEdit: true,
   allowSelfRegister: true,
   twoFaMethods: ['Email', 'Sms', 'Authenticator'],
@@ -21,18 +24,12 @@ export const environment = {
   requiredProfileFields: {
     firstName: true,
     lastName: true,
-    phoneNumber: true,
-    streetAddress: true,
-    city: true,
-    zipCode: true,
-    state: true,
+    phoneNumber: false,
+    streetAddress: false,
+    city: false,
+    zipCode: false,
+    state: false,
   },
-
-  // TODO(template): "Tech"/"Manager" are this app's own business roles -
-  // replace with whatever roles your application needs. "Admin" is assumed
-  // to exist elsewhere (SeedAdmin, route guards, navigation) - keep it
-  // unless those are updated too.
-  availableRoles: ['Admin', 'Tech', 'Manager'],
 };
 
 /*
