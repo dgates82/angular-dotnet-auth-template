@@ -108,10 +108,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   app-shell component that isn't re-instantiated on the `/enable2fa` -> `/home`
   navigation, so it never re-checked. `EnableTwoFaRootComponent.onTwoFaEnabled` now
   calls `sendAuthStateChangeNotification` after enrollment succeeds.
-- Completing mandatory 2FA setup no longer routes back through `/login` at all - the
-  "Click here to login" link (harmless once the two fixes above landed, since the
-  existing session is still valid, but still an unnecessary extra hop) now reads
-  "Continue to your account" and links straight to `/home`.
+- Completing mandatory 2FA setup no longer shows the sidenav alongside a "Continue to
+  your account" confirmation screen. `EnableTwoFaRootComponent.onTwoFaEnabled` notified
+  the sidenav to reopen in the same handler that displayed that confirmation message,
+  so both appeared at once while the user was still on the enrollment page. It now
+  navigates straight to `/home` on success, with a SweetAlert2 success notification
+  (matching the pattern used elsewhere in the app) firing alongside the navigation
+  instead of a static confirmation page.
 
 ## [1.0.0] - 2026-08-04
 

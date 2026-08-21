@@ -2,23 +2,25 @@ import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular
 import {LoggerService} from "@core/services/logger.service";
 import {Constants} from "@core/constants";
 import {AccountService} from "@data/services/account.service";
-import { ActivatedRoute, RouterLink } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { MatCard } from '@angular/material/card';
 import { EnableTwoFaMethodsComponent } from '../enable-two-fa-methods/enable-two-fa-methods.component';
 import { EnableAuthenticatorComponent } from '../enable-authenticator/enable-authenticator.component';
 import { EnableTwoFaEmailComponent } from '../enable-two-fa-email/enable-two-fa-email.component';
 import { EnableTwoFaPhoneComponent } from '../enable-two-fa-phone/enable-two-fa-phone.component';
+import Swal from "sweetalert2";
 
 @Component({
     selector: 'app-enable-two-fa-root',
     templateUrl: './enable-two-fa-root.component.html',
     styleUrls: ['./enable-two-fa-root.component.scss'],
-    imports: [MatCard, EnableTwoFaMethodsComponent, EnableAuthenticatorComponent, EnableTwoFaEmailComponent, EnableTwoFaPhoneComponent, RouterLink]
+    imports: [MatCard, EnableTwoFaMethodsComponent, EnableAuthenticatorComponent, EnableTwoFaEmailComponent, EnableTwoFaPhoneComponent]
 })
 export class EnableTwoFaRootComponent implements OnInit {
   private readonly logger = inject(LoggerService);
   private readonly accountService = inject(AccountService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
 
   @Input() email = '';
@@ -33,8 +35,6 @@ export class EnableTwoFaRootComponent implements OnInit {
   showEnableTwoFaSms = false;
 
   isRouted = false;
-
-  isTwoFaEnabled = false;
 
   ngOnInit() {
     this.logger.debug(`enable-two-fa-root.component.ngOnInit`);
@@ -88,12 +88,24 @@ export class EnableTwoFaRootComponent implements OnInit {
 
   onTwoFaEnabled(event: string) {
     this.logger.debug(`enable-two-fa-root.component.onTwoFaEnabled | event: ${event}`);
-    this.isTwoFaEnabled = event !== '';
-    // Nothing else re-runs the sidenav's twoFaSetupRequired check - without this it stays
-    // closed forever after mandatory 2FA setup completes, since the sidenav is a persistent
-    // app-shell component that only re-checks on authChanged, not on navigation.
-    this.accountService.sendAuthStateChangeNotification(this.accountService.isUserAuthenticated());
     this.twoFaEnabled.emit(event);
+
+    // Embedded settings-page flow (isRouted false) stays put; its own parent handles the event.
+    if (!this.isRouted) {
+      return;
+    }
+
+    // Notifies the persistent sidenav to recheck twoFaSetupRequired, timed to the /home nav below.
+    this.accountService.sendAuthStateChangeNotification(this.accountService.isUserAuthenticated());
+
+    Swal.fire({
+      title: 'Two-factor authentication enabled',
+      text: 'Your account is now protected with two-factor authentication.',
+      icon: 'success',
+      heightAuto: false
+    });
+
+    this.router.navigate(['/home']);
   }
 
   protected readonly Constants = Constants;
