@@ -92,6 +92,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   token, and `sendtwofacode`'s own self-or-admin check rejects an anonymous caller -
   so nothing was actually exploitable, just a confusing error instead of a redirect).
   Added `AuthGuard` to the route, matching every other authenticated page.
+- Completing mandatory 2FA setup (`is2FaRequired: true`) via email, SMS, or
+  authenticator no longer redirect-loops back to `/enable2fa` when clicking "Click
+  here to login" or refreshing. None of the three enrollment success handlers ever
+  updated the locally cached user's `twoFactorEnabled`/`twoFactorMethod`, so
+  `twoFaRequiredGuard` (added above, for #82) kept reading the stale cached value and
+  bouncing back to setup - a regression that guard exposed rather than caused, since
+  nothing checked that value on `/home` before it existed. Each handler now calls
+  `updateStoredUser` with the enrolled method, matching the pattern already used for
+  the SMS handler's phone-number update.
+- The sidenav no longer stays permanently hidden after completing mandatory 2FA
+  setup. `NavigationSidenavComponent` only recomputes `twoFaSetupRequired` (which
+  drives whether the sidenav is shown) when `AccountService.authChanged` emits, but
+  nothing emitted it after 2FA enrollment completed - the sidenav is a persistent
+  app-shell component that isn't re-instantiated on the `/enable2fa` -> `/home`
+  navigation, so it never re-checked. `EnableTwoFaRootComponent.onTwoFaEnabled` now
+  calls `sendAuthStateChangeNotification` after enrollment succeeds.
+- Completing mandatory 2FA setup no longer shows the sidenav alongside a "Continue to
+  your account" confirmation screen. `EnableTwoFaRootComponent.onTwoFaEnabled` notified
+  the sidenav to reopen in the same handler that displayed that confirmation message,
+  so both appeared at once while the user was still on the enrollment page. It now
+  navigates straight to `/home` on success, with a SweetAlert2 success notification
+  (matching the pattern used elsewhere in the app) firing alongside the navigation
+  instead of a static confirmation page.
 
 ## [1.0.0] - 2026-08-04
 
