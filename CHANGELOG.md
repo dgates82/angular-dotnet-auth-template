@@ -121,7 +121,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and no method for the setup screen to show - a self-contradictory config, not a
   runtime edge case, so a new `provideAppInitializer` check throws a clear error
   rather than letting it surface as a broken UI a developer has to debug from
-  scratch.
+  scratch. `main.ts`'s bootstrap failure handler now also renders that error
+  directly on the page instead of only logging it - a blank screen with nothing
+  but a console message was easy to miss entirely.
 
 ### Security
 
