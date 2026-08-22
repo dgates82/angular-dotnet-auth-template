@@ -118,7 +118,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-- Bumped `DGates.Identity.Jwt2Fa` to `1.0.0-beta.8`, which requires the caller to be
+- Bumped `DGates.Identity.Jwt2Fa` to `1.0.0`, which requires the caller to be
   the target account or hold the admin role on `changepassword` - previously any
   authenticated user could change a different account's password given that
   account's current password, since the endpoint only required some valid JWT
