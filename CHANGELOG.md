@@ -124,6 +124,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   scratch. `main.ts`'s bootstrap failure handler now also renders that error
   directly on the page instead of only logging it - a blank screen with nothing
   but a console message was easy to miss entirely.
+- A `twoFaMethods` config with exactly one method no longer leaves the 2FA
+  enrollment screen blank. `EnableTwoFaRootComponent.ngOnInit`'s single-method
+  branch only logged instead of setting the matching `show*` flag, so a
+  template consumer configured with just one method saw nothing when a user
+  tried to enroll - now it routes straight into that method's flow, the same
+  way the multi-method chooser already does per selection.
 
 ### Security
 
