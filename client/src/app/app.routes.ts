@@ -19,6 +19,7 @@ import {
 } from "@features/account/manage/two-fa/enable-two-fa-root/enable-two-fa-root.component";
 import { roleGuard } from "@core/guards/role.guard";
 import { twoFaRequiredGuard } from "@core/guards/two-fa-required.guard";
+import { allowSelfRegisterGuard } from "@core/guards/allow-self-register.guard";
 import { HomeComponent } from "@features/home/home.component";
 
 export const routes: Routes = [
@@ -36,7 +37,7 @@ export const routes: Routes = [
   { path: 'forgot-password/reset', component: PasswordResetComponent },
   { path: 'forgot-password/reset/:code', component: PasswordResetComponent },
   /* Register */
-  { path: 'register', component: RegisterComponent, canActivate: [LoginGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [LoginGuard, allowSelfRegisterGuard] },
   /* Email Confirmation */
   { path: 'email-confirmation', component: EmailConfirmationComponent, canActivate: [LoginGuard] , title: "Confirm Email - [Application Name]"},
   { path: 'email-confirmation/reset', component: PasswordResetComponent },

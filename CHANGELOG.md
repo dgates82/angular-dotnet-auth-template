@@ -115,6 +115,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   navigates straight to `/home` on success, with a SweetAlert2 success notification
   (matching the pattern used elsewhere in the app) firing alongside the navigation
   instead of a static confirmation page.
+- `allowSelfRegister: false` now actually blocks self-registration. It previously
+  only hid the "Register" link on the login page - the `/register` route itself had
+  no corresponding guard, so a direct visit still rendered a fully working
+  registration form regardless of the flag. A new `allowSelfRegisterGuard`
+  redirects to `/login` when the flag is off, matching the pattern already used for
+  `LoginGuard`/`twoFaRequiredGuard`.
 
 ### Security
 
