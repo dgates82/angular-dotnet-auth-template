@@ -115,6 +115,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   navigates straight to `/home` on success, with a SweetAlert2 success notification
   (matching the pattern used elsewhere in the app) firing alongside the navigation
   instead of a static confirmation page.
+- The Profile page's 2FA toggle is now disabled (with an explanatory tooltip) when
+  `twoFaMethods` is empty, matching the existing disable pattern already used for
+  `is2FaRequired`. Previously it stayed enabled with nothing configured to enable -
+  turning it on rendered the enrollment screen with no method to show, leaving the
+  toggle stuck on "Enabling..." with no way to proceed.
 - `allowSelfRegister: false` now actually blocks self-registration. It previously
   only hid the "Register" link on the login page - the `/register` route itself had
   no corresponding guard, so a direct visit still rendered a fully working
