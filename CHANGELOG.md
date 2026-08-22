@@ -116,6 +116,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (matching the pattern used elsewhere in the app) firing alongside the navigation
   instead of a static confirmation page.
 
+### Security
+
+- Bumped `DGates.Identity.Jwt2Fa` to `1.0.0`, which requires the caller to be
+  the target account or hold the admin role on `changepassword` - previously any
+  authenticated user could change a different account's password given that
+  account's current password, since the endpoint only required some valid JWT
+  rather than the target's own.
+
 ## [1.0.0] - 2026-08-04
 
 ### Added
