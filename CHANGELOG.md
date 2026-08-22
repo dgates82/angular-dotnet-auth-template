@@ -115,6 +115,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   navigates straight to `/home` on success, with a SweetAlert2 success notification
   (matching the pattern used elsewhere in the app) firing alongside the navigation
   instead of a static confirmation page.
+- `is2FaRequired: true` with an empty `twoFaMethods` list now fails loudly at
+  startup instead of silently locking every user out. That combination left
+  `twoFaRequiredGuard` forcing everyone through 2FA setup with no way to skip it
+  and no method for the setup screen to show - a self-contradictory config, not a
+  runtime edge case, so a new `provideAppInitializer` check throws a clear error
+  rather than letting it surface as a broken UI a developer has to debug from
+  scratch. `main.ts`'s bootstrap failure handler now also renders that error
+  directly on the page instead of only logging it - a blank screen with nothing
+  but a console message was easy to miss entirely.
 
 ### Security
 
