@@ -120,6 +120,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `is2FaRequired`. Previously it stayed enabled with nothing configured to enable -
   turning it on rendered the enrollment screen with no method to show, leaving the
   toggle stuck on "Enabling..." with no way to proceed.
+- `allowSelfRegister: false` now actually blocks self-registration. It previously
+  only hid the "Register" link on the login page - the `/register` route itself had
+  no corresponding guard, so a direct visit still rendered a fully working
+  registration form regardless of the flag. A new `allowSelfRegisterGuard`
+  redirects to `/login` when the flag is off, matching the pattern already used for
+  `LoginGuard`/`twoFaRequiredGuard`.
+- `is2FaRequired: true` with an empty `twoFaMethods` list now fails loudly at
+  startup instead of silently locking every user out. That combination left
+  `twoFaRequiredGuard` forcing everyone through 2FA setup with no way to skip it
+  and no method for the setup screen to show - a self-contradictory config, not a
+  runtime edge case, so a new `provideAppInitializer` check throws a clear error
+  rather than letting it surface as a broken UI a developer has to debug from
+  scratch. `main.ts`'s bootstrap failure handler now also renders that error
+  directly on the page instead of only logging it - a blank screen with nothing
+  but a console message was easy to miss entirely.
+- A `twoFaMethods` config with exactly one method no longer leaves the 2FA
+  enrollment screen blank. `EnableTwoFaRootComponent.ngOnInit`'s single-method
+  branch only logged instead of setting the matching `show*` flag, so a
+  template consumer configured with just one method saw nothing when a user
+  tried to enroll - now it routes straight into that method's flow, the same
+  way the multi-method chooser already does per selection.
 
 ### Security
 
