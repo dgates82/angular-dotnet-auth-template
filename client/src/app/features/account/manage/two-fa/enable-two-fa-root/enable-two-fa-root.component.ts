@@ -55,8 +55,9 @@ export class EnableTwoFaRootComponent implements OnInit {
       this.showMethods = true;
     }
     // Otherwise, display the only method available
-    else {
+    else if (this.twoFaMethods.length === 1) {
       this.logger.debug(`enable-two-fa-root.component.ngOnInit | Single two-factor method available`);
+      this.onMethodSelected(this.twoFaMethods[0]);
     }
 
   }
