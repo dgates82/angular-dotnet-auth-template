@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
@@ -13,6 +13,7 @@ import { provideSweetAlert2 } from '@sweetalert2/ngx-sweetalert2';
 import { routes } from './app.routes';
 import { tokenGetter } from '@core/token-getter';
 import { errorInterceptor } from '@core/interceptors/error.interceptor';
+import { validateTwoFaConfig } from '@core/validators/startup-config.validator';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,6 +22,7 @@ export const appConfig: ApplicationConfig = {
     // success) never trigger change detection, leaving the UI stuck
     // showing stale state even though the underlying data updated.
     provideZoneChangeDetection({ eventCoalescing: true }),
+    provideAppInitializer(validateTwoFaConfig),
     provideRouter(routes),
     provideAnimations(),
     // withInterceptorsFromDi() is load-bearing: it's what wires up JwtModule's JwtInterceptor below.
