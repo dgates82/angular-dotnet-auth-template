@@ -37,6 +37,7 @@ export class TwoFaRootComponent implements OnInit {
   isTwoFaEnabling = false;
 
   isTwoFaRequired: boolean = Constants.is2FaRequired;
+  noTwoFaMethodsConfigured: boolean = Constants.twoFaMethods.length === 0;
 
   ngOnInit(): void {
     this.isTwoFaEnabled = this.user.twoFactorEnabled;

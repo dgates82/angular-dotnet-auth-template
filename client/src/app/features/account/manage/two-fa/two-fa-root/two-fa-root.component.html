@@ -5,8 +5,8 @@
       <mat-slide-toggle class="mt-2"
         [(ngModel)]="isTwoFaEnabled"
         color="primary"
-        [disabled]="isTwoFaRequired"
-        [matTooltip]="isTwoFaRequired ? '2FA is required for this site' : ''"
+        [disabled]="isTwoFaRequired || noTwoFaMethodsConfigured"
+        [matTooltip]="isTwoFaRequired ? '2FA is required for this site' : noTwoFaMethodsConfigured ? 'No 2FA methods are configured for this site' : ''"
         (change)="onEnabledChanged($event)">
         <span class="ms-2">{{ isTwoFaEnabledString }}</span>
       </mat-slide-toggle>
