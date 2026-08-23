@@ -26,7 +26,7 @@ This repository provides a template for an authentication system built with Angu
 ## Project Structure
 - `/api` — the .NET backend solution (`AngularDotNetAuthTemplate.sln`, `AngularDotNetAuthTemplate.Api/`)
 - `/client` — the Angular frontend
-- `/e2e` — a [Playwright](https://playwright.dev) suite covering full auth flows (registration, login, 2FA, admin user management) end to end against the real, containerized app - see [Running the End-to-End Suite](#running-the-end-to-end-suite)
+- `/e2e` — a [Playwright](https://playwright.dev) suite covering full auth flows (registration, login, 2FA, admin user management) end to end against the real, containerized app — see [Running the End-to-End Suite](#running-the-end-to-end-suite)
 
 The app runs as a single process: the API serves the Angular build output directly, so there's nothing to configure for cross-origin requests.
 
@@ -50,11 +50,11 @@ git grep -n "\[Application Name\]" -- api client/src
 
 What's currently marked:
 
-- **App name in emails/SMS/authenticator app** —
-  `api/AngularDotNetAuthTemplate.Api/Controllers/API/AccountController.cs`
-  has `[Application Name]` in the confirmation, password reset, and 2FA
-  email/SMS copy, plus the issuer name shown in authenticator apps
-  (`GenerateQrCodeUri`). The Angular route `title`s in
+- **App name in emails/SMS/authenticator app** — `appsettings.json`'s
+  `Jwt2FaAuthCoreConfig.ApplicationName` has `[Application Name]`, substituted
+  into the confirmation, password reset, and 2FA email/SMS copy (see [JWT
+  Configuration](#jwt-configuration) below) and the issuer name shown in
+  authenticator apps. The Angular route `title`s in
   `client/src/app/app.routes.ts` and `client/src/index.html`'s default
   `<title>` use the same placeholder.
 - **Logo and favicon** — `client/src/assets/images/logo-small.png` (used
@@ -80,28 +80,56 @@ What's currently marked:
 
 ### JWT Configuration
 
-`JwtConfigs.securityKey` in `appsettings.json` ships with an obviously-fake
+> **Upgrading a repo generated before v1.1.0?** This section's config shape
+> changed when auth/JWT/2FA logic moved into `DGates.Identity.Jwt2Fa`.
+> `JwtConfigs` is now `Jwt2FaConfig`, with the same three keys but
+> PascalCase (`securityKey`→`SecurityKey`, `validIssuer`→`ValidIssuer`,
+> `validAudience`→`ValidAudience`), plus a new `AdminRoleName` key. There's
+> also a brand-new `Jwt2FaAuthCoreConfig` block that didn't exist before —
+> if you'd customized the `[Application Name]` placeholder directly in the
+> now-deleted `AccountController.cs`, that value moves to
+> `Jwt2FaAuthCoreConfig.ApplicationName` instead.
+
+JWT issuance and multi-channel 2FA (Authenticator/TOTP, Email, SMS) are
+provided by
+[`DGates.Identity.Jwt2Fa`](https://github.com/dgates82/DGates.Identity.Jwt2Fa),
+a NuGet package referenced from `AngularDotNetAuthTemplate.Api.csproj`, not
+implemented in this repo. Real, claims-bearing JWTs plus multi-channel 2FA
+delivery — not just "Identity as a JSON API" — is the whole point of the
+package; see its own README for the full pitch and config surface. Fixes and
+new capabilities land in the package and reach generated repos via an
+ordinary package update, not a template re-sync.
+
+`Jwt2FaConfig.SecurityKey` in `appsettings.json` ships with an obviously-fake
 default (`...ReplaceMe`); replace it with a real secret before any real
-deployment, and never commit the real value. `validIssuer`/`validAudience`
+deployment, and never commit the real value. `ValidIssuer`/`ValidAudience`
 in the same block are just internal labels the client and server need to
 agree on, but worth updating to reflect your actual app/API name too.
+`AdminRoleName` is the Identity role treated as admin for the package's
+admin-only endpoints, and `Jwt2FaAuthCoreConfig` (the block below it)
+carries the app name substituted into emails/SMS/authenticator issuer
+(`ApplicationName`) plus the frontend links those emails point at
+(`FrontendBaseUrl` and the two `*Path` templates) — see the package's own
+README for the rest of its configuration surface (per-email/SMS
+subject/body overrides, etc.).
 
 Via `appsettings.Development.json` (gitignored):
 ```json
 {
-  "JwtConfigs": {
-    "securityKey": "some-long-random-secret-value",
-    "validIssuer": "YourAppAPI",
-    "validAudience": "https://localhost:7249"
+  "Jwt2FaConfig": {
+    "SecurityKey": "some-long-random-secret-value",
+    "ValidIssuer": "YourAppAPI",
+    "ValidAudience": "https://localhost:7249",
+    "AdminRoleName": "Admin"
   }
 }
 ```
 
 Or via environment variables:
 ```bash
-export JwtConfigs__securityKey="some-long-random-secret-value"
-export JwtConfigs__validIssuer="YourAppAPI"
-export JwtConfigs__validAudience="https://localhost:7249"
+export Jwt2FaConfig__SecurityKey="some-long-random-secret-value"
+export Jwt2FaConfig__ValidIssuer="YourAppAPI"
+export Jwt2FaConfig__ValidAudience="https://localhost:7249"
 ```
 
 ### Notification Senders
@@ -378,7 +406,7 @@ The app listens on HTTP only inside the container (port 8080, matching the
 ### Running the End-to-End Suite
 
 `/e2e` exercises full auth flows through a real browser against the actual containerized
-app - not mocks, and not a bare `dotnet run`/`ng serve` port. Start the full stack first:
+app — not mocks, and not a bare `dotnet run`/`ng serve` port. Start the full stack first:
 ```bash
 docker compose up -d --build api
 ```
@@ -388,7 +416,7 @@ npm install
 npx playwright install --with-deps chromium
 npm test
 ```
-Runs headless, against Chromium, by default - the same suite that runs in CI on every
+Runs headless, against Chromium, by default — the same suite that runs in CI on every
 push/PR. For interactive debugging, call Playwright directly rather than through `npm
 test`: npm only forwards flags placed after a bare `npm test` if you separate them with
 `--`, so `npm test --headed` silently runs as `playwright test headed`, which finds no
@@ -398,7 +426,7 @@ npx playwright test --headed
 npx playwright test --ui
 ```
 If Chromium isn't installable on your machine, `npx playwright install --with-deps
-firefox` plus `npx playwright test --project firefox` is a local-only fallback - CI
+firefox` plus `npx playwright test --project firefox` is a local-only fallback — CI
 always installs and runs Chromium only.
 
 ## Options
