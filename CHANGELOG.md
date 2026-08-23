@@ -56,15 +56,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Auth/JWT/2FA logic (register, login, the password/email lifecycle, admin user
-  management, and multi-channel 2FA enrollment/verification) extracted to the
-  [`DGates.Identity.Jwt2Fa`](https://github.com/dgates82/DGates.Identity.Jwt2Fa)
-  package, now consumed as a NuGet dependency instead of implemented locally.
-  No change to the template's auth flows or external (client-facing) behavior,
-  but `appsettings.json`'s JWT config section is renamed and reshaped
-  (`JwtConfigs` → `Jwt2FaConfig`, PascalCase keys, plus a new
-  `Jwt2FaAuthCoreConfig` block) - see [JWT
-  Configuration](README.md#jwt-configuration) in the README.
+- **Auth/JWT/2FA logic extracted to `DGates.Identity.Jwt2Fa`.** Register, login,
+  the password/email lifecycle, admin user management, and multi-channel 2FA
+  enrollment/verification are now consumed as a NuGet dependency
+  ([`DGates.Identity.Jwt2Fa`](https://github.com/dgates82/DGates.Identity.Jwt2Fa))
+  instead of implemented locally. A generated repo predating v1.1.0 needs a config
+  migration step before upgrading: `appsettings.json`'s JWT section is renamed and
+  reshaped (`JwtConfigs` → `Jwt2FaConfig`, PascalCase keys, plus a new
+  `Jwt2FaAuthCoreConfig` block) - see the migration callout in [JWT
+  Configuration](README.md#jwt-configuration). The runtime auth flows themselves
+  (what a user experiences in the browser) are unchanged.
 - The password-reset/setup form (`/forgot-password/reset`, `/email-confirmation/reset`)
   no longer has an email field - it never added any security (the reset token is
   already bound to a specific account server-side), just friction: an admin-created

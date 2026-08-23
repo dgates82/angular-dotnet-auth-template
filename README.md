@@ -80,6 +80,16 @@ What's currently marked:
 
 ### JWT Configuration
 
+> **Upgrading a repo generated before v1.1.0?** This section's config shape
+> changed when auth/JWT/2FA logic moved into `DGates.Identity.Jwt2Fa`.
+> `JwtConfigs` is now `Jwt2FaConfig`, with the same three keys but
+> PascalCase (`securityKey`→`SecurityKey`, `validIssuer`→`ValidIssuer`,
+> `validAudience`→`ValidAudience`), plus a new `AdminRoleName` key. There's
+> also a brand-new `Jwt2FaAuthCoreConfig` block that didn't exist before —
+> if you'd customized the `[Application Name]` placeholder directly in the
+> now-deleted `AccountController.cs`, that value moves to
+> `Jwt2FaAuthCoreConfig.ApplicationName` instead.
+
 JWT issuance and multi-channel 2FA (Authenticator/TOTP, Email, SMS) are
 provided by
 [`DGates.Identity.Jwt2Fa`](https://github.com/dgates82/DGates.Identity.Jwt2Fa),
@@ -396,7 +406,7 @@ The app listens on HTTP only inside the container (port 8080, matching the
 ### Running the End-to-End Suite
 
 `/e2e` exercises full auth flows through a real browser against the actual containerized
-app - not mocks, and not a bare `dotnet run`/`ng serve` port. Start the full stack first:
+app — not mocks, and not a bare `dotnet run`/`ng serve` port. Start the full stack first:
 ```bash
 docker compose up -d --build api
 ```
@@ -406,7 +416,7 @@ npm install
 npx playwright install --with-deps chromium
 npm test
 ```
-Runs headless, against Chromium, by default - the same suite that runs in CI on every
+Runs headless, against Chromium, by default — the same suite that runs in CI on every
 push/PR. For interactive debugging, call Playwright directly rather than through `npm
 test`: npm only forwards flags placed after a bare `npm test` if you separate them with
 `--`, so `npm test --headed` silently runs as `playwright test headed`, which finds no
@@ -416,7 +426,7 @@ npx playwright test --headed
 npx playwright test --ui
 ```
 If Chromium isn't installable on your machine, `npx playwright install --with-deps
-firefox` plus `npx playwright test --project firefox` is a local-only fallback - CI
+firefox` plus `npx playwright test --project firefox` is a local-only fallback — CI
 always installs and runs Chromium only.
 
 ## Options
