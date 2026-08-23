@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0] - TBD
+## [1.1.0] - 2026-08-23
 
 ### Added
 
@@ -21,7 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   that never actually worked. Controlled by a new `show2FaBanner` flag alongside
   `is2FaRequired`, so a template consumer has a real third option: mandatory, optional
   with a nudge, or optional and silent. Dismissing persists via localStorage so it
-  doesn't reappear every login once acknowledged.
+  doesn't reappear every login once acknowledged. Scoped to session/localStorage state
+  rather than a true "first login" check deliberately - the latter would mean adding a
+  new `DGates.Identity.Jwt2Fa` capability interface and version bump for a fairly
+  small payoff.
 - The 2FA nudge banner's link now takes the user straight into 2FA setup - deep-linking
   to the Profile page's "Password and Security" tab and auto-starting the enable flow,
   instead of dropping them on the default "Personal" tab with no indication of where to
@@ -34,9 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   password management (change while authenticated, forgot-password reset via email),
   all three 2FA enrollment/login flows (Authenticator, Email, SMS), and admin user
   management (paginated list, profile/role edits sourced from the live roles endpoint,
-  deactivate/reactivate). Several regressions from the Jwt2Fa swap (stale API routes, a
-  broken 2FA-required redirect, a bypassable 2FA-required guard) were only ever caught
-  by manual testing; nothing committed to the repo exercised the client's
+  deactivate/reactivate). Several regressions from the Jwt2Fa swap (a broken
+  2FA-required redirect, a bypassable 2FA-required guard - see Fixed below) were only
+  ever caught by manual testing; nothing committed to the repo exercised the client's
   routing/guard/session wiring end to end the way this does. Switching to SMS from an
   already-enabled 2FA method and the `is2FaRequired: true` build path are intentionally
   left out of this batch - the former needs a released fix from `DGates.Identity.Jwt2Fa`,
@@ -53,12 +56,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Auth/JWT/2FA logic extracted to `DGates.Identity.Jwt2Fa`.** Register, login,
+  the password/email lifecycle, admin user management, and multi-channel 2FA
+  enrollment/verification are now consumed as a NuGet dependency
+  ([`DGates.Identity.Jwt2Fa`](https://github.com/dgates82/DGates.Identity.Jwt2Fa))
+  instead of implemented locally. A generated repo predating v1.1.0 needs a config
+  migration step before upgrading: `appsettings.json`'s JWT section is renamed and
+  reshaped (`JwtConfigs` → `Jwt2FaConfig`, PascalCase keys, plus a new
+  `Jwt2FaAuthCoreConfig` block) - see the migration callout in [JWT
+  Configuration](README.md#jwt-configuration). The runtime auth flows themselves
+  (what a user experiences in the browser) are unchanged.
 - The password-reset/setup form (`/forgot-password/reset`, `/email-confirmation/reset`)
   no longer has an email field - it never added any security (the reset token is
   already bound to a specific account server-side), just friction: an admin-created
   user's setup page had it pre-filled, everyone else had to type it in. The account is
   now identified by `userId`, carried on the link the same way it already was for
-  email confirmation. Bumps `DGates.Identity.Jwt2Fa` to `1.0.0-beta.7`.
+  email confirmation. Bumps `DGates.Identity.Jwt2Fa` to `1.0.0`.
 
 ### Fixed
 
@@ -66,7 +79,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead of a hardcoded list in `environment.ts`. The two had drifted: the admin
   role dropdown offered "Tech"/"Manager", but `DbSeeder` only ever created "Admin",
   so assigning either threw an unhandled error. `DbSeeder` now seeds the app's
-  business roles too, and is the one place to edit them.
+  business roles too, and is the one place to edit them. Found while deciding what
+  stays local to the app versus moves into `DGates.Identity.Jwt2Fa` during the
+  extraction above - role definitions are app-specific business data, so the new
+  endpoint lives here, not in the package.
 - The admin-created-user first-login page now shows "Create Your Password" instead
   of "Password Reset", and pre-fills the email field instead of leaving it blank.
   The header was hardcoded regardless of `isFirstLogin`, and the email field was
