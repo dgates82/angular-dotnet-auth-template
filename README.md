@@ -58,7 +58,8 @@ What's currently marked:
 | `client/package.json`'s `"name"` | Still the Angular CLI default (`"angular"`) |
 | Angular feature flags | `client/src/environments/environment.ts` / `environment.prod.ts` — see [Options](#options) |
 | Business roles | `BusinessRoleNames` in `api/AngularDotNetAuthTemplate.Api/Data/DbSeeder.cs` |
-| Legal/docs placeholders | `LICENSE` copyright holder, `CONTRIBUTING.md`, `docs/LOCAL_DEV.md` |
+| Legal placeholders | `LICENSE` copyright holder, `CONTRIBUTING.md` |
+| Team-specific dev notes | `docs/LOCAL_DEV.md` — has real content already, plus a `TODO(template)` for anything specific to your own setup |
 | JWT config | See [JWT Configuration](#jwt-configuration) |
 
 ### JWT Configuration
@@ -129,7 +130,8 @@ Never commit real credentials.
 
 Every alternative provider already has a local mock wired up, so you can
 switch providers and develop against them with no real account — see
-[Notification Provider Mocks](#notification-provider-mocks).
+[Notification Provider Mocks](docs/LOCAL_DEV.md#notification-provider-mocks)
+in `docs/LOCAL_DEV.md`.
 
 <details>
 <summary><b>Where these come from, and how the mock overrides work</b></summary>
@@ -274,16 +276,8 @@ cd api
 dotnet tool restore
 ```
 
-<details>
-<summary><b>Why this is a separate step</b></summary>
-
-<br>
-
-`Microsoft.EntityFrameworkCore.Tools` in the `.csproj` only wires up the
-Visual Studio Package Manager Console cmdlets. The `dotnet ef` command itself
-comes from a separate tool package, pinned in `api/.config/dotnet-tools.json`.
-
-</details>
+(Why a separate step at all? See
+[docs/LOCAL_DEV.md](docs/LOCAL_DEV.md#why-dotnet-tool-restore-is-a-separate-step).)
 
 **3. Run migrations** (from `api/AngularDotNetAuthTemplate.Api/` — `dotnet ef`
 resolves the target project from the current directory):
@@ -312,51 +306,10 @@ export SeedAdmin__Email="admin@example.com"
 export SeedAdmin__Password="ChangeMe123!"
 ```
 
-#### Notification Provider Mocks
-
-`mysql`, `mailpit`, and `smsmock` back the providers wired up by default.
-`docker-compose.yml` also defines mocks for every *other* provider this
-template supports, so you can develop against any of them without a real
-account:
-
-```bash
-docker compose up -d sendgridmock postmarkmock localstack
-```
-
-| Service | Port | View sent messages |
-|---|---|---|
-| `sendgridmock` | 3040 | `http://localhost:3040` or `curl http://localhost:3040/api/messages` |
-| `postmarkmock` | 3050 | `http://localhost:3050` or `curl http://localhost:3050/api/messages` |
-| `localstack` (SNS) | 4566 | `curl http://localhost:4566/_aws/sns/sms-messages` |
-
-Each has its `BaseUrlOverride`/`ServiceUrlOverride` already pointed at it in
-`appsettings.json` — just uncomment the matching `AddXyz...Sender` in
-`Program.cs`. See [Notification Senders](#notification-senders) above.
-
-<details>
-<summary><b>Where these images come from, and a Docker networking caveat</b></summary>
-
-<br>
-
-Everything except `localstack` (the official
-[LocalStack](https://www.localstack.cloud/) image, running only the SNS
-service) is published from
-[`dgates-mock-servers`](https://github.com/dgates82/dgates-mock-servers), a
-shared repo of GHCR-published mock servers used by both this template and
-`DGates.Identity.NotificationProviders`. LocalStack uses its standard
-`test`/`test` fake credentials, and has no web UI for SNS — the `curl`
-endpoint above is its own introspection API, since SNS SMS has no real
-delivery to observe.
-
-**If you're running the `api` service via Docker Compose** (not `dotnet run`
-on the host), the `http://localhost:PORT` values above won't resolve —
-`localhost` inside that container means the container itself, not a sibling
-mock container. `docker-compose.yml`'s `api` service already overrides each
-one to the mock's Compose service name (e.g. `http://postmarkmock:3050`), so
-this works out of the box. The `localhost` values are what to use from the
-host machine (a browser, or `dotnet run`).
-
-</details>
+Want to develop against SendGrid, Postmark, or SNS instead of the two default
+mocks? See
+[Notification Provider Mocks](docs/LOCAL_DEV.md#notification-provider-mocks)
+in `docs/LOCAL_DEV.md`.
 
 ### Frontend Setup
 
@@ -390,30 +343,9 @@ docker compose up -d --build api
 ```
 Browse to `http://localhost:8080`.
 
-<details>
-<summary><b>Building and running the image standalone</b></summary>
-
-<br>
-
-To test the raw production image outside this compose network, run from the
-repo root (the build needs both `api/` and `client/`) and point the config at
-wherever your MySQL/SMTP/SMS mock actually are — `localhost` won't resolve to
-anything inside the container:
-
-```bash
-docker build -f api/AngularDotNetAuthTemplate.Api/Dockerfile -t angular-dotnet-auth-template .
-docker run -p 8080:8080 \
-  --add-host=host.docker.internal:host-gateway \
-  -e ConnectionStrings__DefaultConnection="Server=host.docker.internal;Port=3307;Database=AuthTemplate;User=webapp;Password=mypass" \
-  -e TwilioSmsConfigs__BaseUrlOverride="http://host.docker.internal:3030" \
-  -e SmtpEmailConfigs__Host=host.docker.internal \
-  angular-dotnet-auth-template
-```
-
-The app listens on HTTP only inside the container (port 8080, matching the
-.NET base image's default).
-
-</details>
+Testing the raw production image outside this compose network? See
+[Running the Production Image Standalone](docs/LOCAL_DEV.md#running-the-production-image-standalone)
+in `docs/LOCAL_DEV.md`.
 
 ### Running the End-to-End Suite
 
@@ -429,30 +361,10 @@ npm test
 ```
 
 Runs headless against Chromium by default — the same suite CI runs on every
-push/PR.
-
-<details>
-<summary><b>Interactive debugging, and a <code>npm test</code> flag gotcha</b></summary>
-
-<br>
-
-For interactive debugging, call Playwright directly rather than through
-`npm test`:
-
-```bash
-npx playwright test --headed
-npx playwright test --ui
-```
-
-npm only forwards flags placed after a bare `npm test` if you separate them
-with `--`, so `npm test --headed` silently runs as `playwright test headed`,
-which finds no matching test files instead of doing what you'd expect.
-
-If Chromium isn't installable on your machine, `npx playwright install
---with-deps firefox` plus `npx playwright test --project firefox` is a
-local-only fallback — CI always installs and runs Chromium only.
-
-</details>
+push/PR. For interactive debugging (and a `npm test` flag gotcha worth
+knowing about), see
+[End-to-End Suite: Interactive Debugging](docs/LOCAL_DEV.md#end-to-end-suite-interactive-debugging)
+in `docs/LOCAL_DEV.md`.
 
 ## Options
 
@@ -493,10 +405,7 @@ See [JWT Configuration](#jwt-configuration) for the current shape.
 
 ## Troubleshooting
 
-**Port already in use.** A previous run may still be alive in the background
-and still holding the port. Find and stop it: `lsof -i :<port>` then
-`kill <pid>` (Linux/macOS), or on Windows
-`Get-Process -Id (Get-NetTCPConnection -LocalPort <port>).OwningProcess | Stop-Process`.
+See [Troubleshooting](docs/LOCAL_DEV.md#troubleshooting) in `docs/LOCAL_DEV.md`.
 
 ## License
 This project is licensed under the MIT License.
