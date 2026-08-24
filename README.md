@@ -254,10 +254,10 @@ email and SMS so a fresh clone works with no external accounts.
 `docker-compose.yml` also defines an `api` service — leave it out for now; it
 needs the database migrated first (see below).
 
-`mailpit` is a local SMTP catcher. The app's default `SmtpEmailConfigs` point
-at it, so registration confirmation, password reset, and other outbound
-emails during local dev are caught instead of actually sent. View them at
-`http://localhost:8025`.
+`mailpit` is a local SMTP catcher. The sender registered via
+`AddSmtpEmailSender` points at it, so registration confirmation, password
+reset, and other outbound emails during local dev are caught instead of
+actually sent. View them at `http://localhost:8025`.
 
 `smsmock` plays the same role for SMS 2FA — the prebuilt
 [`twilio-mock`](https://github.com/dgates82/dgates-mock-servers/tree/main/twilio-mock)
