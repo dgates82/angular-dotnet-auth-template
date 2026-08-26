@@ -21,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{48B8397B-0ADA-47A6-A098-B1EF46267F71}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\ci.yml = ..\.github\workflows\ci.yml
+		..\.github\workflows\deploy-cloudrun.yml = ..\.github\workflows\deploy-cloudrun.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularDotNetAuthTemplate.Api.Tests", "AngularDotNetAuthTemplate.Api.Tests\AngularDotNetAuthTemplate.Api.Tests.csproj", "{0CDF7F0B-B215-4E01-82E0-1139DD1A0830}"
