@@ -24,9 +24,9 @@ jobs:
       - name: Power on Aiven MySQL
         run: |
           pip install aiven-client
-          avn service update ${{ vars.AIVEN_SERVICE_NAME }} \
+          avn --auth-token "${{ secrets.AIVEN_API_TOKEN }}" \
+            service update ${{ vars.AIVEN_SERVICE_NAME }} \
             --power-on \
-            --auth-token "${{ secrets.AIVEN_API_TOKEN }}" \
             --project ${{ vars.AIVEN_PROJECT }}
 
       - id: auth
@@ -49,8 +49,8 @@ jobs:
         run: |
           pip install aiven-client
           for i in $(seq 1 30); do
-            status=$(avn service get ${{ vars.AIVEN_SERVICE_NAME }} \
-              --auth-token "${{ secrets.AIVEN_API_TOKEN }}" \
+            status=$(avn --auth-token "${{ secrets.AIVEN_API_TOKEN }}" \
+              service get ${{ vars.AIVEN_SERVICE_NAME }} \
               --project ${{ vars.AIVEN_PROJECT }} \
               --json | jq -r '.state')
             if [ "$status" = "RUNNING" ]; then
