@@ -406,7 +406,8 @@ See [JWT Configuration](#jwt-configuration) for the current shape.
 ## Deployment
 
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the Cloud Run deploy
-pipeline and its free-tier ceiling.
+pipeline, its free-tier ceiling, and what to set up if you're deploying your
+own generated copy of this template.
 
 ## Troubleshooting
 
