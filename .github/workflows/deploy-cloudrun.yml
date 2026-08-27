@@ -89,7 +89,7 @@ jobs:
             Jwt2FaConfig__ValidIssuer=AngularDotNetAuthTemplateAPI
             Jwt2FaConfig__ValidAudience=${{ vars.CLOUD_RUN_URL }}
             Jwt2FaAuthCoreConfig__FrontendBaseUrl=${{ vars.CLOUD_RUN_URL }}
-            SmtpEmailConfigs__Host=${{ vars.MAILPIT_URL }}
+            SendGridEmailConfigs__BaseUrlOverride=${{ vars.SENDGRID_MOCK_URL }}
             TwilioSmsConfigs__BaseUrlOverride=${{ vars.TWILIO_MOCK_URL }}
             SeedAdmin__Email=admin@example.com
           secrets: |

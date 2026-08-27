@@ -125,7 +125,7 @@ Never commit real credentials.
 
 | Channel | Default | Also available |
 |---|---|---|
-| Email | `AddSmtpEmailSender` (points at the Mailpit container) | `AddSendGridEmailSender`, `AddPostMarkEmailSender` |
+| Email | `AddSendGridEmailSender` (points at the sendgrid-mock container) | `AddSmtpEmailSender`, `AddPostMarkEmailSender` |
 | SMS | `AddTwilioSmsSender` (points at the local Twilio mock) | `AddSnsSmsSender` (AWS SNS) |
 
 Every alternative provider already has a local mock wired up, so you can
@@ -208,7 +208,7 @@ installed, and you've already generated your own repo via
 git clone https://github.com/yourusername/your-generated-repo.git
 cd your-generated-repo
 
-docker compose up -d mysql mailpit smsmock
+docker compose up -d mysql sendgridmock smsmock
 
 cd api
 dotnet tool restore
@@ -226,7 +226,7 @@ dotnet run --project api/AngularDotNetAuthTemplate.Api
 
 **Available at:**
 - App: https://localhost:7249
-- Mailpit (dev inbox — confirmation/reset emails land here instead of a real inbox): http://localhost:8025
+- SendGrid mock (dev inbox — confirmation/reset emails land here instead of a real inbox): http://localhost:3040
 - SMS mock (dev inbox for SMS 2FA codes): http://localhost:3030
 
 ### Prerequisites
@@ -237,9 +237,9 @@ dotnet run --project api/AngularDotNetAuthTemplate.Api
 
 ### Backend Setup
 
-**1. Start MySQL, Mailpit, and the SMS mock** (from the repo root):
+**1. Start MySQL, the SendGrid mock, and the SMS mock** (from the repo root):
 ```bash
-docker compose up -d mysql mailpit smsmock
+docker compose up -d mysql sendgridmock smsmock
 ```
 
 This provisions the database, user, and password to match `appsettings.json`'s
@@ -254,10 +254,10 @@ email and SMS so a fresh clone works with no external accounts.
 `docker-compose.yml` also defines an `api` service — leave it out for now; it
 needs the database migrated first (see below).
 
-`mailpit` is a local SMTP catcher. The sender registered via
-`AddSmtpEmailSender` points at it, so registration confirmation, password
-reset, and other outbound emails during local dev are caught instead of
-actually sent. View them at `http://localhost:8025`.
+`sendgridmock` is a local catcher implementing the SendGrid REST API. The
+sender registered via `AddSendGridEmailSender` points at it, so registration
+confirmation, password reset, and other outbound emails during local dev are
+caught instead of actually sent. View them at `http://localhost:3040`.
 
 `smsmock` plays the same role for SMS 2FA — the prebuilt
 [`twilio-mock`](https://github.com/dgates82/dgates-mock-servers/tree/main/twilio-mock)
@@ -306,8 +306,8 @@ export SeedAdmin__Email="admin@example.com"
 export SeedAdmin__Password="ChangeMe123!"
 ```
 
-Want to develop against SendGrid, Postmark, or SNS instead of the two default
-mocks? See
+Want to develop against SMTP/Mailpit, Postmark, or SNS instead of the two
+default mocks? See
 [Notification Provider Mocks](docs/LOCAL_DEV.md#notification-provider-mocks)
 in `docs/LOCAL_DEV.md`.
 
@@ -334,7 +334,7 @@ dotnet run --project api/AngularDotNetAuthTemplate.Api
 The Dockerfile builds the Angular client and the API together into a single
 image. The easiest way to run it locally is via the `api` service already
 defined in `docker-compose.yml` — it shares a Docker network with
-`mysql`/`mailpit`/`smsmock`, so it can reach them by service name.
+`mysql`/`sendgridmock`/`smsmock`, so it can reach them by service name.
 **Requires the database to already be migrated** (see Backend Setup) — the
 container doesn't run migrations itself.
 

@@ -17,31 +17,32 @@ switching between the two.
 
 ## Notification Provider Mocks
 
-`mysql`, `mailpit`, and `smsmock` (see the root README's
+`mysql`, `sendgridmock`, and `smsmock` (see the root README's
 [Backend Setup](../README.md#backend-setup)) back the providers wired up by
 default. `docker-compose.yml` also defines mocks for every *other* provider
 this template supports, so you can develop against any of them without a
 real account:
 
 ```bash
-docker compose up -d sendgridmock postmarkmock localstack
+docker compose up -d mailpit postmarkmock localstack
 ```
 
 | Service | Port | View sent messages |
 |---|---|---|
-| `sendgridmock` | 3040 | `http://localhost:3040` or `curl http://localhost:3040/api/messages` |
+| `mailpit` | 8025 | `http://localhost:8025` or `curl http://localhost:8025/api/v1/messages` |
 | `postmarkmock` | 3050 | `http://localhost:3050` or `curl http://localhost:3050/api/messages` |
 | `localstack` (SNS) | 4566 | `curl http://localhost:4566/_aws/sns/sms-messages` |
 
-Each has its `BaseUrlOverride`/`ServiceUrlOverride` already pointed at it in
-`appsettings.json` — just uncomment the matching `AddXyz...Sender` in
+Each has its `Host`/`BaseUrlOverride`/`ServiceUrlOverride` already pointed at
+it in `appsettings.json` — just uncomment the matching `AddXyz...Sender` in
 `Program.cs`. See the root README's
 [Notification Senders](../README.md#notification-senders) for how switching
 providers works.
 
-Everything except `localstack` (the official
-[LocalStack](https://www.localstack.cloud/) image, running only the SNS
-service) is published from
+Everything except `mailpit` (the third-party
+[axllent/mailpit](https://github.com/axllent/mailpit) image) and `localstack`
+(the official [LocalStack](https://www.localstack.cloud/) image, running only
+the SNS service) is published from
 [`dgates-mock-servers`](https://github.com/dgates82/dgates-mock-servers), a
 shared repo of GHCR-published mock servers used by both this template and
 `DGates.Identity.NotificationProviders`. LocalStack uses its standard
@@ -61,7 +62,7 @@ host machine (a browser, or `dotnet run`).
 
 To test the raw production image outside the `docker-compose.yml` network,
 run from the repo root (the build needs both `api/` and `client/`) and point
-the config at wherever your MySQL/SMTP/SMS mock actually are — `localhost`
+the config at wherever your MySQL/SendGrid/SMS mock actually are — `localhost`
 won't resolve to anything inside the container:
 
 ```bash
@@ -70,7 +71,7 @@ docker run -p 8080:8080 \
   --add-host=host.docker.internal:host-gateway \
   -e ConnectionStrings__DefaultConnection="Server=host.docker.internal;Port=3307;Database=AuthTemplate;User=webapp;Password=mypass" \
   -e TwilioSmsConfigs__BaseUrlOverride="http://host.docker.internal:3030" \
-  -e SmtpEmailConfigs__Host=host.docker.internal \
+  -e SendGridEmailConfigs__BaseUrlOverride="http://host.docker.internal:3040" \
   angular-dotnet-auth-template
 ```
 
