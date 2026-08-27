@@ -403,6 +403,11 @@ See [JWT Configuration](#jwt-configuration) for the current shape.
 
 </details>
 
+## Deployment
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the Cloud Run deploy
+pipeline and its free-tier ceiling.
+
 ## Troubleshooting
 
 See [Troubleshooting](docs/LOCAL_DEV.md#troubleshooting) in `docs/LOCAL_DEV.md`.
