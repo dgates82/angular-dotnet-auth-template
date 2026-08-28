@@ -23,7 +23,7 @@ public static class AccountTestHelper
     public static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     // Registers via the real HTTP endpoint, then confirms the email using a token
-    // generated straight from UserManager (rather than parsing it out of the Mailpit
+    // generated straight from UserManager (rather than parsing it out of the mocked
     // email) and posts it through the real confirmEmail endpoint. Email delivery and
     // token encoding are covered by their own tests; this just gets a usable confirmed
     // account for tests that need one as a precondition.

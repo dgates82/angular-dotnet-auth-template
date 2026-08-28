@@ -1,40 +1,50 @@
-const MAILPIT_URL = 'http://localhost:8025';
+const SENDGRID_MOCK_URL = 'http://localhost:3040';
 
-interface MailpitMessageSummary {
-  ID: string;
-  Created: string;
-  Subject: string;
+interface SendGridMockMessage {
+  messageId: string;
+  to: string;
+  from: string;
+  subject: string;
+  body: string;
 }
 
-interface MailpitMessage {
+interface MailMessage {
   HTML: string;
   Text: string;
 }
 
+// sendgrid-mock doesn't return a separate timestamp field - messageId is
+// "mock-msg-<epoch-ms>-<random>", so parse the epoch out of it instead.
+function messageTimestampMs(messageId: string): number {
+  const match = messageId.match(/^mock-msg-(\d+)-/);
+  return match ? Number(match[1]) : 0;
+}
+
 /**
- * Polls Mailpit for the most recent message to `to` created at or after `sinceMs`,
- * optionally matching `subjectContains`. Throws if nothing shows up within the
+ * Polls the sendgrid-mock catcher for the most recent message to `to` sent at or after
+ * `sinceMs`, optionally matching `subjectContains`. Throws if nothing shows up within the
  * timeout - email delivery in the local stack is near-instant, so a long wait here
  * usually means something upstream is actually broken, not just slow.
  */
 export async function getLatestEmail(
   to: string,
   options: { subjectContains?: string; sinceMs?: number; timeoutMs?: number } = {}
-): Promise<MailpitMessage> {
+): Promise<MailMessage> {
   const sinceMs = options.sinceMs ?? 0;
   const timeoutMs = options.timeoutMs ?? 10_000;
   const deadline = Date.now() + timeoutMs;
 
   while (Date.now() < deadline) {
-    const res = await fetch(`${MAILPIT_URL}/api/v1/search?query=to:${encodeURIComponent(to)}`);
-    const data = (await res.json()) as { messages: MailpitMessageSummary[] };
-    const match = data.messages
-      .filter(m => new Date(m.Created).getTime() >= sinceMs)
-      .find(m => !options.subjectContains || m.Subject.includes(options.subjectContains));
+    const res = await fetch(`${SENDGRID_MOCK_URL}/api/messages`);
+    const messages = (await res.json()) as SendGridMockMessage[];
+    const matches = messages
+      .filter(m => m.to === to && messageTimestampMs(m.messageId) >= sinceMs)
+      .filter(m => !options.subjectContains || m.subject.includes(options.subjectContains))
+      .sort((a, b) => messageTimestampMs(a.messageId) - messageTimestampMs(b.messageId));
 
-    if (match) {
-      const full = await fetch(`${MAILPIT_URL}/api/v1/message/${match.ID}`);
-      return (await full.json()) as MailpitMessage;
+    if (matches.length > 0) {
+      const latest = matches[matches.length - 1];
+      return { HTML: latest.body, Text: '' };
     }
 
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -44,7 +54,7 @@ export async function getLatestEmail(
 }
 
 /** Extracts the first http(s) link containing `pathContains` from an email body. */
-export function extractLink(email: MailpitMessage, pathContains: string): string {
+export function extractLink(email: MailMessage, pathContains: string): string {
   const body = email.HTML || email.Text || '';
   const match = body.match(new RegExp(`http[^\\s"'<]*${pathContains}[^\\s"'<]*`));
   if (!match) {

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import { uniqueEmail, registerAndConfirm, login } from '../helpers/auth';
-import { getLatestEmail, extractLink } from '../helpers/mailpit';
+import { getLatestEmail, extractLink } from '../helpers/email-mock';
 import { dismissSwal } from '../helpers/swal';
 
 const PASSWORD = 'Passw0rd!';

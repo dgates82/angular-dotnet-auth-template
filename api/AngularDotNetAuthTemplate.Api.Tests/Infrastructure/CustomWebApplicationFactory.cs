@@ -5,9 +5,9 @@ using Xunit;
 
 namespace AngularDotNetAuthTemplate.Api.Tests.Infrastructure;
 
-// Points the app at a disposable "AuthTemplateTest" schema on the same MySQL/Mailpit/
+// Points the app at a disposable "AuthTemplateTest" schema on the same MySQL/sendgridmock/
 // smsmock containers docker-compose.yml already brings up for local dev, so CI only
-// needs `docker compose up -d mysql mailpit smsmock` before `dotnet test`. Uses the
+// needs `docker compose up -d mysql sendgridmock smsmock` before `dotnet test`. Uses the
 // compose file's root credentials (not the app's normal "webapp" user) because that
 // user is only granted privileges on the "AuthTemplate" database, not one this factory
 // creates/drops.
@@ -29,8 +29,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
         Environment.SetEnvironmentVariable("ConnectionStrings__DefaultConnection", TestConnectionString);
-        Environment.SetEnvironmentVariable("SmtpEmailConfigs__Host", "localhost");
-        Environment.SetEnvironmentVariable("SmtpEmailConfigs__Port", "1025");
+        Environment.SetEnvironmentVariable("SendGridEmailConfigs__BaseUrlOverride", "http://localhost:3040");
         Environment.SetEnvironmentVariable("TwilioSmsConfigs__BaseUrlOverride", "http://localhost:3030");
         Environment.SetEnvironmentVariable("SeedAdmin__Email", "");
         Environment.SetEnvironmentVariable("SeedAdmin__Password", "");

@@ -1,6 +1,6 @@
 import { Page, expect } from '@playwright/test';
 
-import { getLatestEmail, extractLink } from './mailpit';
+import { getLatestEmail, extractLink } from './email-mock';
 
 export const ADMIN_EMAIL = 'admin@example.com';
 export const ADMIN_PASSWORD = 'Password1!';
