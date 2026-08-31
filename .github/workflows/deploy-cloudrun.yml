@@ -52,7 +52,10 @@ jobs:
       - name: Build and push image
         run: |
           IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.ref_name }}"
-          docker build -f api/AngularDotNetAuthTemplate.Api/Dockerfile -t "$IMAGE" .
+          docker build -f api/AngularDotNetAuthTemplate.Api/Dockerfile -t "$IMAGE" \
+            --build-arg DEMO_BANNER_ENABLED=true \
+            --build-arg DEMO_BANNER_REPO_URL=https://github.com/dgates82/angular-dotnet-auth-template \
+            .
           docker push "$IMAGE"
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
 

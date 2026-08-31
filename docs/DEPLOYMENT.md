@@ -7,6 +7,15 @@ triggers on pushing a `v*` tag — not on merge to `main` — so a deploy can be
 cut from any branch while testing, independent of when something actually
 merges. See issue #6 for the full pipeline rationale.
 
+## Demo banner
+
+`DEMO_BANNER_ENABLED`/`DEMO_BANNER_REPO_URL` are Docker build args (not repo
+variables — see the Dockerfile), passed only by this repo's own
+`deploy-cloudrun.yml`. They're `false`/empty by default, so a generated copy
+of this template won't show "this is a demo, see the template repo" on a
+real app unless you deliberately add the same build args to your own
+workflow.
+
 ## Free tier
 
 Cloud Run's always-free tier (per project, per month, us-central1 and a
