@@ -7,7 +7,8 @@ import { IAppInfo } from '@interfaces/app-info';
 
 const DEFAULT_APP_INFO: IAppInfo = {
   demoBannerEnabled: false,
-  demoBannerRepoUrl: ''
+  demoBannerRepoUrl: '',
+  version: ''
 };
 
 // A missing file (native `dotnet run`, no Docker build involved) is expected, not an error.

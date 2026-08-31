@@ -7,6 +7,13 @@ triggers on pushing a `v*` tag — not on merge to `main` — so a deploy can be
 cut from any branch while testing, independent of when something actually
 merges. See issue #6 for the full pipeline rationale.
 
+## Version display
+
+`VERSION` is a Docker build arg, set to `${{ github.ref_name }}` by
+`deploy-cloudrun.yml` and shown in a small footer on every page. Empty for
+local/CI builds, which never pass it — no build-time value, no footer
+rendered. Same `app-info.json` mechanism as the demo banner below.
+
 ## Demo banner
 
 `DEMO_BANNER_ENABLED`/`DEMO_BANNER_REPO_URL` are Docker build args (not repo

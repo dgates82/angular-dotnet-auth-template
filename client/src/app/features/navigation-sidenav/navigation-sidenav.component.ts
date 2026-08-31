@@ -22,12 +22,13 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatButton } from '@angular/material/button';
 import { TwoFaNudgeBannerComponent } from '@shared/two-fa-nudge-banner/two-fa-nudge-banner.component';
 import { DemoBannerComponent } from '@shared/demo-banner/demo-banner.component';
+import { VersionFooterComponent } from '@shared/version-footer/version-footer.component';
 
 @Component({
     selector: 'app-navigation-sidenav',
     templateUrl: './navigation-sidenav.component.html',
     styleUrl: './navigation-sidenav.component.scss',
-    imports: [MatSidenavContainer, MatSidenav, NgClass, MatNavList, MatListItem, RouterLink, FaIconComponent, MatDivider, MatButton, MatSidenavContent, RouterOutlet, TwoFaNudgeBannerComponent, DemoBannerComponent]
+    imports: [MatSidenavContainer, MatSidenav, NgClass, MatNavList, MatListItem, RouterLink, FaIconComponent, MatDivider, MatButton, MatSidenavContent, RouterOutlet, TwoFaNudgeBannerComponent, DemoBannerComponent, VersionFooterComponent]
 })
 export class NavigationSidenavComponent implements OnInit{
   private readonly accountService = inject(AccountService);

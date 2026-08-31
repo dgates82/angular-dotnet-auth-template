@@ -1,0 +1,7 @@
+@if (appInfo$ | async; as appInfo) {
+  @if (appInfo.version) {
+    <div class="version-footer text-muted text-center small">
+      {{ appInfo.version }}
+    </div>
+  }
+}
