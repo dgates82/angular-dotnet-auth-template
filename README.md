@@ -61,6 +61,7 @@ What's currently marked:
 | Legal placeholders | `LICENSE` copyright holder, `CONTRIBUTING.md` |
 | Team-specific dev notes | `docs/LOCAL_DEV.md` — has real content already, plus a `TODO(template)` for anything specific to your own setup |
 | JWT config | See [JWT Configuration](#jwt-configuration) |
+| Cloud Run deploy pipeline | `.github/workflows/deploy-cloudrun.yml` points at the original author's own GCP project by design — see [Deployment](#deployment) |
 
 ### JWT Configuration
 
