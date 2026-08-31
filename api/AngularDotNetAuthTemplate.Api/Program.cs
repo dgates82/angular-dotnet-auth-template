@@ -63,13 +63,14 @@ namespace AngularDotNetAuthTemplate.Api
             builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-            // Default sender: SMTP pointed at the Mailpit container from docker-compose.yml,
-            // so a fresh clone has a working email path with no external account/API key.
-            // TODO(template): swap to SendGrid/PostMark below (and supply your own key via
+            // Default sender: SendGrid, pointed at the sendgrid-mock container from
+            // docker-compose.yml, so a fresh clone has a working email path with no external
+            // account/API key. REST-based (not SMTP), so it also works when deployed - see #6.
+            // TODO(template): swap to SMTP/PostMark below (and supply your own key via
             // appsettings.Development.json or user-secrets) for a real provider - see README's
             // "Customizing for Your Project" section.
-            builder.Services.AddSmtpEmailSender(builder.Configuration);
-            // builder.Services.AddSendGridEmailSender(builder.Configuration);
+            builder.Services.AddSendGridEmailSender(builder.Configuration);
+            // builder.Services.AddSmtpEmailSender(builder.Configuration);
             // builder.Services.AddPostMarkEmailSender(builder.Configuration);
 
             // Default sender: Twilio, pointed at the twilio-mock container from

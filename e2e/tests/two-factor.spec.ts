@@ -1,7 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 
 import { uniqueEmail, registerAndConfirm, login } from '../helpers/auth';
-import { getLatestEmail, extractCode } from '../helpers/mailpit';
+import { getLatestEmail, extractCode } from '../helpers/email-mock';
 import { getLatestSms } from '../helpers/sms-mock';
 import { normalizeSecret, generateCode } from '../helpers/totp';
 

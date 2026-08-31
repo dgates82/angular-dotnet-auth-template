@@ -1,0 +1,101 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: angular-dotnet-auth-template
+  REGION: us-central1
+  SERVICE: angular-dotnet-auth-template
+  REPOSITORY: angular-dotnet-auth-template
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Power on Aiven MySQL
+        run: |
+          pip install aiven-client
+          avn --auth-token "${{ secrets.AIVEN_API_TOKEN }}" \
+            service update ${{ vars.AIVEN_SERVICE_NAME }} \
+            --power-on \
+            --project ${{ vars.AIVEN_PROJECT }}
+
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/1019453023791/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: github-deployer@angular-dotnet-auth-template.iam.gserviceaccount.com
+
+      - name: Configure Docker auth
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build and push image
+        run: |
+          IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.ref_name }}"
+          docker build -f api/AngularDotNetAuthTemplate.Api/Dockerfile -t "$IMAGE" .
+          docker push "$IMAGE"
+          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
+
+      - name: Wait for Aiven MySQL to be running
+        run: |
+          pip install aiven-client
+          for i in $(seq 1 30); do
+            status=$(avn --auth-token "${{ secrets.AIVEN_API_TOKEN }}" \
+              service get ${{ vars.AIVEN_SERVICE_NAME }} \
+              --project ${{ vars.AIVEN_PROJECT }} \
+              --json | jq -r '.state')
+            if [ "$status" = "RUNNING" ]; then
+              echo "Aiven MySQL is running"
+              exit 0
+            fi
+            echo "Waiting for Aiven MySQL... ($i/30, status: $status)"
+            sleep 10
+          done
+          echo "Aiven MySQL did not reach RUNNING in time"
+          exit 1
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run EF Core migrations
+        working-directory: api/AngularDotNetAuthTemplate.Api
+        run: |
+          dotnet tool restore
+          CONN_STRING=$(gcloud secrets versions access latest \
+            --secret=db-connection-string \
+            --project ${{ env.PROJECT_ID }})
+          export ConnectionStrings__DefaultConnection="$CONN_STRING"
+          dotnet ef database update
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: ${{ env.SERVICE }}
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE }}
+          flags: --allow-unauthenticated
+          env_vars: |
+            Jwt2FaConfig__ValidIssuer=AngularDotNetAuthTemplateAPI
+            Jwt2FaConfig__ValidAudience=${{ vars.CLOUD_RUN_URL }}
+            Jwt2FaAuthCoreConfig__FrontendBaseUrl=${{ vars.CLOUD_RUN_URL }}
+            SendGridEmailConfigs__BaseUrlOverride=${{ vars.SENDGRID_MOCK_URL }}
+            TwilioSmsConfigs__BaseUrlOverride=${{ vars.TWILIO_MOCK_URL }}
+            SeedAdmin__Email=admin@example.com
+          secrets: |
+            ConnectionStrings__DefaultConnection=db-connection-string:latest
+            Jwt2FaConfig__SecurityKey=jwt2fa-security-key:latest
+            SeedAdmin__Password=seed-admin-password:latest
+
+      - name: Show deployed URL
+        run: echo "${{ steps.deploy.outputs.url }}"

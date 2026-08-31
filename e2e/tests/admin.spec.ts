@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { uniqueEmail, registerAndConfirm, login, loginAsAdmin, logout } from '../helpers/auth';
 import { openEditUserByEmail, adminCreateUser } from '../helpers/admin';
 import { dismissSwal } from '../helpers/swal';
-import { getLatestEmail, extractLink } from '../helpers/mailpit';
+import { getLatestEmail, extractLink } from '../helpers/email-mock';
 
 const PASSWORD = 'Passw0rd!';
 
