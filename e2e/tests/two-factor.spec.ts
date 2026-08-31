@@ -28,7 +28,7 @@ test.describe('two-factor authentication', () => {
 
     await startEnrollment(page, 'Authenticator');
     const secret = normalizeSecret((await page.locator('kbd').textContent()) ?? '');
-    await page.locator('input[formcontrolname="code"]').pressSequentially(generateCode(secret), { delay: 30 });
+    await page.locator('input[formcontrolname="code"]').pressSequentially(await generateCode(secret), { delay: 30 });
     await page.getByRole('button', { name: 'Verify' }).click();
     await expect(page.getByText('authenticator app has been configured')).toBeVisible();
 
@@ -38,7 +38,7 @@ test.describe('two-factor authentication', () => {
 
     await login(page, email, PASSWORD);
     await page.locator('input[formcontrolname="twoFaCode"]').waitFor();
-    await page.locator('input[formcontrolname="twoFaCode"]').pressSequentially(generateCode(secret), { delay: 30 });
+    await page.locator('input[formcontrolname="twoFaCode"]').pressSequentially(await generateCode(secret), { delay: 30 });
     await page.getByRole('button', { name: 'Log In' }).click();
     await page.waitForURL('**/home');
   });
