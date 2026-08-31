@@ -17,25 +17,28 @@ switching between the two.
 
 ## Notification Provider Mocks
 
-`mysql`, `sendgridmock`, and `smsmock` (see the root README's
-[Backend Setup](../README.md#backend-setup)) back the providers wired up by
-default. `docker-compose.yml` also defines mocks for every *other* provider
-this template supports, so you can develop against any of them without a
-real account:
+`docker-compose.yml` defines a mock for every notification provider this
+template supports, so you can develop against any of them without a real
+account. This table is the single source of truth for which are wired up by
+default — nothing above it should ever need to restate that:
 
-```bash
-docker compose up -d mailpit postmarkmock localstack
-```
+| Service | Default? | Config (`appsettings.json`) | View sent messages |
+|---|---|---|---|
+| `sendgridmock` | Yes | `SendGridEmailConfigs.BaseUrlOverride = http://localhost:3040` | `http://localhost:3040` or `curl http://localhost:3040/api/messages` |
+| `smsmock` (Twilio) | Yes | `TwilioSmsConfigs.BaseUrlOverride = http://localhost:3030` | `http://localhost:3030` or `curl http://localhost:3030/api/messages` |
+| `mailpit` | No | `SmtpEmailConfigs.Host = localhost`, `.Port = 1025` | `http://localhost:8025` or `curl http://localhost:8025/api/v1/messages` |
+| `postmarkmock` | No | `PostMarkEmailConfigs.BaseUrlOverride = http://localhost:3050` | `http://localhost:3050` or `curl http://localhost:3050/api/messages` |
+| `localstack` (SNS) | No | `SnsSmsConfigs.ServiceUrlOverride = http://localhost:4566` | `curl http://localhost:4566/_aws/sns/sms-messages` |
 
-| Service | Port | View sent messages |
-|---|---|---|
-| `mailpit` | 8025 | `http://localhost:8025` or `curl http://localhost:8025/api/v1/messages` |
-| `postmarkmock` | 3050 | `http://localhost:3050` or `curl http://localhost:3050/api/messages` |
-| `localstack` (SNS) | 4566 | `curl http://localhost:4566/_aws/sns/sms-messages` |
+`mailpit` is the one exception to "config port == view port": it's real SMTP,
+not a REST mock, so mail actually gets *delivered* on 1025 and the web UI/API
+for reading it back lives on a separate port, 8025.
 
-Each has its `Host`/`BaseUrlOverride`/`ServiceUrlOverride` already pointed at
-it in `appsettings.json` — just uncomment the matching `AddXyz...Sender` in
-`Program.cs`. See the root README's
+Every config value above is already set in `appsettings.json` — to switch
+providers, start the one you want (`docker compose up -d <service>`, the two
+marked Default above are already running if you followed the root README's
+[Backend Setup](../README.md#backend-setup)) and uncomment the matching
+`AddXyz...Sender` in `Program.cs`. See the root README's
 [Notification Senders](../README.md#notification-senders) for how switching
 providers works.
 
