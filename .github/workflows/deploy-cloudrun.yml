@@ -9,6 +9,10 @@ permissions:
   contents: read
   id-token: write
 
+# TODO(template): these four point at the original author's own GCP project -
+# a fresh clone's tag push should fail closed, not silently deploy somewhere
+# unexpected, so these are deliberately not repo variables. Replace with your
+# own project's values. See docs/DEPLOYMENT.md#using-this-for-your-own-deployment.
 env:
   PROJECT_ID: angular-dotnet-auth-template
   REGION: us-central1
@@ -21,6 +25,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # TODO(template): Aiven-specific (pauses/resumes a free-tier instance that
+      # suspends when idle). Remove this step and "Wait for Aiven MySQL to be
+      # running" below if you're not using Aiven, and point db-connection-string
+      # at whatever MySQL-compatible host you're using instead.
       - name: Power on Aiven MySQL
         run: |
           pip install aiven-client
@@ -29,6 +37,9 @@ jobs:
             --power-on \
             --project ${{ vars.AIVEN_PROJECT }}
 
+      # TODO(template): also the original author's project - replace both values
+      # with your own Workload Identity Federation setup. See
+      # docs/DEPLOYMENT.md#using-this-for-your-own-deployment.
       - id: auth
         uses: google-github-actions/auth@v3
         with:
@@ -91,7 +102,7 @@ jobs:
             Jwt2FaAuthCoreConfig__FrontendBaseUrl=${{ vars.CLOUD_RUN_URL }}
             SendGridEmailConfigs__BaseUrlOverride=${{ vars.SENDGRID_MOCK_URL }}
             TwilioSmsConfigs__BaseUrlOverride=${{ vars.TWILIO_MOCK_URL }}
-            SeedAdmin__Email=admin@example.com
+            SeedAdmin__Email=${{ vars.SEED_ADMIN_EMAIL }}
           secrets: |
             ConnectionStrings__DefaultConnection=db-connection-string:latest
             Jwt2FaConfig__SecurityKey=jwt2fa-security-key:latest

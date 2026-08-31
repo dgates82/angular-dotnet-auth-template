@@ -90,9 +90,9 @@ block (`PROJECT_ID`, `REGION`, `SERVICE`, `REPOSITORY`) and the `auth` step's
 `workload_identity_provider`/`service_account` all point at the original
 author's project by design (not templated via repo variables, so a stray
 `v*` tag push on a fresh clone doesn't silently try to deploy anywhere).
-Replace these with your own project's values. Also change
-`SeedAdmin__Email=admin@example.com` to your own address, or remove the
-`SeedAdmin__*` lines entirely if you don't want an admin account seeded.
+Replace these with your own project's values. If you don't want a bootstrap
+admin auto-created on every deploy, remove the `SeedAdmin__*` lines entirely
+(and skip the `seed-admin-password` secret above).
 
 **5. Repo variables/secrets to set** (Settings → Secrets and variables →
 Actions — these are *not* copied when generating from a template):
@@ -100,6 +100,9 @@ Actions — these are *not* copied when generating from a template):
   doesn't exist until Cloud Run assigns it; deploy once with this unset
   (email links and the JWT audience will be wrong), then set it from the
   output URL and redeploy
+- `SEED_ADMIN_EMAIL` — the bootstrap admin's email if you kept the
+  `SeedAdmin__*` lines in the workflow; paired with the `seed-admin-password`
+  secret above
 - `SENDGRID_MOCK_URL`, `TWILIO_MOCK_URL` — only if you're also deploying the
   notification mocks as their own Cloud Run services (see [Notification
   Provider Mocks](LOCAL_DEV.md#notification-provider-mocks)); otherwise
