@@ -30,4 +30,13 @@ FROM base AS final
 WORKDIR /app/api/AngularDotNetAuthTemplate.Api
 COPY --from=publish /app/publish .
 COPY --from=client-build /src/client/dist/browser /app/client/dist/browser
+
+# Baked in at build time rather than a runtime config - see issues #117, #118.
+ARG DEMO_BANNER_ENABLED=false
+ARG DEMO_BANNER_REPO_URL=""
+ARG VERSION=""
+RUN printf '{"demoBannerEnabled":%s,"demoBannerRepoUrl":"%s","version":"%s"}' \
+    "${DEMO_BANNER_ENABLED}" "${DEMO_BANNER_REPO_URL}" "${VERSION}" \
+    > /app/client/dist/browser/app-info.json
+
 ENTRYPOINT ["dotnet", "AngularDotNetAuthTemplate.Api.dll"]

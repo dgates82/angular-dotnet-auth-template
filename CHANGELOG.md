@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-08-31
+
+### Added
+
+- A GitHub Actions pipeline (`.github/workflows/deploy-cloudrun.yml`) that
+  builds the single-process image and deploys it to Google Cloud Run,
+  triggered by pushing a `v*` tag rather than merging to `main` - lets a
+  deploy be cut from any branch independent of when something actually
+  merges. Authenticates via Workload Identity Federation scoped to this
+  exact repo, no static service-account keys. See `docs/DEPLOYMENT.md` for
+  the pipeline's Cloud Run free-tier ceiling and the GCP/WIF/secrets setup
+  needed to point this workflow at a different project when deploying a
+  generated copy of this template.
+
+### Changed
+
+- Default email sender switched from SMTP (Mailpit) to SendGrid. Raw SMTP
+  can't be reached over Cloud Run's single-port HTTP ingress - SendGrid's
+  REST-based provider works the same way in local dev and on Cloud Run,
+  matching the pattern Twilio SMS already used. Local dev's quickstart
+  command and mocks updated accordingly; SMTP/Mailpit remains available as
+  an alternate provider.
+
 ## [1.1.0] - 2026-08-23
 
 ### Added

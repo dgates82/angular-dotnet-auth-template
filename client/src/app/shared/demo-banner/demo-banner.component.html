@@ -1,0 +1,9 @@
+@if (appInfo$ | async; as appInfo) {
+  @if (appInfo.demoBannerEnabled) {
+    <div class="alert alert-secondary text-center mb-0" role="alert">
+      This is a live demo of the
+      <a [href]="appInfo.demoBannerRepoUrl" target="_blank" rel="noopener">Angular + .NET Core Auth Template</a>
+      &mdash; not a real application.
+    </div>
+  }
+}

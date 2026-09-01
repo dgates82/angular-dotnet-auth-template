@@ -86,8 +86,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-      mailpit:
-        condition: service_started
+      sendgridmock:
+        condition: service_healthy
       smsmock:
         condition: service_started
     environment:

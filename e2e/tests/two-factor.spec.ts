@@ -1,7 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 
 import { uniqueEmail, registerAndConfirm, login } from '../helpers/auth';
-import { getLatestEmail, extractCode } from '../helpers/mailpit';
+import { getLatestEmail, extractCode } from '../helpers/email-mock';
 import { getLatestSms } from '../helpers/sms-mock';
 import { normalizeSecret, generateCode } from '../helpers/totp';
 
@@ -27,8 +27,10 @@ test.describe('two-factor authentication', () => {
     await page.waitForURL('**/home');
 
     await startEnrollment(page, 'Authenticator');
-    const secret = normalizeSecret((await page.locator('kbd').textContent()) ?? '');
-    await page.locator('input[formcontrolname="code"]').pressSequentially(generateCode(secret), { delay: 30 });
+    const sharedKey = page.locator('kbd');
+    await expect(sharedKey).not.toHaveText('');
+    const secret = normalizeSecret((await sharedKey.textContent()) ?? '');
+    await page.locator('input[formcontrolname="code"]').pressSequentially(await generateCode(secret), { delay: 30 });
     await page.getByRole('button', { name: 'Verify' }).click();
     await expect(page.getByText('authenticator app has been configured')).toBeVisible();
 
@@ -38,7 +40,7 @@ test.describe('two-factor authentication', () => {
 
     await login(page, email, PASSWORD);
     await page.locator('input[formcontrolname="twoFaCode"]').waitFor();
-    await page.locator('input[formcontrolname="twoFaCode"]').pressSequentially(generateCode(secret), { delay: 30 });
+    await page.locator('input[formcontrolname="twoFaCode"]').pressSequentially(await generateCode(secret), { delay: 30 });
     await page.getByRole('button', { name: 'Log In' }).click();
     await page.waitForURL('**/home');
   });
