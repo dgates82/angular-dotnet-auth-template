@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.0] - 2026-08-31
+## [1.2.0] - 2026-09-01
 
 ### Added
 
@@ -20,6 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the pipeline's Cloud Run free-tier ceiling and the GCP/WIF/secrets setup
   needed to point this workflow at a different project when deploying a
   generated copy of this template.
+- A version footer showing the deployed git tag, baked into the image at
+  Docker build time (not a backend API) - empty by default, so local/CI
+  builds show nothing.
+- An optional demo banner linking back to the template repo, same
+  build-time mechanism as the version footer - off by default, so a
+  generated copy of this template doesn't silently ship "this is a demo"
+  branding on someone's real app. See `docs/DEPLOYMENT.md`.
 
 ### Changed
 
@@ -29,6 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   matching the pattern Twilio SMS already used. Local dev's quickstart
   command and mocks updated accordingly; SMTP/Mailpit remains available as
   an alternate provider.
+
+### Fixed
+
+- A flaky Authenticator/TOTP e2e test: the enrollment secret renders
+  asynchronously into the DOM, and the test could read it before that
+  finished, generating a code from an empty string that the server
+  correctly rejected.
 
 ## [1.1.0] - 2026-08-23
 
