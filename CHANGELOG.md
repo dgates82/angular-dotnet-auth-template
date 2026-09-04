@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-09-04
+
+### Added
+
+- README now links to the live Cloud Run demo, plus the SendGrid/Twilio mock
+  inboxes it uses, near the top instead of buried in Deployment.
+- Demo banner now links directly to the mock email/SMS inboxes
+  (`DEMO_MOCK_EMAIL_URL`/`DEMO_MOCK_SMS_URL` build args) so visitors can find
+  their confirmation/2FA codes without leaving the page.
+
 ## [1.2.0] - 2026-09-01
 
 ### Added
