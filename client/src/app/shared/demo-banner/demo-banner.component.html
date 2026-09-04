@@ -3,7 +3,17 @@
     <div class="alert alert-secondary text-center mb-0" role="alert">
       This is a live demo of the
       <a [href]="appInfo.demoBannerRepoUrl" target="_blank" rel="noopener">Angular + .NET Core Auth Template</a>
-      &mdash; not a real application.
+      &mdash; not a real application. No email/SMS is really sent; codes land in the
+      @if (appInfo.demoMockEmailUrl) {
+        <a [href]="appInfo.demoMockEmailUrl" target="_blank" rel="noopener">email</a>
+      }
+      @if (appInfo.demoMockEmailUrl && appInfo.demoMockSmsUrl) {
+        /
+      }
+      @if (appInfo.demoMockSmsUrl) {
+        <a [href]="appInfo.demoMockSmsUrl" target="_blank" rel="noopener">SMS</a>
+      }
+      mock inbox instead.
     </div>
   }
 }
