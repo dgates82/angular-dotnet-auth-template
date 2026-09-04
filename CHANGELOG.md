@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-09-04
+
 ### Added
 
 - README now links to the live Cloud Run demo, plus the SendGrid/Twilio mock
