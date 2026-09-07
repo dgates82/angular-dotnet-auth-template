@@ -55,6 +55,8 @@ jobs:
           docker build -f api/AngularDotNetAuthTemplate.Api/Dockerfile -t "$IMAGE" \
             --build-arg DEMO_BANNER_ENABLED=true \
             --build-arg DEMO_BANNER_REPO_URL=https://github.com/dgates82/angular-dotnet-auth-template \
+            --build-arg DEMO_MOCK_EMAIL_URL=${{ vars.SENDGRID_MOCK_URL }} \
+            --build-arg DEMO_MOCK_SMS_URL=${{ vars.TWILIO_MOCK_URL }} \
             --build-arg VERSION=${{ github.ref_name }} \
             .
           docker push "$IMAGE"

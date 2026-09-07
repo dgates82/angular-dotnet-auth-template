@@ -16,12 +16,15 @@ rendered. Same `app-info.json` mechanism as the demo banner below.
 
 ## Demo banner
 
-`DEMO_BANNER_ENABLED`/`DEMO_BANNER_REPO_URL` are Docker build args (not repo
-variables — see the Dockerfile), passed only by this repo's own
-`deploy-cloudrun.yml`. They're `false`/empty by default, so a generated copy
-of this template won't show "this is a demo, see the template repo" on a
-real app unless you deliberately add the same build args to your own
-workflow.
+`DEMO_BANNER_ENABLED`/`DEMO_BANNER_REPO_URL`/`DEMO_MOCK_EMAIL_URL`/
+`DEMO_MOCK_SMS_URL` are Docker build args (not repo variables — see the
+Dockerfile), passed only by this repo's own `deploy-cloudrun.yml`. The two
+mock URLs point at this repo's own SendGrid/Twilio mock Cloud Run services
+(`vars.SENDGRID_MOCK_URL`/`vars.TWILIO_MOCK_URL`) so the banner can link
+visitors straight to where confirmation/2FA codes actually land. All four are
+`false`/empty by default, so a generated copy of this template won't show
+"this is a demo, see the template repo" on a real app unless you deliberately
+add the same build args to your own workflow.
 
 ## Free tier
 

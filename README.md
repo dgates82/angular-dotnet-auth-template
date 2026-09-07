@@ -7,6 +7,14 @@ This repository provides a template for an authentication system built with Angu
 > Starter template, not a finished app — see
 > [How to Use This Template](#how-to-use-this-template) to get started.
 
+**[Live demo](https://angular-dotnet-auth-template-1019453023791.us-central1.run.app)**
+— register an account and try 2FA yourself. No real email/SMS is sent;
+confirmation and 2FA codes land in the public mock inboxes instead:
+[SendGrid mock](https://sendgrid-mock-7qs7btajdq-uc.a.run.app) (email) and
+[Twilio mock](https://twilio-mock-1019453023791.us-central1.run.app) (SMS) —
+see [dgates-mock-servers](https://github.com/dgates82/dgates-mock-servers) for
+how they work.
+
 ## How to Use This Template
 
 1. Click **[Use this template](https://github.com/dgates82/angular-dotnet-auth-template/generate)**

@@ -8,6 +8,8 @@ import { IAppInfo } from '@interfaces/app-info';
 const DEFAULT_APP_INFO: IAppInfo = {
   demoBannerEnabled: false,
   demoBannerRepoUrl: '',
+  demoMockEmailUrl: '',
+  demoMockSmsUrl: '',
   version: ''
 };
 
