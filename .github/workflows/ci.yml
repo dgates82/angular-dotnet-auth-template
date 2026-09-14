@@ -20,6 +20,10 @@ jobs:
     name: API build & test
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # secrets.* isn't a recognized named-value in step `if:` conditions - has to be
+    # routed through env: first, then checked as env.SONAR_TOKEN below.
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
       - name: Checkout
@@ -39,14 +43,14 @@ jobs:
       # failing CI - set up your own SonarQube Cloud project and add the secret to
       # turn it back on.
       - name: Set up JDK
-        if: ${{ secrets.SONAR_TOKEN != '' }}
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
 
       - name: Cache SonarQube Cloud packages
-        if: ${{ secrets.SONAR_TOKEN != '' }}
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
@@ -55,7 +59,7 @@ jobs:
 
       - name: Cache SonarQube Cloud scanner
         id: cache-sonar-scanner
-        if: ${{ secrets.SONAR_TOKEN != '' }}
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: actions/cache@v4
         with:
           path: ./.sonar/scanner
@@ -63,7 +67,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar-scanner
 
       - name: Install SonarQube Cloud scanner
-        if: ${{ secrets.SONAR_TOKEN != '' && steps.cache-sonar-scanner.outputs.cache-hit != 'true' }}
+        if: ${{ env.SONAR_TOKEN != '' && steps.cache-sonar-scanner.outputs.cache-hit != 'true' }}
         run: |
           mkdir -p ./.sonar/scanner
           dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
@@ -77,8 +81,8 @@ jobs:
       # TODO(template): no coverage report paths are wired in, so new-code coverage
       # always reads 0% - add coverage collection or relax the gate's coverage condition.
       - name: Begin SonarQube Cloud analysis
-        if: ${{ secrets.SONAR_TOKEN != '' }}
-        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"dgates82_angular-dotnet-auth-template" /o:"dgates" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**,**/e2e/**"
+        if: ${{ env.SONAR_TOKEN != '' }}
+        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"dgates82_angular-dotnet-auth-template" /o:"dgates" /d:sonar.token="$SONAR_TOKEN" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**,**/e2e/**"
 
       # AngularDotNetAuthTemplate.Api.Tests' integration tests exercise the
       # real auth/2FA/JWT controller flows over HTTP against these
@@ -114,11 +118,11 @@ jobs:
 
       - name: End SonarQube Cloud analysis
         id: sonar-end
-        if: ${{ secrets.SONAR_TOKEN != '' }}
-        run: ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        if: ${{ env.SONAR_TOKEN != '' }}
+        run: ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
 
       - name: Surface quality gate result
-        if: ${{ always() && secrets.SONAR_TOKEN != '' }}
+        if: ${{ always() && env.SONAR_TOKEN != '' }}
         run: |
           if [ -n "${{ github.event.pull_request.number }}" ]; then
             DASHBOARD_URL="https://sonarcloud.io/dashboard?id=dgates82_angular-dotnet-auth-template&pullRequest=${{ github.event.pull_request.number }}"
