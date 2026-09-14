@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   which never covered `.cs` files. CI now writes the quality gate result to the job summary,
   and a quality gate badge was added to the README.
 
+### Fixed
+
+- SonarQube Cloud CI steps failed the entire `api` job (not just skipped the scan) on a
+  generated repo without a `SONAR_TOKEN` - now gated on it being set. Project key/org moved
+  from hardcoded literals to `SONAR_PROJECT_KEY`/`SONAR_ORG` repo variables.
+
 ## [1.2.1] - 2026-09-04
 
 ### Added
