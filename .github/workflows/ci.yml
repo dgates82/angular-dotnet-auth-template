@@ -49,22 +49,20 @@ jobs:
         id: cache-sonar-scanner
         uses: actions/cache@v4
         with:
-          path: api/.sonar/scanner
+          path: ./.sonar/scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
 
       - name: Install SonarQube Cloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        working-directory: api
         run: |
           mkdir -p ./.sonar/scanner
           dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
       # begin/build/test/end must all run from the same folder, or the MSBuild
-      # integration silently fails to pick up any projects - hence working-directory
-      # here matching Restore/Build/Test below.
+      # integration silently fails to pick up any projects - runs from the repo
+      # root (not api/) so the scan also covers client/, not just the API.
       - name: Begin SonarQube Cloud analysis
-        working-directory: api
         run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"dgates82_angular-dotnet-auth-template" /o:"dgates" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.qualitygate.wait=true
 
       # AngularDotNetAuthTemplate.Api.Tests' integration tests exercise the
@@ -89,22 +87,18 @@ jobs:
           exit 1
 
       - name: Restore
-        working-directory: api
-        run: dotnet restore AngularDotNetAuthTemplate.sln
+        run: dotnet restore api/AngularDotNetAuthTemplate.sln
 
       - name: Build
-        working-directory: api
-        run: dotnet build AngularDotNetAuthTemplate.sln --no-restore --configuration Release
+        run: dotnet build api/AngularDotNetAuthTemplate.sln --no-restore --configuration Release
 
       - name: Test
-        working-directory: api
         run: >
-          dotnet test AngularDotNetAuthTemplate.sln --no-build --configuration Release
-          --logger "trx" --results-directory TestResults
+          dotnet test api/AngularDotNetAuthTemplate.sln --no-build --configuration Release
+          --logger "trx" --results-directory api/TestResults
 
       - name: End SonarQube Cloud analysis
         id: sonar-end
-        working-directory: api
         run: ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Surface quality gate result
