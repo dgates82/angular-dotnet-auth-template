@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SonarQube Cloud static analysis for the API project, wired into CI's `api` job via
+  `dotnet-sonarscanner` and gated on the quality gate result. Replaces Automatic Analysis,
+  which never covered `.cs` files. CI now writes the quality gate result to the job summary,
+  and a quality gate badge was added to the README.
+
 ## [1.2.1] - 2026-09-04
 
 ### Added

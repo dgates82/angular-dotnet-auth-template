@@ -24,11 +24,43 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Cache SonarQube Cloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache SonarQube Cloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v4
+        with:
+          path: ./.sonar/scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarQube Cloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ./.sonar/scanner
+          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+
+      - name: Begin SonarQube Cloud analysis
+        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"dgates82_angular-dotnet-auth-template" /o:"dgates" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.qualitygate.wait=true
 
       # AngularDotNetAuthTemplate.Api.Tests' integration tests exercise the
       # real auth/2FA/JWT controller flows over HTTP against these
@@ -64,6 +96,25 @@ jobs:
         run: >
           dotnet test AngularDotNetAuthTemplate.sln --no-build --configuration Release
           --logger "trx" --results-directory TestResults
+
+      - name: End SonarQube Cloud analysis
+        id: sonar-end
+        run: ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Surface quality gate result
+        if: always()
+        run: |
+          if [ -n "${{ github.event.pull_request.number }}" ]; then
+            DASHBOARD_URL="https://sonarcloud.io/dashboard?id=dgates82_angular-dotnet-auth-template&pullRequest=${{ github.event.pull_request.number }}"
+          else
+            DASHBOARD_URL="https://sonarcloud.io/dashboard?id=dgates82_angular-dotnet-auth-template&branch=${{ github.ref_name }}"
+          fi
+          if [ "${{ steps.sonar-end.outcome }}" = "failure" ]; then
+            echo "### :x: SonarQube Cloud quality gate FAILED" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### :white_check_mark: SonarQube Cloud quality gate passed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "[View details on SonarQube Cloud]($DASHBOARD_URL)" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload test results
         if: always()

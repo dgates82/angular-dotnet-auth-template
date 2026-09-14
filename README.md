@@ -1,6 +1,7 @@
 # Angular and .NET Core Authentication Template
 
 [![CI](https://github.com/dgates82/angular-dotnet-auth-template/actions/workflows/ci.yml/badge.svg)](https://github.com/dgates82/angular-dotnet-auth-template/actions/workflows/ci.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dgates82_angular-dotnet-auth-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dgates82_angular-dotnet-auth-template)
 
 This repository provides a template for an authentication system built with Angular 21 and .NET 10, using Entity Framework Core, tested against MySQL. It offers a secure foundation for applications requiring user authentication, with options for self-registration and two-factor authentication (2FA).
 
