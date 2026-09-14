@@ -36,12 +36,12 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      # TODO(template): SONAR_TOKEN, and the hardcoded project key ("dgates82_...")
-      # and org ("dgates") below, point at the original author's own SonarQube Cloud
-      # project. Every step in this block is gated on SONAR_TOKEN being set, so a
-      # generated repo without one just skips static analysis entirely rather than
-      # failing CI - set up your own SonarQube Cloud project and add the secret to
-      # turn it back on.
+      # TODO(template): SONAR_TOKEN, SONAR_PROJECT_KEY, and SONAR_ORG all point at
+      # the original author's own SonarQube Cloud project by default. Every step in
+      # this block is gated on SONAR_TOKEN being set, so a generated repo without one
+      # just skips static analysis entirely rather than failing CI - set up your own
+      # SonarQube Cloud project and set these (SONAR_TOKEN as a secret, the other two
+      # as repo variables) to turn it back on.
       - name: Set up JDK
         if: ${{ env.SONAR_TOKEN != '' }}
         uses: actions/setup-java@v4
@@ -82,7 +82,7 @@ jobs:
       # always reads 0% - add coverage collection or relax the gate's coverage condition.
       - name: Begin SonarQube Cloud analysis
         if: ${{ env.SONAR_TOKEN != '' }}
-        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"dgates82_angular-dotnet-auth-template" /o:"dgates" /d:sonar.token="$SONAR_TOKEN" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**,**/e2e/**"
+        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"${{ vars.SONAR_PROJECT_KEY }}" /o:"${{ vars.SONAR_ORG }}" /d:sonar.token="$SONAR_TOKEN" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**,**/e2e/**"
 
       # AngularDotNetAuthTemplate.Api.Tests' integration tests exercise the
       # real auth/2FA/JWT controller flows over HTTP against these
@@ -125,9 +125,9 @@ jobs:
         if: ${{ always() && env.SONAR_TOKEN != '' }}
         run: |
           if [ -n "${{ github.event.pull_request.number }}" ]; then
-            DASHBOARD_URL="https://sonarcloud.io/dashboard?id=dgates82_angular-dotnet-auth-template&pullRequest=${{ github.event.pull_request.number }}"
+            DASHBOARD_URL="https://sonarcloud.io/dashboard?id=${{ vars.SONAR_PROJECT_KEY }}&pullRequest=${{ github.event.pull_request.number }}"
           else
-            DASHBOARD_URL="https://sonarcloud.io/dashboard?id=dgates82_angular-dotnet-auth-template&branch=${{ github.ref_name }}"
+            DASHBOARD_URL="https://sonarcloud.io/dashboard?id=${{ vars.SONAR_PROJECT_KEY }}&branch=${{ github.ref_name }}"
           fi
           if [ "${{ steps.sonar-end.outcome }}" = "failure" ]; then
             echo "### :x: SonarQube Cloud quality gate FAILED" >> "$GITHUB_STEP_SUMMARY"
