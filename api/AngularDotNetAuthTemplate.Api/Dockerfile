@@ -8,7 +8,7 @@ EXPOSE 8080
 FROM node:20-alpine AS client-build
 WORKDIR /src/client
 COPY client/package.json client/package-lock.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 COPY client/ ./
 RUN npm run build
 
@@ -40,5 +40,9 @@ ARG VERSION=""
 RUN printf '{"demoBannerEnabled":%s,"demoBannerRepoUrl":"%s","demoMockEmailUrl":"%s","demoMockSmsUrl":"%s","version":"%s"}' \
     "${DEMO_BANNER_ENABLED}" "${DEMO_BANNER_REPO_URL}" "${DEMO_MOCK_EMAIL_URL}" "${DEMO_MOCK_SMS_URL}" "${VERSION}" \
     > /app/client/dist/browser/app-info.json
+
+# $APP_UID is the non-root user baked into the base aspnet image for exactly this purpose.
+RUN chown -R $APP_UID:$APP_UID /app
+USER $APP_UID
 
 ENTRYPOINT ["dotnet", "AngularDotNetAuthTemplate.Api.dll"]
