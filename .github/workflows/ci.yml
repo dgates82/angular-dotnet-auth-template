@@ -82,8 +82,8 @@ jobs:
         if: ${{ env.SONAR_TOKEN != '' }}
         working-directory: client
         run: |
-          npm ci
-          npx ng test --coverage --coverage-reporters lcov --watch=false
+          npm ci --ignore-scripts
+          ./node_modules/.bin/ng test --coverage --coverage-reporters lcov --watch=false
 
       # begin/build/test/end must all run from the same folder, or the MSBuild
       # integration silently fails to pick up any projects - runs from the repo
