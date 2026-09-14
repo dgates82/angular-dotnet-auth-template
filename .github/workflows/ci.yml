@@ -49,17 +49,22 @@ jobs:
         id: cache-sonar-scanner
         uses: actions/cache@v4
         with:
-          path: ./.sonar/scanner
+          path: api/.sonar/scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
 
       - name: Install SonarQube Cloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        working-directory: api
         run: |
           mkdir -p ./.sonar/scanner
           dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
+      # begin/build/test/end must all run from the same folder, or the MSBuild
+      # integration silently fails to pick up any projects - hence working-directory
+      # here matching Restore/Build/Test below.
       - name: Begin SonarQube Cloud analysis
+        working-directory: api
         run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"dgates82_angular-dotnet-auth-template" /o:"dgates" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.qualitygate.wait=true
 
       # AngularDotNetAuthTemplate.Api.Tests' integration tests exercise the
@@ -99,6 +104,7 @@ jobs:
 
       - name: End SonarQube Cloud analysis
         id: sonar-end
+        working-directory: api
         run: ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Surface quality gate result
