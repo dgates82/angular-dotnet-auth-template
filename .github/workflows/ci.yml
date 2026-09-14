@@ -36,14 +36,8 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      # TODO(template): SONAR_TOKEN, SONAR_PROJECT_KEY, and SONAR_ORG are set in this
-      # repo's own settings, pointing at the original author's SonarQube Cloud project
-      # - none of that carries over to a generated repo (GitHub doesn't copy secrets/
-      # variables when generating from a template), so all three are simply unset
-      # there. Every step in this block is gated on SONAR_TOKEN, so a generated repo
-      # just skips static analysis entirely rather than failing CI - set up your own
-      # SonarQube Cloud project and set these (SONAR_TOKEN as a secret, the other two
-      # as repo variables) to turn it back on.
+      # TODO(template): SONAR_TOKEN/SONAR_PROJECT_KEY/SONAR_ORG point at the original
+      # author's SonarQube Cloud project - set your own to turn analysis back on.
       - name: Set up JDK
         if: ${{ env.SONAR_TOKEN != '' }}
         uses: actions/setup-java@v4
