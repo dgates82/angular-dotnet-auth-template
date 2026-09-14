@@ -71,7 +71,7 @@ What's currently marked:
 | Team-specific dev notes | `docs/LOCAL_DEV.md` — has real content already, plus a `TODO(template)` for anything specific to your own setup |
 | JWT config | See [JWT Configuration](#jwt-configuration) |
 | Cloud Run deploy pipeline | `.github/workflows/deploy-cloudrun.yml` points at the original author's own GCP project by design — see [Deployment](#deployment) |
-| SonarQube Cloud static analysis | Set `SONAR_TOKEN` (secret) and `SONAR_PROJECT_KEY`/`SONAR_ORG` (repo variables) for your own project. Coverage reporting isn't wired up yet, so the quality gate's coverage condition will fail |
+| SonarQube Cloud static analysis | Set `SONAR_TOKEN` (secret) and `SONAR_PROJECT_KEY`/`SONAR_ORG` (repo variables) for your own project |
 
 ### JWT Configuration
 

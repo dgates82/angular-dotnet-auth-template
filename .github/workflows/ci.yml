@@ -66,17 +66,34 @@ jobs:
           mkdir -p ./.sonar/scanner
           dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
+      # Sonar's end step needs the lcov file on this same runner - the client job
+      # runs on a separate one, so this duplicates a lightweight test run here just
+      # to produce coverage data. Client build/lint/test still run for real in the
+      # client job; this doesn't replace that.
+      - name: Setup Node
+        if: ${{ env.SONAR_TOKEN != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Generate client coverage for Sonar
+        if: ${{ env.SONAR_TOKEN != '' }}
+        working-directory: client
+        run: |
+          npm ci
+          npx ng test --coverage --coverage-reporters lcov --watch=false
+
       # begin/build/test/end must all run from the same folder, or the MSBuild
       # integration silently fails to pick up any projects - runs from the repo
       # root (not api/) so the scan also covers client/, not just the API.
       # wwwroot is leftover pre-Angular-migration scaffold assets (jQuery, Bootstrap,
       # etc.), not part of the actual SPA - excluded along with the other generated/
       # vendor dirs so vendored code and binaries aren't scanned as our own source.
-      # TODO(template): coverage report paths aren't wired in, so new-code coverage
-      # always reads 0% - add coverage collection or relax the gate's coverage condition.
       - name: Begin SonarQube Cloud analysis
         if: ${{ env.SONAR_TOKEN != '' }}
-        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"${{ vars.SONAR_PROJECT_KEY }}" /o:"${{ vars.SONAR_ORG }}" /d:sonar.token="$SONAR_TOKEN" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**,**/e2e/**"
+        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"${{ vars.SONAR_PROJECT_KEY }}" /o:"${{ vars.SONAR_ORG }}" /d:sonar.token="$SONAR_TOKEN" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**,**/e2e/**" /d:sonar.cs.cobertura.reportsPaths="api/TestResults/**/coverage.cobertura.xml" /d:sonar.javascript.lcov.reportPaths="client/coverage/Angular/lcov.info"
 
       # AngularDotNetAuthTemplate.Api.Tests' integration tests exercise the
       # real auth/2FA/JWT controller flows over HTTP against these
@@ -108,7 +125,7 @@ jobs:
       - name: Test
         run: >
           dotnet test api/AngularDotNetAuthTemplate.sln --no-build --configuration Release
-          --logger "trx" --results-directory api/TestResults
+          --logger "trx" --results-directory api/TestResults --collect:"XPlat Code Coverage"
 
       - name: End SonarQube Cloud analysis
         id: sonar-end

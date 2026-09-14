@@ -19,9 +19,13 @@ CLAUDE.md
 node_modules/
 client/dist/
 client/.angular/
+client/coverage/
 chrome-profiler-events*.json
 /connect.lock
 /coverage
+
+# .NET test coverage/results (api/)
+api/**/TestResults/
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log

@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `dotnet-sonarscanner` and gated on the quality gate result. Replaces Automatic Analysis,
   which never covered `.cs` files. CI now writes the quality gate result to the job summary,
   and a quality gate badge was added to the README.
+- Test coverage reporting to SonarQube Cloud: `dotnet test --collect:"XPlat Code Coverage"`
+  for the API, `ng test --coverage` for the client, both fed into the scan via
+  `sonar.cs.cobertura.reportsPaths`/`sonar.javascript.lcov.reportPaths`.
 
 ### Fixed
 
