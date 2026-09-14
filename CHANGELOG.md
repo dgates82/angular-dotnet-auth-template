@@ -23,6 +23,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   generated repo without a `SONAR_TOKEN` - now gated on it being set. Project key/org moved
   from hardcoded literals to `SONAR_PROJECT_KEY`/`SONAR_ORG` repo variables.
 
+### Changed
+
+- The scanner now runs from the repo root instead of `api/`, so the scan also covers
+  `client/` - it was silently missing entirely before. `wwwroot` (leftover pre-Angular-
+  migration scaffold assets, not the real SPA) and `e2e/` (test-only) are excluded from
+  analysis. SonarQube Cloud steps in `ci.yml` are now gated on `SONAR_TOKEN` being set, so
+  CI skips static analysis entirely rather than failing for a generated repo without one.
+
+### Fixed
+
+- Resolved the real findings from `main`'s first full analysis: pinned two GitHub Actions
+  to commit SHAs, pinned and hardened the `aiven-client` pip install, stopped expanding
+  secrets directly in `run:` blocks, added `--ignore-scripts` to `npm ci`, switched the
+  container to a non-root user, and fixed log injection via unsanitized input in two log
+  statements in `UserController.cs`.
+
 ## [1.2.1] - 2026-09-04
 
 ### Added
