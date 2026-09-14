@@ -71,7 +71,7 @@ What's currently marked:
 | Team-specific dev notes | `docs/LOCAL_DEV.md` — has real content already, plus a `TODO(template)` for anything specific to your own setup |
 | JWT config | See [JWT Configuration](#jwt-configuration) |
 | Cloud Run deploy pipeline | `.github/workflows/deploy-cloudrun.yml` points at the original author's own GCP project by design — see [Deployment](#deployment) |
-| SonarQube Cloud static analysis | `.github/workflows/ci.yml`'s scan steps point at the original author's own SonarQube Cloud project and are gated on the `SONAR_TOKEN` secret being set — CI skips them entirely (not a failure) if it's absent. Set up your own project and add the secret to turn it back on |
+| SonarQube Cloud static analysis | `.github/workflows/ci.yml`'s scan steps point at the original author's own SonarQube Cloud project and are gated on the `SONAR_TOKEN` secret being set — CI skips them entirely (not a failure) if it's absent. Set up your own project and add the secret to turn it back on. Note: this repo doesn't collect/report test coverage to the scanner yet, so the default "Sonar way" quality gate's new-code coverage condition will fail on your own project too until coverage reporting is added or that condition is relaxed |
 
 ### JWT Configuration
 

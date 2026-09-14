@@ -74,6 +74,8 @@ jobs:
       # wwwroot is leftover pre-Angular-migration scaffold assets (jQuery, Bootstrap,
       # etc.), not part of the actual SPA - excluded along with the other generated/
       # vendor dirs so vendored code and binaries aren't scanned as our own source.
+      # TODO(template): no coverage report paths are wired in, so new-code coverage
+      # always reads 0% - add coverage collection or relax the gate's coverage condition.
       - name: Begin SonarQube Cloud analysis
         if: ${{ secrets.SONAR_TOKEN != '' }}
         run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"dgates82_angular-dotnet-auth-template" /o:"dgates" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**,**/e2e/**"
