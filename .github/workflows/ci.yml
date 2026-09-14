@@ -32,13 +32,21 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      # TODO(template): SONAR_TOKEN, and the hardcoded project key ("dgates82_...")
+      # and org ("dgates") below, point at the original author's own SonarQube Cloud
+      # project. Every step in this block is gated on SONAR_TOKEN being set, so a
+      # generated repo without one just skips static analysis entirely rather than
+      # failing CI - set up your own SonarQube Cloud project and add the secret to
+      # turn it back on.
       - name: Set up JDK
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
 
       - name: Cache SonarQube Cloud packages
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
@@ -47,6 +55,7 @@ jobs:
 
       - name: Cache SonarQube Cloud scanner
         id: cache-sonar-scanner
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         uses: actions/cache@v4
         with:
           path: ./.sonar/scanner
@@ -54,7 +63,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar-scanner
 
       - name: Install SonarQube Cloud scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        if: ${{ secrets.SONAR_TOKEN != '' && steps.cache-sonar-scanner.outputs.cache-hit != 'true' }}
         run: |
           mkdir -p ./.sonar/scanner
           dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
@@ -66,7 +75,8 @@ jobs:
       # etc.), not part of the actual SPA - excluded along with the other generated/
       # vendor dirs so vendored code and binaries aren't scanned as our own source.
       - name: Begin SonarQube Cloud analysis
-        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"dgates82_angular-dotnet-auth-template" /o:"dgates" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**"
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"dgates82_angular-dotnet-auth-template" /o:"dgates" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**,**/e2e/**"
 
       # AngularDotNetAuthTemplate.Api.Tests' integration tests exercise the
       # real auth/2FA/JWT controller flows over HTTP against these
@@ -102,10 +112,11 @@ jobs:
 
       - name: End SonarQube Cloud analysis
         id: sonar-end
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         run: ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Surface quality gate result
-        if: always()
+        if: ${{ always() && secrets.SONAR_TOKEN != '' }}
         run: |
           if [ -n "${{ github.event.pull_request.number }}" ]; then
             DASHBOARD_URL="https://sonarcloud.io/dashboard?id=dgates82_angular-dotnet-auth-template&pullRequest=${{ github.event.pull_request.number }}"
@@ -144,7 +155,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: client
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Lint
         working-directory: client
