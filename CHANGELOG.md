@@ -45,6 +45,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   earlier pass: `--ignore-scripts` added to the `client` and `e2e` jobs' `npm ci`, and the
   `e2e` job's Chromium install now invokes the local Playwright binary directly instead of
   `npx`.
+- `styles.scss`'s legacy `@import` came after `@use`, invalid CSS import ordering - since
+  Dart Sass requires `@use` first, the fix is `@use`-ing Bootstrap's CSS too rather than
+  reordering (which fails to compile).
 
 ## [1.2.1] - 2026-09-04
 
