@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SonarQube Cloud CI steps failed the entire `api` job (not just skipped the scan) on a
   generated repo without a `SONAR_TOKEN` - now gated on it being set. Project key/org moved
   from hardcoded literals to `SONAR_PROJECT_KEY`/`SONAR_ORG` repo variables.
+- `workflow_dispatch` runs weren't picking up the branch name (a SonarScanner limitation),
+  silently analyzing as if there were no branch at all - now passed explicitly for any
+  non-PR trigger.
 
 ## [1.2.1] - 2026-09-04
 

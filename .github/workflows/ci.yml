@@ -78,9 +78,14 @@ jobs:
           cache: "npm"
           cache-dependency-path: client/package-lock.json
 
+      # GITHUB_ACTIONS=false stops Vitest from writing its own job summary here - this
+      # run is only to feed Sonar coverage data, not a real test result to report; the
+      # client job's own test run already produces the real summary.
       - name: Generate client coverage for Sonar
         if: ${{ env.SONAR_TOKEN != '' }}
         working-directory: client
+        env:
+          GITHUB_ACTIONS: false
         run: |
           npm ci --ignore-scripts
           ./node_modules/.bin/ng test --coverage --coverage-reporters lcov --watch=false
@@ -91,9 +96,18 @@ jobs:
       # wwwroot is leftover pre-Angular-migration scaffold assets (jQuery, Bootstrap,
       # etc.), not part of the actual SPA - excluded along with the other generated/
       # vendor dirs so vendored code and binaries aren't scanned as our own source.
+      # workflow_dispatch runs don't get branch auto-detected by the scanner (a known
+      # SonarScanner limitation) and silently analyze as if there's no branch at all -
+      # pass it explicitly for any non-PR trigger. PR runs already auto-detect correctly
+      # via sonar.pullrequest.*, so leave those alone.
       - name: Begin SonarQube Cloud analysis
         if: ${{ env.SONAR_TOKEN != '' }}
-        run: ./.sonar/scanner/dotnet-sonarscanner begin /k:"${{ vars.SONAR_PROJECT_KEY }}" /o:"${{ vars.SONAR_ORG }}" /d:sonar.token="$SONAR_TOKEN" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**,**/e2e/**" /d:sonar.cs.cobertura.reportsPaths="api/TestResults/**/coverage.cobertura.xml" /d:sonar.javascript.lcov.reportPaths="client/coverage/Angular/lcov.info"
+        run: |
+          BRANCH_ARGS=""
+          if [ -z "${{ github.event.pull_request.number }}" ]; then
+            BRANCH_ARGS="/d:sonar.branch.name=${{ github.ref_name }}"
+          fi
+          ./.sonar/scanner/dotnet-sonarscanner begin /k:"${{ vars.SONAR_PROJECT_KEY }}" /o:"${{ vars.SONAR_ORG }}" /d:sonar.token="$SONAR_TOKEN" /d:sonar.qualitygate.wait=true /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/dist/**,**/.angular/**,**/wwwroot/**,**/e2e/**" /d:sonar.cs.cobertura.reportsPaths="api/TestResults/**/coverage.cobertura.xml" /d:sonar.javascript.lcov.reportPaths="client/coverage/Angular/lcov.info" $BRANCH_ARGS
 
       # AngularDotNetAuthTemplate.Api.Tests' integration tests exercise the
       # real auth/2FA/JWT controller flows over HTTP against these
