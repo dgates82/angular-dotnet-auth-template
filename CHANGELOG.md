@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `workflow_dispatch` runs weren't picking up the branch name (a SonarScanner limitation),
   silently analyzing as if there were no branch at all - now passed explicitly for any
   non-PR trigger.
+- Three remaining SonarQube Cloud vulnerability findings in `ci.yml` itself, missed in the
+  earlier pass: `--ignore-scripts` added to the `client` and `e2e` jobs' `npm ci`, and the
+  `e2e` job's Chromium install now invokes the local Playwright binary directly instead of
+  `npx`.
 
 ## [1.2.1] - 2026-09-04
 
