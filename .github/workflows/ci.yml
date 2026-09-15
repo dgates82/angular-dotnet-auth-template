@@ -2,9 +2,12 @@ name: CI
 
 on:
   # Feature branches get coverage via pull_request - open a draft PR on the first commit.
+  # release/** included so merges there get scanned as their own long-lived branch too,
+  # not just via workflow_dispatch.
   push:
     branches:
       - main
+      - release/**
   pull_request:
   workflow_dispatch:
 

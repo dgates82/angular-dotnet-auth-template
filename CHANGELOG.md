@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test coverage reporting to SonarQube Cloud: `dotnet test --collect:"XPlat Code Coverage"`
   for the API, `ng test --coverage` for the client, both fed into the scan via
   `sonar.cs.cobertura.reportsPaths`/`sonar.javascript.lcov.reportPaths`.
+- CI now also runs on pushes to `release/**` branches, not just `main` - a release branch
+  merge gets scanned automatically instead of needing a manual `workflow_dispatch` run.
 
 ### Changed
 
