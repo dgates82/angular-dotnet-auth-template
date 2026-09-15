@@ -78,9 +78,14 @@ jobs:
           cache: "npm"
           cache-dependency-path: client/package-lock.json
 
+      # GITHUB_ACTIONS=false stops Vitest from writing its own job summary here - this
+      # run is only to feed Sonar coverage data, not a real test result to report; the
+      # client job's own test run already produces the real summary.
       - name: Generate client coverage for Sonar
         if: ${{ env.SONAR_TOKEN != '' }}
         working-directory: client
+        env:
+          GITHUB_ACTIONS: false
         run: |
           npm ci --ignore-scripts
           ./node_modules/.bin/ng test --coverage --coverage-reporters lcov --watch=false
