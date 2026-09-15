@@ -34,6 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   secrets directly in `run:` blocks, added `--ignore-scripts` to `npm ci`, switched the
   container to a non-root user, and fixed log injection via unsanitized input in two log
   statements in `UserController.cs`.
+- `workflow_dispatch` runs weren't picking up the branch name (a SonarScanner limitation),
+  silently analyzing as if there were no branch at all - now passed explicitly for any
+  non-PR trigger.
+- Vitest was writing its own job summary for the coverage-only client run inside the `api`
+  job, showing up misleadingly under "API build & test" instead of "Client build & test".
 
 ## [1.2.1] - 2026-09-04
 
