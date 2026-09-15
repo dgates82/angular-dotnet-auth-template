@@ -16,15 +16,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test coverage reporting to SonarQube Cloud: `dotnet test --collect:"XPlat Code Coverage"`
   for the API, `ng test --coverage` for the client, both fed into the scan via
   `sonar.cs.cobertura.reportsPaths`/`sonar.javascript.lcov.reportPaths`.
+- CI now also runs on pushes to `release/**` branches, not just `main` - a release branch
+  merge gets scanned automatically instead of needing a manual `workflow_dispatch` run.
+
+### Changed
+
+- The scanner now runs from the repo root instead of `api/`, so the scan also covers
+  `client/` - it was silently missing entirely before. `wwwroot` (leftover pre-Angular-
+  migration scaffold assets, not the real SPA) and `e2e/` (test-only) are excluded from
+  analysis.
 
 ### Fixed
 
 - SonarQube Cloud CI steps failed the entire `api` job (not just skipped the scan) on a
   generated repo without a `SONAR_TOKEN` - now gated on it being set. Project key/org moved
   from hardcoded literals to `SONAR_PROJECT_KEY`/`SONAR_ORG` repo variables.
+- Resolved the real findings from `main`'s first full analysis: pinned two GitHub Actions
+  to commit SHAs, pinned and hardened the `aiven-client` pip install, stopped expanding
+  secrets directly in `run:` blocks, added `--ignore-scripts` to `npm ci`, switched the
+  container to a non-root user, and fixed log injection via unsanitized input in two log
+  statements in `UserController.cs`.
 - `workflow_dispatch` runs weren't picking up the branch name (a SonarScanner limitation),
   silently analyzing as if there were no branch at all - now passed explicitly for any
   non-PR trigger.
+- Vitest was writing its own job summary for the coverage-only client run inside the `api`
+  job, showing up misleadingly under "API build & test" instead of "Client build & test".
 
 ## [1.2.1] - 2026-09-04
 
