@@ -189,7 +189,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: client
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Lint
         working-directory: client
@@ -278,16 +278,17 @@ jobs:
 
       - name: Install dependencies
         working-directory: e2e
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       # --with-deps also apt-get installs OS-level shared libraries, which hung on a
       # flaky GitHub Actions apt mirror (azure.archive.ubuntu.com) and burned a full
       # timeout-minutes run. GitHub's ubuntu-latest runners already ship what Chromium
       # needs, so plain `install chromium` (binary download only, no apt/network-mirror
-      # involved) should avoid that flakiness entirely.
+      # involved) should avoid that flakiness entirely. Invokes the local binary directly
+      # instead of npx, which can install on-demand and run lifecycle scripts.
       - name: Install Chromium
         working-directory: e2e
-        run: npx playwright install chromium
+        run: ./node_modules/.bin/playwright install chromium
 
       - name: Test
         working-directory: e2e

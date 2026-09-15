@@ -41,6 +41,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   non-PR trigger.
 - Vitest was writing its own job summary for the coverage-only client run inside the `api`
   job, showing up misleadingly under "API build & test" instead of "Client build & test".
+- Three remaining SonarQube Cloud vulnerability findings in `ci.yml` itself, missed in the
+  earlier pass: `--ignore-scripts` added to the `client` and `e2e` jobs' `npm ci`, and the
+  `e2e` job's Chromium install now invokes the local Playwright binary directly instead of
+  `npx`.
 
 ## [1.2.1] - 2026-09-04
 
