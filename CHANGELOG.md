@@ -25,6 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   against the real published release: full unit/integration suite and full Playwright
   e2e suite both green.
 
+### Fixed
+
+- `UserController.Put`'s two log statements sanitize `request.Id` (strip `\r`/`\n`) before
+  logging it, closing a residual log-forging gap CodeQL's `cs/log-forging` caught -
+  switching these to structured-logging placeholders in an earlier release addressed
+  Sonar's interpolation rule, but the app's default plain-text console formatter still
+  renders newlines in parameter values unescaped, so a malicious `Id` could inject a
+  fake-looking log entry either way.
+
 ## [1.2.2] - 2026-09-15
 
 ### Added
