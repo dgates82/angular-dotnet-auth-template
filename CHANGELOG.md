@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- CodeQL static analysis (`.github/workflows/codeql.yml`), covering both `csharp` and
+  `javascript-typescript` — GitHub's own dataflow-based analyzer, run independently of
+  SonarQube Cloud. Path exclusions mirror the existing Sonar exclusion list. Runs on push
+  to `main`/`release/**`, on PRs, weekly on a schedule, and via `workflow_dispatch`. A
+  CodeQL badge was added to the README alongside the existing CI/Sonar ones.
+
 ### Changed
 
 - `DGates.Identity.NotificationProviders` bumped to `1.1.0` — CI/tooling only on the
