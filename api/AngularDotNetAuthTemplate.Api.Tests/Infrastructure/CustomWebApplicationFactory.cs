@@ -1,6 +1,11 @@
 using AngularDotNetAuthTemplate.Api.Data;
+using AngularDotNetAuthTemplate.Api.Models;
+using DGates.Identity.Jwt2Fa.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace AngularDotNetAuthTemplate.Api.Tests.Infrastructure;
@@ -59,5 +64,18 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
     async Task IAsyncLifetime.DisposeAsync()
     {
         await base.DisposeAsync();
+    }
+
+    // Swaps IAuthCoreService for a fake whose AdminUpdateUserAsync always throws, so tests
+    // can exercise a controller's generic-500 catch block without needing a real failure
+    // condition (e.g. a dropped database connection) to trigger it.
+    public HttpClient CreateClientWithThrowingAuthService()
+    {
+        return WithWebHostBuilder(builder =>
+            builder.ConfigureTestServices(services =>
+            {
+                services.RemoveAll<IAuthCoreService<ApplicationUser>>();
+                services.AddScoped<IAuthCoreService<ApplicationUser>>(_ => new ThrowingAuthCoreService());
+            })).CreateClient();
     }
 }

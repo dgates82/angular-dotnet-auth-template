@@ -51,6 +51,33 @@ public class UserControllerTests
     }
 
     [Fact]
+    public async Task Put_WhenAdminUpdateThrows_Returns500()
+    {
+        // The throwing fake replaces IAuthCoreService for every endpoint on its host, not
+        // just AdminUpdateUserAsync - register/login as admin on a normal client first,
+        // then replay the resulting JWT against the throwing-service client so only the
+        // Put call under test hits the fake.
+        var adminClient = _factory.CreateClient();
+        var adminEmail = TestUsers.NewEmail();
+        await AccountTestHelper.RegisterConfirmAndAuthenticateAsAdminAsync(adminClient, _factory.Services, adminEmail, TestUsers.DefaultPassword);
+
+        var targetEmail = TestUsers.NewEmail();
+        await AccountTestHelper.RegisterAndConfirmAsync(_factory.CreateClient(), _factory.Services, targetEmail, TestUsers.DefaultPassword);
+        var targetId = await GetUserIdAsync(targetEmail);
+
+        var throwingClient = _factory.CreateClientWithThrowingAuthService();
+        throwingClient.DefaultRequestHeaders.Authorization = adminClient.DefaultRequestHeaders.Authorization;
+
+        var response = await throwingClient.PutAsJsonAsync("/api/admin/user",
+            new { Id = targetId, FirstName = "Updated", Roles = new List<string>() },
+            AccountTestHelper.JsonOptions);
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.Contains("An unexpected error occurred.", body);
+    }
+
+    [Fact]
     public async Task Put_WithUnknownId_ReturnsNotFound()
     {
         var adminClient = _factory.CreateClient();
