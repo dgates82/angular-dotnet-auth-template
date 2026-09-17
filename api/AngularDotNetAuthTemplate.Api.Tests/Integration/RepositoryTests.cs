@@ -109,6 +109,8 @@ public class RepositoryTests
         using var scope = _factory.Services.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IRepository<ApplicationUser>>();
 
-        await repository.DeleteAsync(Guid.NewGuid().ToString());
+        var exception = await Record.ExceptionAsync(() => repository.DeleteAsync(Guid.NewGuid().ToString()));
+
+        Assert.Null(exception);
     }
 }
