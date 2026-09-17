@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   SonarQube Cloud. Path exclusions mirror the existing Sonar exclusion list. Runs on push
   to `main`/`release/**`, on PRs, weekly on a schedule, and via `workflow_dispatch`. A
   CodeQL badge was added to the README alongside the existing CI/Sonar ones.
+- Test coverage for `UserController.Put`'s generic-500 catch block, via a throwing
+  `IAuthCoreService` fake and a `CreateClientWithThrowingAuthService()` factory helper,
+  and for `RolesController.Get`. On the client, new or extended specs for `AccountService`,
+  `RegisterUserComponent`, `ProfilePersonalInfoComponent`, `AdminPersonalInfoComponent`,
+  `EnableTwoFaPhoneComponent`, and `NavigationSidenavComponent`.
 
 ### Changed
 
