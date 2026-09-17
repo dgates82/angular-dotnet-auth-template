@@ -46,9 +46,13 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] UpdateUserRequestDto request)
         {
+            // Strips CR/LF so a malicious Id can't inject fake-looking entries into the log
+            // output - the default console formatter doesn't escape newlines in log parameters.
+            var sanitizedUserId = request.Id.Replace('\r', '_').Replace('\n', '_');
+
             try
             {
-                _logger.LogInformation("Updating user: {UserId}", request.Id);
+                _logger.LogInformation("Updating user: {UserId}", sanitizedUserId);
 
                 var user = await _userManager.FindByIdAsync(request.Id);
                 if (user == null)
@@ -91,7 +95,7 @@ namespace AngularDotNetAuthTemplate.Api.Controllers.API.Admin
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error updating user: {UserId}", request.Id);
+                _logger.LogError(e, "Error updating user: {UserId}", sanitizedUserId);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
