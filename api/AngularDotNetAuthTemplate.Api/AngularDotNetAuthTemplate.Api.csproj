@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DGates.Identity.Jwt2Fa" Version="1.0.0" />
+    <PackageReference Include="DGates.Identity.Jwt2Fa" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.18" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.18" />
@@ -44,7 +44,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
-    <PackageReference Include="DGates.Identity.NotificationProviders" Version="1.0.0" />
+    <PackageReference Include="DGates.Identity.NotificationProviders" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
