@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `DGates.Identity.NotificationProviders` bumped to `1.1.0` — CI/tooling only on the
+  package side (SonarQube Cloud wiring, a `NuGet/login` SHA pin, and interface-alignment/
+  logging cleanup), no API changes.
 - `DGates.Identity.Jwt2Fa` bumped to `1.1.0` — CI/tooling only on the package side
   (SonarQube Cloud wiring, static-analysis findings cleanup), no API changes. Verified
   against the real published release: full unit/integration suite and full Playwright
