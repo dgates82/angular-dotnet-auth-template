@@ -60,6 +60,21 @@ jobs:
           dotnet build api/AngularDotNetAuthTemplate.sln --configuration Release --no-restore
 
       - name: Perform CodeQL Analysis
+        id: codeql-analyze
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"
+
+      # CodeQL doesn't have a "quality gate" the way Sonar does - a successful outcome
+      # here means the scan ran cleanly, not that there are zero alerts. Alert counts and
+      # detail live in the Security tab, linked below.
+      - name: Surface CodeQL analysis result
+        if: always()
+        run: |
+          DASHBOARD_URL="https://github.com/${{ github.repository }}/security/code-scanning?query=tool%3ACodeQL"
+          if [ "${{ steps.codeql-analyze.outcome }}" = "failure" ]; then
+            echo "### :x: CodeQL analysis (${{ matrix.language }}) failed to complete" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### :white_check_mark: CodeQL analysis (${{ matrix.language }}) completed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "[View results on GitHub Security]($DASHBOARD_URL)" >> "$GITHUB_STEP_SUMMARY"
