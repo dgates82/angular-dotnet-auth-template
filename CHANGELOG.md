@@ -19,6 +19,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and for `RolesController.Get`. On the client, new or extended specs for `AccountService`,
   `RegisterUserComponent`, `ProfilePersonalInfoComponent`, `AdminPersonalInfoComponent`,
   `EnableTwoFaPhoneComponent`, and `NavigationSidenavComponent`.
+- Further test coverage: `Repository<T>` and `DbSeeder`'s admin-seeding branch on the API
+  side, both exercised against the real disposable test database rather than mocked. On
+  the client, new or extended specs for `UserService`, `AddressService`,
+  `LoginComponent`'s 2FA-required paths, `TwoFaRootComponent`'s enable/disable flow,
+  `UpdatePasswordComponent`, `RegisterComponent`, `EditUserComponent`,
+  `EmailConfirmationComponent`, `AdminSecurityInfoComponent`, `EnableTwoFaEmailComponent`,
+  `LoginTwoFactorComponent`, `ListUsersComponent`, `EnableAuthenticatorComponent`, and
+  `EnableTwoFaRootComponent`.
 
 ### Changed
 

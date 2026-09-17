@@ -99,4 +99,46 @@ describe('UserService', () => {
 
     await expect(promise).resolves.toEqual(updated);
   });
+
+  it('updates a user via PUT', async () => {
+    const user = { id: '1', email: 'admin@example.com', firstName: 'Updated' } as IApplicationUser;
+    const promise = service.update(user);
+
+    const req = httpMock.expectOne('/api/admin/user');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(user);
+    req.flush(user);
+
+    await expect(promise).resolves.toEqual(user);
+  });
+
+  it('deactivates a user by id', async () => {
+    const promise = service.deactivate('1');
+
+    const req = httpMock.expectOne('/api/auth/deactivate/1');
+    expect(req.request.method).toBe('POST');
+    req.flush({ isSuccess: true });
+
+    await expect(promise).resolves.toEqual({ isSuccess: true });
+  });
+
+  it('activates a user by id', async () => {
+    const promise = service.activate('1');
+
+    const req = httpMock.expectOne('/api/auth/activate/1');
+    expect(req.request.method).toBe('POST');
+    req.flush({ isSuccess: true });
+
+    await expect(promise).resolves.toEqual({ isSuccess: true });
+  });
+
+  it('unlocks a user by id', async () => {
+    const promise = service.unlock('1');
+
+    const req = httpMock.expectOne('/api/auth/unlock/1');
+    expect(req.request.method).toBe('POST');
+    req.flush({ isSuccess: true });
+
+    await expect(promise).resolves.toEqual({ isSuccess: true });
+  });
 });

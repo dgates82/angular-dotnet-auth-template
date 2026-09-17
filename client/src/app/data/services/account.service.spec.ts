@@ -15,6 +15,11 @@ import { ITwoFaAuthRequest } from '@interfaces/account/two-fa-auth-request';
 import { ISendVerificationCodeRequest } from '@interfaces/account/send-verification-code-request';
 import { IVerifyAuthenticatorRequest } from '@interfaces/account/verify-authenticator-request';
 import { IEmailOnlyRequest } from '@interfaces/account/email-only-request';
+import { IForgotPasswordRequest } from '@interfaces/account/forgot-password-request';
+import { IResetPasswordRequest } from '@interfaces/account/reset-password-request';
+import { IChangePasswordRequest } from '@interfaces/account/change-password-request';
+import { IConfirmEmailRequest } from '@interfaces/account/confirm-email-request';
+import { IEnableAuthenticatorResponse } from '@interfaces/account/enable-authenticator-response';
 
 describe('AccountService', () => {
   let service: AccountService;
@@ -223,6 +228,114 @@ describe('AccountService', () => {
       localStorage.setItem('authResponse', JSON.stringify({ isAuthSuccessful: true, requiresTwoFactor: false, user }));
 
       expect(service.getLoggedInUser()).toEqual(user);
+    });
+  });
+
+  describe('sendForgotPassword', () => {
+    it('posts the request and resolves with the response', async () => {
+      const request: IForgotPasswordRequest = { email: 'admin@example.com' };
+      const promise = service.sendForgotPassword(request);
+
+      const req = httpMock.expectOne('/api/auth/forgotpassword');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(request);
+      req.flush({ isSuccess: true });
+
+      await expect(promise).resolves.toEqual({ isSuccess: true });
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('posts the request and resolves with the response', async () => {
+      const request: IResetPasswordRequest = { userId: '1', code: 'abc', password: 'Password1!' };
+      const promise = service.resetPassword(request);
+
+      const req = httpMock.expectOne('/api/auth/resetpassword');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(request);
+      req.flush({ isSuccess: true });
+
+      await expect(promise).resolves.toEqual({ isSuccess: true });
+    });
+  });
+
+  describe('changePassword', () => {
+    it('posts the request and resolves with the response', async () => {
+      const request: IChangePasswordRequest = { email: 'admin@example.com', currentPassword: 'Old1!', newPassword: 'New1!' };
+      const promise = service.changePassword(request);
+
+      const req = httpMock.expectOne('/api/auth/changepassword');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(request);
+      req.flush({ isSuccess: true });
+
+      await expect(promise).resolves.toEqual({ isSuccess: true });
+    });
+  });
+
+  describe('sendConfirmEmail', () => {
+    it('posts the request and resolves with the response', async () => {
+      const request: IEmailOnlyRequest = { email: 'admin@example.com' };
+      const promise = service.sendConfirmEmail(request);
+
+      const req = httpMock.expectOne('/api/auth/sendemailconfirmation');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(request);
+      req.flush({ isSuccess: true });
+
+      await expect(promise).resolves.toEqual({ isSuccess: true });
+    });
+  });
+
+  describe('confirmEmail', () => {
+    it('posts the request and resolves with the response', async () => {
+      const request: IConfirmEmailRequest = { userId: '1', code: 'abc' };
+      const promise = service.confirmEmail(request);
+
+      const req = httpMock.expectOne('/api/auth/confirmemail');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(request);
+      req.flush({ isSuccess: true });
+
+      await expect(promise).resolves.toEqual({ isSuccess: true });
+    });
+  });
+
+  describe('enableAuthenticator', () => {
+    it('posts the request and resolves with the shared key and URI', async () => {
+      const request: IEmailOnlyRequest = { email: 'admin@example.com' };
+      const response: IEnableAuthenticatorResponse = { sharedKey: 'KEY', authenticatorUri: 'otpauth://totp/x' };
+      const promise = service.enableAuthenticator(request);
+
+      const req = httpMock.expectOne('/api/auth/enableauthenticator');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(request);
+      req.flush(response);
+
+      await expect(promise).resolves.toEqual(response);
+    });
+  });
+
+  describe('testSecure', () => {
+    it('gets the secure endpoint as text', async () => {
+      const promise = service.testSecure();
+
+      const req = httpMock.expectOne('/api/auth/secure');
+      expect(req.request.method).toBe('GET');
+      req.flush('secure response');
+
+      await expect(promise).resolves.toBe('secure response');
+    });
+  });
+
+  describe('sendAuthStateChangeNotification', () => {
+    it('emits the given value on authChanged', () => {
+      const values: boolean[] = [];
+      service.authChanged.subscribe(v => values.push(v));
+
+      service.sendAuthStateChangeNotification(true);
+
+      expect(values).toEqual([false, true]);
     });
   });
 });
