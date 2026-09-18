@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-09-18
+
+### Added
+
+- CodeQL static analysis (`.github/workflows/codeql.yml`), covering both `csharp` and
+  `javascript-typescript` — GitHub's own dataflow-based analyzer, run independently of
+  SonarQube Cloud. Path exclusions mirror the existing Sonar exclusion list. Runs on push
+  to `main`/`release/**`, on PRs, weekly on a schedule, and via `workflow_dispatch`. A
+  CodeQL badge was added to the README alongside the existing CI/Sonar ones.
+- Test coverage for `UserController.Put`'s generic-500 catch block, via a throwing
+  `IAuthCoreService` fake and a `CreateClientWithThrowingAuthService()` factory helper,
+  and for `RolesController.Get`. On the client, new or extended specs for `AccountService`,
+  `RegisterUserComponent`, `ProfilePersonalInfoComponent`, `AdminPersonalInfoComponent`,
+  `EnableTwoFaPhoneComponent`, and `NavigationSidenavComponent`.
+- Further test coverage: `Repository<T>` and `DbSeeder`'s admin-seeding branch on the API
+  side, both exercised against the real disposable test database rather than mocked. On
+  the client, new or extended specs for `UserService`, `AddressService`,
+  `LoginComponent`'s 2FA-required paths, `TwoFaRootComponent`'s enable/disable flow,
+  `UpdatePasswordComponent`, `RegisterComponent`, `EditUserComponent`,
+  `EmailConfirmationComponent`, `AdminSecurityInfoComponent`, `EnableTwoFaEmailComponent`,
+  `LoginTwoFactorComponent`, `ListUsersComponent`, `EnableAuthenticatorComponent`, and
+  `EnableTwoFaRootComponent`.
+
+### Changed
+
+- `DGates.Identity.NotificationProviders` bumped to `1.1.0` — CI/tooling only on the
+  package side (SonarQube Cloud wiring, a `NuGet/login` SHA pin, and interface-alignment/
+  logging cleanup), no API changes.
+- `DGates.Identity.Jwt2Fa` bumped to `1.1.0` — CI/tooling only on the package side
+  (SonarQube Cloud wiring, static-analysis findings cleanup), no API changes. Verified
+  against the real published release: full unit/integration suite and full Playwright
+  e2e suite both green.
+
+### Fixed
+
+- `UserController.Put`'s two log statements sanitize `request.Id` (strip `\r`/`\n`) before
+  logging it, closing a residual log-forging gap CodeQL's `cs/log-forging` caught -
+  switching these to structured-logging placeholders in an earlier release addressed
+  Sonar's interpolation rule, but the app's default plain-text console formatter still
+  renders newlines in parameter values unescaped, so a malicious `Id` could inject a
+  fake-looking log entry either way.
+
 ## [1.2.2] - 2026-09-15
 
 ### Added

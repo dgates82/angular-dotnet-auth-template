@@ -1,0 +1,12 @@
+name: "CodeQL config"
+
+# Mirrors ci.yml's sonar.exclusions list - vendored/generated/test-only paths, not this
+# repo's own source.
+paths-ignore:
+  - '**/node_modules/**'
+  - '**/bin/**'
+  - '**/obj/**'
+  - '**/dist/**'
+  - '**/.angular/**'
+  - '**/wwwroot/**'
+  - '**/e2e/**'

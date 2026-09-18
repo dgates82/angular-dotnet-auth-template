@@ -1,0 +1,80 @@
+name: CodeQL
+
+on:
+  push:
+    branches:
+      - main
+      - release/**
+  pull_request:
+  schedule:
+    # Weekly - catches newly-disclosed vulnerability patterns in code that hasn't changed.
+    - cron: '23 3 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [csharp, javascript-typescript]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          config-file: ./.github/codeql/codeql-config.yml
+
+      # C# needs an actual build for CodeQL's dataflow analysis - JS/TS analyzes from
+      # source directly, no build step needed.
+      - name: Setup .NET
+        if: matrix.language == 'csharp'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Build API
+        if: matrix.language == 'csharp'
+        run: |
+          dotnet restore api/AngularDotNetAuthTemplate.sln
+          dotnet build api/AngularDotNetAuthTemplate.sln --configuration Release --no-restore
+
+      - name: Perform CodeQL Analysis
+        id: codeql-analyze
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+
+      # CodeQL doesn't have a "quality gate" the way Sonar does - a successful outcome
+      # here means the scan ran cleanly, not that there are zero alerts. Alert counts and
+      # detail live in the Security tab, linked below.
+      - name: Surface CodeQL analysis result
+        if: always()
+        run: |
+          DASHBOARD_URL="https://github.com/${{ github.repository }}/security/code-scanning?query=tool%3ACodeQL"
+          if [ "${{ steps.codeql-analyze.outcome }}" = "failure" ]; then
+            echo "### :x: CodeQL analysis (${{ matrix.language }}) failed to complete" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### :white_check_mark: CodeQL analysis (${{ matrix.language }}) completed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "[View results on GitHub Security]($DASHBOARD_URL)" >> "$GITHUB_STEP_SUMMARY"
