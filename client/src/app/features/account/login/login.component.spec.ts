@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoginComponent } from './login.component';
 import { AccountService } from '@data/services/account.service';
 import { LoggerService } from '@core/services/logger.service';
+import { TwoFaNudgeService } from '@core/services/two-fa-nudge.service';
 import { IAuthResponse } from '@interfaces/account/auth-response';
 import { Constants } from '@core/constants';
 
@@ -12,6 +13,7 @@ describe('LoginComponent', () => {
     login: ReturnType<typeof vi.fn>;
     sendAuthStateChangeNotification: ReturnType<typeof vi.fn>;
     testSecure: ReturnType<typeof vi.fn>;
+    sendTwoFaCode: ReturnType<typeof vi.fn>;
   };
   let router: { navigate: ReturnType<typeof vi.fn> };
 
@@ -20,6 +22,7 @@ describe('LoginComponent', () => {
       login: vi.fn(),
       sendAuthStateChangeNotification: vi.fn(),
       testSecure: vi.fn().mockResolvedValue(''),
+      sendTwoFaCode: vi.fn().mockResolvedValue({ isSuccess: true }),
     };
     router = { navigate: vi.fn() };
 
@@ -117,5 +120,108 @@ describe('LoginComponent', () => {
 
     expect(fixture.componentInstance.isInvalidLogin).toBe(true);
     expect(fixture.componentInstance.isSubmitting).toBe(false);
+  });
+
+  it('calls testSecure and notifies the 2FA nudge service on a successful, non-2FA response', async () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+    const nudgeService = TestBed.inject(TwoFaNudgeService);
+    const notifySpy = vi.spyOn(nudgeService, 'notifyLoginSuccess');
+
+    const authResponse = { isAuthSuccessful: true, requiresTwoFactor: false } as IAuthResponse;
+    accountService.login.mockResolvedValue(authResponse);
+
+    fixture.componentInstance.loginForm.setValue({ email: 'admin@example.com', password: 'Password1!' });
+    fixture.componentInstance.login();
+
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(notifySpy).toHaveBeenCalledWith(false);
+    expect(accountService.testSecure).toHaveBeenCalled();
+  });
+
+  it('shows the failed-login message when the response is neither successful nor 2FA-required', async () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+
+    const authResponse = { isAuthSuccessful: false, requiresTwoFactor: false, errorMessage: 'Account locked' } as IAuthResponse;
+    accountService.login.mockResolvedValue(authResponse);
+
+    fixture.componentInstance.loginForm.setValue({ email: 'admin@example.com', password: 'wrong' });
+    fixture.componentInstance.login();
+
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(fixture.componentInstance.isInvalidLogin).toBe(true);
+    expect(fixture.componentInstance.isSubmitting).toBe(false);
+    expect(fixture.componentInstance.errorMessage).toBe('Account locked');
+    expect(accountService.sendAuthStateChangeNotification).toHaveBeenCalledWith(false);
+  });
+
+  describe('when 2FA is required', () => {
+    it('sends a code to email and sets the obfuscated-email subtitle', async () => {
+      const fixture = TestBed.createComponent(LoginComponent);
+      fixture.detectChanges();
+
+      const authResponse = { isAuthSuccessful: false, requiresTwoFactor: true, twoFactorMethod: 'Email' } as IAuthResponse;
+      accountService.login.mockResolvedValue(authResponse);
+
+      fixture.componentInstance.loginForm.setValue({ email: 'admin@example.com', password: 'Password1!' });
+      fixture.componentInstance.login();
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(accountService.sendTwoFaCode).toHaveBeenCalledWith({ email: 'admin@example.com', method: 'Email' });
+      expect(fixture.componentInstance.is2FaEnabled).toBe(true);
+      expect(fixture.componentInstance.subtitle).toContain('ad***@example.com');
+    });
+
+    it('sends a code to phone and sets the obfuscated-phone subtitle', async () => {
+      const fixture = TestBed.createComponent(LoginComponent);
+      fixture.detectChanges();
+
+      const authResponse = {
+        isAuthSuccessful: false, requiresTwoFactor: true, twoFactorMethod: 'Phone', phoneNumber: '5551234567'
+      } as IAuthResponse;
+      accountService.login.mockResolvedValue(authResponse);
+
+      fixture.componentInstance.loginForm.setValue({ email: 'admin@example.com', password: 'Password1!' });
+      fixture.componentInstance.login();
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(accountService.sendTwoFaCode).toHaveBeenCalledWith({ email: 'admin@example.com', phoneNumber: '5551234567', method: 'Sms' });
+      expect(fixture.componentInstance.is2FaEnabled).toBe(true);
+      expect(fixture.componentInstance.subtitle).toContain('***-***-4567');
+    });
+
+    it('does not send a code for the authenticator method', async () => {
+      const fixture = TestBed.createComponent(LoginComponent);
+      fixture.detectChanges();
+
+      const authResponse = { isAuthSuccessful: false, requiresTwoFactor: true, twoFactorMethod: 'Authenticator' } as IAuthResponse;
+      accountService.login.mockResolvedValue(authResponse);
+
+      fixture.componentInstance.loginForm.setValue({ email: 'admin@example.com', password: 'Password1!' });
+      fixture.componentInstance.login();
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(accountService.sendTwoFaCode).not.toHaveBeenCalled();
+      expect(fixture.componentInstance.is2FaEnabled).toBe(true);
+      expect(fixture.componentInstance.subtitle).toContain('authenticator app');
+    });
   });
 });
