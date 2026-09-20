@@ -18,13 +18,15 @@ rendered. Same `app-info.json` mechanism as the demo banner below.
 
 `DEMO_BANNER_ENABLED`/`DEMO_BANNER_REPO_URL`/`DEMO_MOCK_EMAIL_URL`/
 `DEMO_MOCK_SMS_URL` are Docker build args (not repo variables — see the
-Dockerfile), passed only by this repo's own `deploy-cloudrun.yml`. The two
-mock URLs point at this repo's own SendGrid/Twilio mock Cloud Run services
-(`vars.SENDGRID_MOCK_URL`/`vars.TWILIO_MOCK_URL`) so the banner can link
-visitors straight to where confirmation/2FA codes actually land. All four are
-`false`/empty by default, so a generated copy of this template won't show
-"this is a demo, see the template repo" on a real app unless you deliberately
-add the same build args to your own workflow.
+Dockerfile). The `Dockerfile`'s own defaults are `false`/empty, so a plain
+`docker build` with no build-args never shows the banner. `deploy-cloudrun.yml`
+itself, however, already passes `DEMO_BANNER_ENABLED=true` and a repo URL
+(via `${{ github.server_url }}/${{ github.repository }}`, so it always points
+at whichever repo is actually running the workflow) — since that workflow
+file is inherited as-is by generated repos, **the banner is on by default for
+any deployment that uses this workflow unmodified**, not opt-in. If you don't
+want "this is a demo" showing on your own deployment, remove or flip those
+four `--build-arg` lines in the "Build and push image" step.
 
 ## Free tier
 
@@ -49,24 +51,21 @@ cost/free-tier terms — this section covers the Cloud Run compute for the
 
 ## Using this for your own deployment
 
-Two independent layers keep a generated repo from touching the original
-author's GCP project.
+### Why a generated repo can't deploy into the original project
 
-The first is a job-level gate: `deploy-cloudrun.yml`'s `deploy` job only runs
-`if: vars.GCP_PROJECT_ID != ''`. A repo generated from this template starts
-with none of the six GCP/WIF Actions variables set, so pushing a `v*` tag
-just **skips** the job — nothing runs, nothing is attempted.
+Two things stop it:
 
-The second is server-side: this pipeline authenticates to GCP via Workload
-Identity Federation (OIDC, no static service-account keys), and the WIF
-provider is locked to one exact GitHub repo —
-`dgates82/angular-dotnet-auth-template`. Even if someone sets the six
-variables to the original author's actual values, the OIDC token GCP
-receives still carries the pushing repo's identity, not `dgates82/...`, so
-`google-github-actions/auth@v3` is **rejected** at that step.
+- **Nothing is configured.** The `deploy` job only runs when `GCP_PROJECT_ID` is
+  set. Generated repos don't inherit Actions variables or secrets, so pushing a
+  `v*` tag skips the job.
+- **GCP checks the caller.** Deploys authenticate with Workload Identity Federation
+  (OIDC, no stored keys), and the WIF provider trusts only the original repository.
+  If someone copies the original values into their own repo, the token GCP receives
+  carries their repository claim, and the `auth` step is rejected.
 
-To deploy your own copy, you need your own GCP project and your own WIF
-setup pointed at your fork.
+To deploy your own copy, create your own GCP project and a WIF provider scoped to
+your repository, then set the variables and secrets listed in
+[the setup steps](#using-this-for-your-own-deployment).
 
 **1. GCP project setup** — with the CLI authenticated against your own
 project:
