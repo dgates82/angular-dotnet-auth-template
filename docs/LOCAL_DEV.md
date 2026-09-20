@@ -1,12 +1,84 @@
 # Local Development
 
 Operational detail that isn't needed to evaluate or do a first run of the
-template — see the root README's
-[Running the Template As-Is](../README.md#running-the-template-as-is) for
-that. This file is for once you're actually developing against it.
+template — see the root README's [Quickstart](../README.md#quickstart) for
+that. This file is for once you're actually developing against it, including
+the native (non-Docker) setup and the end-to-end suite.
 
 TODO(template): keep adding to this — IDE run configurations, seeding data,
 or troubleshooting notes specific to your own team's machine setup.
+
+## Project Structure
+
+- `/api` — the .NET backend solution (`AngularDotNetAuthTemplate.sln`, `AngularDotNetAuthTemplate.Api/`)
+- `/client` — the Angular frontend
+- `/e2e` — a [Playwright](https://playwright.dev) suite covering full auth flows (registration, login, 2FA, admin user management) end to end against the real, containerized app — see [Running the End-to-End Suite](#running-the-end-to-end-suite)
+
+The app runs as a single process: the API serves the Angular build output
+directly, so there's nothing to configure for cross-origin requests.
+
+## Backend Setup
+
+For hot-reload development (not the containerized path — see the root
+README's [Quickstart](../README.md#quickstart) if you just want it running).
+
+**1. Start MySQL, the SendGrid mock, and the SMS mock** (from the repo root):
+```bash
+docker compose up -d mysql sendgridmock smsmock
+```
+
+This provisions the database, user, and password to match `appsettings.json`'s
+`DefaultConnection` (mapped to `localhost:3307`), plus local catchers for
+email and SMS so a fresh clone works with no external accounts.
+
+`docker-compose.yml` also defines an `api` service — leave it out for now; it
+needs the database migrated first (see below).
+
+**2. Install the EF Core CLI tool** (one-time per clone):
+```bash
+cd api
+dotnet tool restore
+```
+
+(Why a separate step at all? See
+[Why dotnet tool restore Is a Separate Step](#why-dotnet-tool-restore-is-a-separate-step)
+below.)
+
+**3. Run migrations** (from `api/AngularDotNetAuthTemplate.Api/` — `dotnet ef`
+resolves the target project from the current directory):
+```bash
+cd AngularDotNetAuthTemplate.Api
+dotnet ef database update
+```
+
+**4. (Optional) Bootstrap an admin account.** See
+[Seeded Admin Account](CONFIGURATION.md#seeded-admin-account) in
+`docs/CONFIGURATION.md`.
+
+Want to develop against SMTP/Mailpit, Postmark, or SNS instead of the two
+default mocks? See [Notification Provider Mocks](#notification-provider-mocks)
+below.
+
+## Frontend Setup
+
+```bash
+cd client
+npm install
+ng build
+```
+
+Outputs to `client/dist/browser`, which the API serves as static files.
+
+## Run the Solution
+
+Open `api/AngularDotNetAuthTemplate.sln` in your IDE and run the
+`AngularDotNetAuthTemplate.Api` project, or from the repo root:
+```bash
+dotnet run --project api/AngularDotNetAuthTemplate.Api
+```
+
+Available at `https://localhost:7249` (see [Ports](#ports) below for how this
+differs from the Docker path).
 
 ## Ports
 
@@ -36,11 +108,11 @@ for reading it back lives on a separate port, 8025.
 
 Every config value above is already set in `appsettings.json` — to switch
 providers, start the one you want (`docker compose up -d <service>`, the two
-marked Default above are already running if you followed the root README's
-[Backend Setup](../README.md#backend-setup)) and uncomment the matching
-`AddXyz...Sender` in `Program.cs`. See the root README's
-[Notification Senders](../README.md#notification-senders) for how switching
-providers works.
+marked Default above are already running if you followed
+[Backend Setup](#backend-setup) above) and uncomment the matching
+`AddXyz...Sender` in `Program.cs`. See
+[Notification Senders](CONFIGURATION.md#notification-senders) in
+`docs/CONFIGURATION.md` for how switching providers works.
 
 Everything except `mailpit` (the third-party
 [axllent/mailpit](https://github.com/axllent/mailpit) image) and `localstack`
@@ -60,6 +132,40 @@ mock container. `docker-compose.yml`'s `api` service already overrides each
 one to the mock's Compose service name (e.g. `http://postmarkmock:3050`), so
 this works out of the box. The `localhost` values are what to use from the
 host machine (a browser, or `dotnet run`).
+
+## Running the End-to-End Suite
+
+`/e2e` exercises full auth flows through a real browser against the actual
+containerized app — not mocks, and not a bare `dotnet run`/`ng serve` port.
+
+```bash
+docker compose up -d --build api   # start the full stack first
+cd e2e
+npm install
+npx playwright install --with-deps chromium
+npm test
+```
+
+Runs headless against Chromium by default — the same suite CI runs on every
+push/PR. For interactive debugging, see below.
+
+## End-to-End Suite: Interactive Debugging
+
+For interactive debugging, call Playwright directly rather than through
+`npm test`:
+
+```bash
+npx playwright test --headed
+npx playwright test --ui
+```
+
+npm only forwards flags placed after a bare `npm test` if you separate them
+with `--`, so `npm test --headed` silently runs as `playwright test headed`,
+which finds no matching test files instead of doing what you'd expect.
+
+If Chromium isn't installable on your machine, `npx playwright install
+--with-deps firefox` plus `npx playwright test --project firefox` is a
+local-only fallback — CI always installs and runs Chromium only.
 
 ## Running the Production Image Standalone
 
@@ -81,31 +187,13 @@ docker run -p 8080:8080 \
 The app listens on HTTP only inside the container (port 8080, matching the
 .NET base image's default).
 
-## End-to-End Suite: Interactive Debugging
-
-For interactive debugging, call Playwright directly rather than through
-`npm test`:
-
-```bash
-npx playwright test --headed
-npx playwright test --ui
-```
-
-npm only forwards flags placed after a bare `npm test` if you separate them
-with `--`, so `npm test --headed` silently runs as `playwright test headed`,
-which finds no matching test files instead of doing what you'd expect.
-
-If Chromium isn't installable on your machine, `npx playwright install
---with-deps firefox` plus `npx playwright test --project firefox` is a
-local-only fallback — CI always installs and runs Chromium only.
-
 ## Why `dotnet tool restore` Is a Separate Step
 
 `Microsoft.EntityFrameworkCore.Tools` in the `.csproj` only wires up the
 Visual Studio Package Manager Console cmdlets. The `dotnet ef` command itself
 comes from a separate tool package, pinned in `api/.config/dotnet-tools.json`
-— hence the one-time `dotnet tool restore` per clone (see the root README's
-[Backend Setup](../README.md#backend-setup)).
+— hence the one-time `dotnet tool restore` per clone (see
+[Backend Setup](#backend-setup) above).
 
 ## Troubleshooting
 

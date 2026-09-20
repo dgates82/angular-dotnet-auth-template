@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The demo banner's repository link in `deploy-cloudrun.yml` now derives from
   `github.repository` instead of a hardcoded URL.
 - The demo banner is now opt-in via the `DEMO_BANNER_ENABLED` variable.
+- README restructured — demo-first, features grouped, package ecosystem section added;
+  detailed reference content (JWT/notification/database config, customization table,
+  upgrade notes) moved to `docs/`.
 
 ## [1.2.3] - 2026-09-18
 
