@@ -9,26 +9,26 @@ permissions:
   contents: read
   id-token: write
 
-# TODO(template): these four point at the original author's own GCP project -
-# a fresh clone's tag push should fail closed, not silently deploy somewhere
-# unexpected, so these are deliberately not repo variables. Replace with your
-# own project's values. See docs/DEPLOYMENT.md#using-this-for-your-own-deployment.
+# TODO(template): a generated repo starts with none of the six GCP/WIF
+# variables below set, so the deploy job skips cleanly until you configure
+# them. See docs/DEPLOYMENT.md#using-this-for-your-own-deployment.
 env:
-  PROJECT_ID: angular-dotnet-auth-template
-  REGION: us-central1
-  SERVICE: angular-dotnet-auth-template
-  REPOSITORY: angular-dotnet-auth-template
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  REGION: ${{ vars.GCP_REGION }}
+  SERVICE: ${{ vars.CLOUD_RUN_SERVICE }}
+  REPOSITORY: ${{ vars.ARTIFACT_REGISTRY_REPOSITORY }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: vars.GCP_PROJECT_ID != ''
     steps:
       - uses: actions/checkout@v4
 
-      # TODO(template): Aiven-specific (pauses/resumes a free-tier instance that
-      # suspends when idle). Remove this step and "Wait for Aiven MySQL to be
-      # running" below if you're not using Aiven, and point db-connection-string
-      # at whatever MySQL-compatible host you're using instead.
+      # Aiven-specific (pauses/resumes a free-tier instance that suspends when
+      # idle). Remove this step and "Wait for Aiven MySQL to be running" below
+      # if you're not using Aiven, and point db-connection-string at whatever
+      # MySQL-compatible host you're using instead.
       - name: Power on Aiven MySQL
         env:
           AIVEN_API_TOKEN: ${{ secrets.AIVEN_API_TOKEN }}
@@ -39,14 +39,11 @@ jobs:
             --power-on \
             --project ${{ vars.AIVEN_PROJECT }}
 
-      # TODO(template): also the original author's project - replace both values
-      # with your own Workload Identity Federation setup. See
-      # docs/DEPLOYMENT.md#using-this-for-your-own-deployment.
       - id: auth
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
-          workload_identity_provider: projects/1019453023791/locations/global/workloadIdentityPools/github-pool/providers/github-provider
-          service_account: github-deployer@angular-dotnet-auth-template.iam.gserviceaccount.com
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SERVICE_ACCOUNT }}
 
       - name: Configure Docker auth
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev

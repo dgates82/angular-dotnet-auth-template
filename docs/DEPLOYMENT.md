@@ -49,14 +49,24 @@ cost/free-tier terms — this section covers the Cloud Run compute for the
 
 ## Using this for your own deployment
 
-This pipeline authenticates to GCP via Workload Identity Federation (OIDC,
-no static service-account keys), and the WIF provider is locked to one exact
-GitHub repo — `dgates82/angular-dotnet-auth-template`. If you generate your
-own repo from this template, the workflow as-is **can't** deploy to the
-original author's GCP project; the OIDC token GCP receives carries your
-repo's identity, not `dgates82/...`, so `google-github-actions/auth@v3`
-simply fails closed. To deploy your own copy, you need your own GCP project
-and your own WIF setup pointed at your fork.
+Two independent layers keep a generated repo from touching the original
+author's GCP project.
+
+The first is a job-level gate: `deploy-cloudrun.yml`'s `deploy` job only runs
+`if: vars.GCP_PROJECT_ID != ''`. A repo generated from this template starts
+with none of the six GCP/WIF Actions variables set, so pushing a `v*` tag
+just **skips** the job — nothing runs, nothing is attempted.
+
+The second is server-side: this pipeline authenticates to GCP via Workload
+Identity Federation (OIDC, no static service-account keys), and the WIF
+provider is locked to one exact GitHub repo —
+`dgates82/angular-dotnet-auth-template`. Even if someone sets the six
+variables to the original author's actual values, the OIDC token GCP
+receives still carries the pushing repo's identity, not `dgates82/...`, so
+`google-github-actions/auth@v3` is **rejected** at that step.
+
+To deploy your own copy, you need your own GCP project and your own WIF
+setup pointed at your fork.
 
 **1. GCP project setup** — with the CLI authenticated against your own
 project:
@@ -104,14 +114,19 @@ revision fails to start):
   the workflow (see below); drop them if you don't want a bootstrap admin
   auto-created on every deploy
 
-**4. Update the hardcoded values in `deploy-cloudrun.yml`** — the `env:`
-block (`PROJECT_ID`, `REGION`, `SERVICE`, `REPOSITORY`) and the `auth` step's
-`workload_identity_provider`/`service_account` all point at the original
-author's project by design (not templated via repo variables, so a stray
-`v*` tag push on a fresh clone doesn't silently try to deploy anywhere).
-Replace these with your own project's values. If you don't want a bootstrap
-admin auto-created on every deploy, remove the `SeedAdmin__*` lines entirely
-(and skip the `seed-admin-password` secret above).
+**4. Set these Actions variables** (Settings → Secrets and variables →
+Actions → Variables) with your own project's values —
+`deploy-cloudrun.yml`'s `env:` block and `auth` step read them directly, and
+the job skips entirely until all six are set:
+- `GCP_PROJECT_ID`, `GCP_REGION`, `CLOUD_RUN_SERVICE`,
+  `ARTIFACT_REGISTRY_REPOSITORY` — your GCP project ID, the Cloud Run
+  region, and the service/repository names you created in step 1
+- `WORKLOAD_IDENTITY_PROVIDER`, `DEPLOY_SERVICE_ACCOUNT` — the full provider
+  path and service account email from step 2
+
+If you don't want a bootstrap admin auto-created on every deploy, remove the
+`SeedAdmin__*` lines entirely (and skip the `seed-admin-password` secret
+above).
 
 **5. Repo variables/secrets to set** (Settings → Secrets and variables →
 Actions — these are *not* copied when generating from a template):
