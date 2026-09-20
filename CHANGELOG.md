@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Federation values moved from hardcoded to Actions variables (`GCP_PROJECT_ID`,
   `GCP_REGION`, `CLOUD_RUN_SERVICE`, `ARTIFACT_REGISTRY_REPOSITORY`,
   `WORKLOAD_IDENTITY_PROVIDER`, `DEPLOY_SERVICE_ACCOUNT`). The deploy job now skips
-  cleanly when they're unset.
+  cleanly when `GCP_PROJECT_ID` is unset.
 - The demo banner's repository link in `deploy-cloudrun.yml` now derives from
   `github.repository` instead of a hardcoded URL.
 - The demo banner is now opt-in via the `DEMO_BANNER_ENABLED` variable.

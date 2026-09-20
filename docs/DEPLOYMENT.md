@@ -17,16 +17,16 @@ rendered. Same `app-info.json` mechanism as the demo banner below.
 ## Demo banner
 
 `DEMO_BANNER_ENABLED`/`DEMO_BANNER_REPO_URL`/`DEMO_MOCK_EMAIL_URL`/
-`DEMO_MOCK_SMS_URL` are Docker build args (see the Dockerfile). Three of the
-four are always empty/derived unless you're also deploying the notification
-mocks (`DEMO_MOCK_EMAIL_URL`/`DEMO_MOCK_SMS_URL`, from
-`vars.SENDGRID_MOCK_URL`/`vars.TWILIO_MOCK_URL`) or want the repo link
-pointed elsewhere (`DEMO_BANNER_REPO_URL` derives from
-`${{ github.server_url }}/${{ github.repository }}`, so it always points at
-whichever repo is actually running the workflow). `DEMO_BANNER_ENABLED` is
-opt-in via the `DEMO_BANNER_ENABLED` Actions variable
-(`${{ vars.DEMO_BANNER_ENABLED || 'false' }}`) — a generated repo shows no
-banner until you explicitly set that variable to `true`.
+`DEMO_MOCK_SMS_URL` are Docker build args (see the Dockerfile). The banner is
+off by default: set the `DEMO_BANNER_ENABLED` Actions variable to `true` to
+show it. Its repo link derives from the repository running the workflow
+(`github.server_url`/`github.repository`). The two mock URLs come from
+`SENDGRID_MOCK_URL`/`TWILIO_MOCK_URL`; they let the banner link visitors to
+where confirmation and 2FA codes land, and only apply if you deploy the
+notification mocks. If either mock URL is unset, the banner just omits that
+link — `demo-banner.component.html` gates each `<a>` independently, so you
+get no dead or empty link, just slightly bare wording ("codes land in the
+mock inbox instead" with neither channel named) if both are unset.
 
 ## Free tier
 
@@ -149,3 +149,6 @@ Actions — these are *not* copied when generating from a template):
   handling (the "Power on Aiven MySQL" / "Wait for Aiven MySQL" steps);
   otherwise delete those two steps and point `db-connection-string` at
   whatever MySQL-compatible host you're using instead
+- `DEMO_BANNER_ENABLED` — optional; set to `true` to show the "this is a
+  demo" banner on your deployment (off by default; see
+  [Demo banner](#demo-banner))

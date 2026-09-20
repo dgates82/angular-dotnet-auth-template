@@ -19,9 +19,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     # TODO(template): a generated repo starts with none of the required GCP/WIF/
-    # Aiven/notification-mock variables and secrets set, so this job skips
-    # cleanly until you configure them. See the full list in
-    # docs/DEPLOYMENT.md#using-this-for-your-own-deployment.
+    # Aiven/notification-mock variables and secrets set. This job skips until
+    # GCP_PROJECT_ID is set, but a deploy needs the rest too. See the full list
+    # in docs/DEPLOYMENT.md#using-this-for-your-own-deployment.
     if: vars.GCP_PROJECT_ID != ''
     steps:
       - uses: actions/checkout@v4
