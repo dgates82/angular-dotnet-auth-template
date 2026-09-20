@@ -23,10 +23,7 @@ show it. Its repo link derives from the repository running the workflow
 (`github.server_url`/`github.repository`). The two mock URLs come from
 `SENDGRID_MOCK_URL`/`TWILIO_MOCK_URL`; they let the banner link visitors to
 where confirmation and 2FA codes land, and only apply if you deploy the
-notification mocks. If either mock URL is unset, the banner just omits that
-link — `demo-banner.component.html` gates each `<a>` independently, so you
-get no dead or empty link, just slightly bare wording ("codes land in the
-mock inbox instead" with neither channel named) if both are unset.
+notification mocks. The banner omits any link whose URL is unset.
 
 ## Free tier
 
