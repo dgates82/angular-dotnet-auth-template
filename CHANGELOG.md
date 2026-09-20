@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `GCP_REGION`, `CLOUD_RUN_SERVICE`, `ARTIFACT_REGISTRY_REPOSITORY`,
   `WORKLOAD_IDENTITY_PROVIDER`, `DEPLOY_SERVICE_ACCOUNT`). The deploy job now skips
   cleanly when they're unset.
+- The demo banner's repository link in `deploy-cloudrun.yml` now derives from
+  `github.repository` instead of a hardcoded URL.
 
 ## [1.2.3] - 2026-09-18
 

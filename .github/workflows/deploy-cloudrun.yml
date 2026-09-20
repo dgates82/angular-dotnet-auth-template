@@ -32,10 +32,10 @@ jobs:
           workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.DEPLOY_SERVICE_ACCOUNT }}
 
-      # Aiven-specific (pauses/resumes a free-tier instance that suspends when
-      # idle). Remove this step and "Wait for Aiven MySQL to be running" below
-      # if you're not using Aiven, and point db-connection-string at whatever
-      # MySQL-compatible host you're using instead.
+      # TODO(template): Aiven-specific (pauses/resumes a free-tier instance that
+      # suspends when idle). Remove this step and "Wait for Aiven MySQL to be
+      # running" below if you're not using Aiven, and point db-connection-string
+      # at whatever MySQL-compatible host you're using instead.
       - name: Power on Aiven MySQL
         env:
           AIVEN_API_TOKEN: ${{ secrets.AIVEN_API_TOKEN }}

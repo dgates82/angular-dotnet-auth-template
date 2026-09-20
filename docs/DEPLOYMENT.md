@@ -64,8 +64,10 @@ Two things stop it:
   carries their repository claim, and the `auth` step is rejected.
 
 To deploy your own copy, create your own GCP project and a WIF provider scoped to
-your repository, then set the variables and secrets listed in
-[the setup steps](#using-this-for-your-own-deployment).
+your repository, then set the variables and secrets listed in the setup steps
+below.
+
+### Setup steps
 
 **1. GCP project setup** — with the CLI authenticated against your own
 project:
@@ -115,8 +117,9 @@ revision fails to start):
 
 **4. Set these Actions variables** (Settings → Secrets and variables →
 Actions → Variables) with your own project's values —
-`deploy-cloudrun.yml`'s `env:` block and `auth` step read them directly, and
-the job skips entirely until all six are set:
+`deploy-cloudrun.yml`'s `env:` block and `auth` step read them directly. The
+deploy job is skipped until `GCP_PROJECT_ID` is set, but all six are
+required: with only `GCP_PROJECT_ID` set, the run starts but fails later.
 - `GCP_PROJECT_ID`, `GCP_REGION`, `CLOUD_RUN_SERVICE`,
   `ARTIFACT_REGISTRY_REPOSITORY` — your GCP project ID, the Cloud Run
   region, and the service/repository names you created in step 1
