@@ -17,14 +17,13 @@ rendered. Same `app-info.json` mechanism as the demo banner below.
 ## Demo banner
 
 `DEMO_BANNER_ENABLED`/`DEMO_BANNER_REPO_URL`/`DEMO_MOCK_EMAIL_URL`/
-`DEMO_MOCK_SMS_URL` are Docker build args (not repo variables — see the
-Dockerfile), passed only by this repo's own `deploy-cloudrun.yml`. The two
-mock URLs point at this repo's own SendGrid/Twilio mock Cloud Run services
-(`vars.SENDGRID_MOCK_URL`/`vars.TWILIO_MOCK_URL`) so the banner can link
-visitors straight to where confirmation/2FA codes actually land. All four are
-`false`/empty by default, so a generated copy of this template won't show
-"this is a demo, see the template repo" on a real app unless you deliberately
-add the same build args to your own workflow.
+`DEMO_MOCK_SMS_URL` are Docker build args (see the Dockerfile). The banner is
+off by default: set the `DEMO_BANNER_ENABLED` Actions variable to `true` to
+show it. Its repo link derives from the repository running the workflow
+(`github.server_url`/`github.repository`). The two mock URLs come from
+`SENDGRID_MOCK_URL`/`TWILIO_MOCK_URL`; they let the banner link visitors to
+where confirmation and 2FA codes land, and only apply if you deploy the
+notification mocks. The banner omits any link whose URL is unset.
 
 ## Free tier
 
@@ -49,14 +48,23 @@ cost/free-tier terms — this section covers the Cloud Run compute for the
 
 ## Using this for your own deployment
 
-This pipeline authenticates to GCP via Workload Identity Federation (OIDC,
-no static service-account keys), and the WIF provider is locked to one exact
-GitHub repo — `dgates82/angular-dotnet-auth-template`. If you generate your
-own repo from this template, the workflow as-is **can't** deploy to the
-original author's GCP project; the OIDC token GCP receives carries your
-repo's identity, not `dgates82/...`, so `google-github-actions/auth@v3`
-simply fails closed. To deploy your own copy, you need your own GCP project
-and your own WIF setup pointed at your fork.
+### Why a generated repo can't deploy into the original project
+
+Two things stop it:
+
+- **Nothing is configured.** The `deploy` job only runs when `GCP_PROJECT_ID` is
+  set. Generated repos don't inherit Actions variables or secrets, so pushing a
+  `v*` tag skips the job.
+- **GCP checks the caller.** Deploys authenticate with Workload Identity Federation
+  (OIDC, no stored keys), and the WIF provider trusts only the original repository.
+  If someone copies the original values into their own repo, the token GCP receives
+  carries their repository claim, and the `auth` step is rejected.
+
+To deploy your own copy, create your own GCP project and a WIF provider scoped to
+your repository, then set the variables and secrets listed in the setup steps
+below.
+
+### Setup steps
 
 **1. GCP project setup** — with the CLI authenticated against your own
 project:
@@ -104,14 +112,20 @@ revision fails to start):
   the workflow (see below); drop them if you don't want a bootstrap admin
   auto-created on every deploy
 
-**4. Update the hardcoded values in `deploy-cloudrun.yml`** — the `env:`
-block (`PROJECT_ID`, `REGION`, `SERVICE`, `REPOSITORY`) and the `auth` step's
-`workload_identity_provider`/`service_account` all point at the original
-author's project by design (not templated via repo variables, so a stray
-`v*` tag push on a fresh clone doesn't silently try to deploy anywhere).
-Replace these with your own project's values. If you don't want a bootstrap
-admin auto-created on every deploy, remove the `SeedAdmin__*` lines entirely
-(and skip the `seed-admin-password` secret above).
+**4. Set these Actions variables** (Settings → Secrets and variables →
+Actions → Variables) with your own project's values —
+`deploy-cloudrun.yml`'s `env:` block and `auth` step read them directly. The
+deploy job is skipped until `GCP_PROJECT_ID` is set, but all six are
+required: with only `GCP_PROJECT_ID` set, the run starts but fails later.
+- `GCP_PROJECT_ID`, `GCP_REGION`, `CLOUD_RUN_SERVICE`,
+  `ARTIFACT_REGISTRY_REPOSITORY` — your GCP project ID, the Cloud Run
+  region, and the service/repository names you created in step 1
+- `WORKLOAD_IDENTITY_PROVIDER`, `DEPLOY_SERVICE_ACCOUNT` — the full provider
+  path and service account email from step 2
+
+If you don't want a bootstrap admin auto-created on every deploy, remove the
+`SeedAdmin__*` lines entirely (and skip the `seed-admin-password` secret
+above).
 
 **5. Repo variables/secrets to set** (Settings → Secrets and variables →
 Actions — these are *not* copied when generating from a template):
@@ -132,3 +146,6 @@ Actions — these are *not* copied when generating from a template):
   handling (the "Power on Aiven MySQL" / "Wait for Aiven MySQL" steps);
   otherwise delete those two steps and point `db-connection-string` at
   whatever MySQL-compatible host you're using instead
+- `DEMO_BANNER_ENABLED` — optional; set to `true` to show the "this is a
+  demo" banner on your deployment (off by default; see
+  [Demo banner](#demo-banner))
