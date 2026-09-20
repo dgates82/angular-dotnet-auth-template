@@ -17,16 +17,16 @@ rendered. Same `app-info.json` mechanism as the demo banner below.
 ## Demo banner
 
 `DEMO_BANNER_ENABLED`/`DEMO_BANNER_REPO_URL`/`DEMO_MOCK_EMAIL_URL`/
-`DEMO_MOCK_SMS_URL` are Docker build args (not repo variables — see the
-Dockerfile). The `Dockerfile`'s own defaults are `false`/empty, so a plain
-`docker build` with no build-args never shows the banner. `deploy-cloudrun.yml`
-itself, however, already passes `DEMO_BANNER_ENABLED=true` and a repo URL
-(via `${{ github.server_url }}/${{ github.repository }}`, so it always points
-at whichever repo is actually running the workflow) — since that workflow
-file is inherited as-is by generated repos, **the banner is on by default for
-any deployment that uses this workflow unmodified**, not opt-in. If you don't
-want "this is a demo" showing on your own deployment, remove or flip those
-four `--build-arg` lines in the "Build and push image" step.
+`DEMO_MOCK_SMS_URL` are Docker build args (see the Dockerfile). Three of the
+four are always empty/derived unless you're also deploying the notification
+mocks (`DEMO_MOCK_EMAIL_URL`/`DEMO_MOCK_SMS_URL`, from
+`vars.SENDGRID_MOCK_URL`/`vars.TWILIO_MOCK_URL`) or want the repo link
+pointed elsewhere (`DEMO_BANNER_REPO_URL` derives from
+`${{ github.server_url }}/${{ github.repository }}`, so it always points at
+whichever repo is actually running the workflow). `DEMO_BANNER_ENABLED` is
+opt-in via the `DEMO_BANNER_ENABLED` Actions variable
+(`${{ vars.DEMO_BANNER_ENABLED || 'false' }}`) — a generated repo shows no
+banner until you explicitly set that variable to `true`.
 
 ## Free tier
 
