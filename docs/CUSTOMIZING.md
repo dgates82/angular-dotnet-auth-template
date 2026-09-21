@@ -25,3 +25,4 @@ What's currently marked:
 | JWT config | See [JWT Configuration](CONFIGURATION.md#jwt-configuration) |
 | Cloud Run deploy pipeline | `.github/workflows/deploy-cloudrun.yml` skips until you set the `GCP_PROJECT_ID` Actions variable. A deploy also needs the other GCP/WIF, Aiven, and mock-URL variables and secrets — see [Deploy your own](../README.md#deploy-your-own-cloud-run) |
 | SonarQube Cloud static analysis | Set `SONAR_TOKEN` (secret) and `SONAR_PROJECT_KEY`/`SONAR_ORG` (repo variables) for your own project |
+| `README.md` | Replace with your own project's README; the badges, demo links, and GIF describe the template |

@@ -8,6 +8,13 @@ the native (non-Docker) setup and the end-to-end suite.
 TODO(template): keep adding to this — IDE run configurations, seeding data,
 or troubleshooting notes specific to your own team's machine setup.
 
+## Prerequisites
+
+- **Node.js** and **npm** for Angular
+- **.NET SDK 10** for the backend
+- **Docker** for database setup, and optionally for running the whole app
+- **MySQL Client** (optional, for direct database access)
+
 ## Project Structure
 
 - `/api` — the .NET backend solution (`AngularDotNetAuthTemplate.sln`, `AngularDotNetAuthTemplate.Api/`)

@@ -1,5 +1,7 @@
 # Angular + .NET Authentication Starter Template
 
+<!-- TODO(template): replace this README with your own project's; the badges, demo links, and GIF describe the template -->
+
 [![CI](https://github.com/dgates82/angular-dotnet-auth-template/actions/workflows/ci.yml/badge.svg)](https://github.com/dgates82/angular-dotnet-auth-template/actions/workflows/ci.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dgates82_angular-dotnet-auth-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dgates82_angular-dotnet-auth-template)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dgates82_angular-dotnet-auth-template&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dgates82_angular-dotnet-auth-template)
@@ -9,9 +11,9 @@ An Angular 21 + ASP.NET Core 10 authentication starter with JWT auth and multi-c
 
 > **Try it before you clone it:** [Live demo](https://angular-dotnet-auth-template-1019453023791.us-central1.run.app) · [Use this template](https://github.com/dgates82/angular-dotnet-auth-template/generate)
 >
-> The demo is this repository, deployed from its tagged releases by its own GitHub Actions pipeline — not a separate showcase app. Register an account and try email confirmation, password reset, authenticator/TOTP enrollment, email and SMS 2FA, and the admin screens. No real email or SMS is sent: messages land in the public mock inboxes — [SendGrid mock](https://sendgrid-mock-7qs7btajdq-uc.a.run.app) (email) and [Twilio mock](https://twilio-mock-1019453023791.us-central1.run.app) (SMS). Both scale to zero, so the first load after idle can take a few seconds. The pipeline that deployed it ships in the template too — see [Deploy your own](#deploy-your-own-cloud-run). ([Read how it's built](https://dev.to/dgates82/an-angular-net-auth-template-with-multi-channel-2fa-and-a-live-demo-2hp4).)
+> The demo is this repository, deployed from its tagged releases by its own GitHub Actions pipeline — not a separate showcase app. Register an account and try email confirmation, password reset, authenticator/TOTP enrollment, email and SMS 2FA, and the admin screens. No real email or SMS is sent: messages land in the public mock inboxes — [SendGrid mock](https://sendgrid-mock-7qs7btajdq-uc.a.run.app) (email) and [Twilio mock](https://twilio-mock-1019453023791.us-central1.run.app) (SMS). Both scale to zero, so the first load after idle can take a few seconds. The pipeline that deployed it ships in the template too — see [Deploy your own](#deploy-your-own-cloud-run) — or [read how it's built](https://dev.to/dgates82/an-angular-net-auth-template-with-multi-channel-2fa-and-a-live-demo-2hp4).
 
-![Login, authenticator enrollment via QR code, and the authenticated app](docs/images/auth-flow.gif)
+![Registration, login, authenticator enrollment via QR code, recovery codes, and the authenticated app](docs/images/auth-flow.gif)
 
 ## What you get
 
@@ -31,6 +33,7 @@ An Angular 21 + ASP.NET Core 10 authentication starter with JWT auth and multi-c
 - Role-based authorization
 
 **Development experience**
+- Entity Framework Core with MySQL (see [Database Provider](docs/CONFIGURATION.md#database-provider) for other providers)
 - Full Docker Compose stack — MySQL, Mailpit (SMTP), and SendGrid/Twilio/Postmark mocks
 - No external accounts needed for any provider
 
@@ -60,6 +63,7 @@ flowchart TD
   client["Angular 21 client"] --> api[".NET 10 API<br/>(this template)"]
   api --> jwt["DGates.Identity.Jwt2Fa<br/>JWT + multi-channel 2FA"]
   api --> np["DGates.Identity.NotificationProviders<br/>email + SMS senders"]
+  jwt --> np
   np --> mocks["dgates-mock-servers<br/>local provider mocks"]
 ```
 
@@ -100,7 +104,7 @@ Browse to `http://localhost:8080`. Mock inboxes: SendGrid at `http://localhost:3
 
 Prerequisites: Docker, and the .NET SDK 10 (for the migration step above — the container doesn't run migrations itself).
 
-Want hot-reload instead, or to run the API and Angular client separately? See [docs/LOCAL_DEV.md](docs/LOCAL_DEV.md).
+Want hot-reload instead, or to run the API and Angular client separately? See [Prerequisites](docs/LOCAL_DEV.md#prerequisites) and the rest of [docs/LOCAL_DEV.md](docs/LOCAL_DEV.md).
 
 ## Deploy your own (Cloud Run)
 
@@ -114,7 +118,7 @@ Setup checklist (see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for exact commands
 3. Create a deploy service account and grant it access
 4. Put the app secrets in Secret Manager
 5. Set up MySQL (Aiven free tier or your own) and add its credentials
-6. Set the Actions variables and secrets
+6. Set the Actions variables and secrets (see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#setup-steps) steps 4-5); the deploy job skips until `GCP_PROJECT_ID` is set, but a deploy needs the rest too
 7. Push a `vX.Y.Z` tag to trigger a deploy
 
 Free-tier ceiling: see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#free-tier).
