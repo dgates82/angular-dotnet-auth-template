@@ -31,5 +31,4 @@ npm test
 ## Local development
 
 See [docs/LOCAL_DEV.md](docs/LOCAL_DEV.md) for environment-specific setup
-notes beyond the root README's [Running the Template As-Is](README.md#running-the-template-as-is)
-section.
+notes beyond the root README's [Quickstart](README.md#quickstart) section.
