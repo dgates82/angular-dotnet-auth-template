@@ -60,7 +60,9 @@ This is a starter template, not a finished app.
 
 ```mermaid
 flowchart TD
-  client["Angular 21 client"] --> api[".NET 10 API<br/>(this template)"]
+  subgraph tpl["angular-dotnet-auth-template (this repo)"]
+    client["Angular 21 client"] --> api[".NET 10 API"]
+  end
   api --> jwt["DGates.Identity.Jwt2Fa<br/>JWT + multi-channel 2FA"]
   api --> np["DGates.Identity.NotificationProviders<br/>email + SMS senders"]
   jwt --> np
