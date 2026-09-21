@@ -1,8 +1,8 @@
 # Deployment (Google Cloud Run)
 
 `.github/workflows/deploy-cloudrun.yml` builds the single-process image
-(Kestrel serving the Angular build output, same as [Run with
-Docker](../README.md#run-with-docker)) and deploys it to Cloud Run. It
+(Kestrel serving the Angular build output, same as the
+[Quickstart](../README.md#quickstart)) and deploys it to Cloud Run. It
 triggers on pushing a `v*` tag — not on merge to `main` — so a deploy can be
 cut from any branch while testing, independent of when something actually
 merges. See issue #6 for the full pipeline rationale.
