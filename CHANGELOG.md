@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- `DGates.Identity.Jwt2Fa` bumped to `1.1.2`.
+- `DGates.Identity.NotificationProviders` bumped to `1.1.1`.
+
 ## [1.2.4] - 2026-09-21
 
 ### Changed
