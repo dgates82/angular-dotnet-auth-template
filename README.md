@@ -9,9 +9,13 @@
 
 An Angular 21 + ASP.NET Core 10 authentication starter with JWT auth and multi-channel 2FA (authenticator app, email, SMS). Generate it into your own repository, run the whole stack locally with no external accounts, and try it live first.
 
+> [!TIP]
 > **Try it before you clone it:** [Live demo](https://angular-dotnet-auth-template-1019453023791.us-central1.run.app) · [Use this template](https://github.com/dgates82/angular-dotnet-auth-template/generate)
->
-> The demo is this repository, deployed from its tagged releases by its own GitHub Actions pipeline — not a separate showcase app. Register an account and try email confirmation, password reset, authenticator/TOTP enrollment, email and SMS 2FA, and the admin screens. No real email or SMS is sent: messages land in the public mock inboxes — [SendGrid mock](https://sendgrid-mock-7qs7btajdq-uc.a.run.app) (email) and [Twilio mock](https://twilio-mock-1019453023791.us-central1.run.app) (SMS). Both scale to zero, so the first load after idle can take a few seconds. The pipeline that deployed it ships in the template too — see [Deploy your own](#deploy-your-own-cloud-run) — or [read how it's built](https://dev.to/dgates82/an-angular-net-auth-template-with-multi-channel-2fa-and-a-live-demo-2hp4).
+
+The demo is this repository, deployed from its tagged releases by its own GitHub Actions pipeline — not a separate showcase app. Register an account and try email confirmation, password reset, authenticator/TOTP enrollment, email and SMS 2FA, and the admin screens. No real email or SMS is sent: messages land in the public mock inboxes — [SendGrid mock](https://sendgrid-mock-7qs7btajdq-uc.a.run.app) (email) and [Twilio mock](https://twilio-mock-1019453023791.us-central1.run.app) (SMS). Both scale to zero, so the first load after idle can take a few seconds.
+
+> [!TIP]
+> The demo runs on a free-tier stack, and the pipeline that deployed it **ships in the template too** — see [Deploy your own](#deploy-your-own-cloud-run) — or [read how it's built](https://dev.to/dgates82/an-angular-net-auth-template-with-multi-channel-2fa-and-a-live-demo-2hp4).
 
 ![Registration, login, authenticator enrollment via QR code, recovery codes, and the authenticated app](docs/images/auth-flow.gif)
 
@@ -112,7 +116,8 @@ Want hot-reload instead, or to run the API and Angular client separately? See [P
 
 The template doesn't just have a demo — it ships the pipeline that deployed it. Every generated repo inherits `.github/workflows/deploy-cloudrun.yml`, the `Dockerfile`, and `docs/DEPLOYMENT.md`, and can run the same stack on Cloud Run: GitHub Actions → Cloud Run, Workload Identity Federation (no static credentials), app secrets in Secret Manager, Aiven free-tier MySQL with automated power-on handling, and the SendGrid/Twilio mocks deployed as their own scale-to-zero services so no paid email/SMS account is needed.
 
-It's inert until you configure it: a generated repo starts with none of the required Actions variables set, so the deploy job just skips on a tag push. Even if the variables were pointed at this project's values, GCP's own Workload Identity Federation trust — scoped to this exact repository — would reject the token.
+> [!IMPORTANT]
+> It's inert until you configure it: a generated repo starts with none of the required Actions variables set, so the deploy job just skips on a tag push. Even if the variables were pointed at this project's values, GCP's own Workload Identity Federation trust — scoped to this exact repository — would reject the token.
 
 Setup checklist (see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for exact commands):
 1. Enable the needed GCP APIs and create an Artifact Registry repository in your own project
@@ -138,7 +143,8 @@ See [docs/CUSTOMIZING.md](docs/CUSTOMIZING.md) for the full list, and [docs/CONF
 
 ### JWT Configuration
 
-**The one thing you must change before deploying:** `Jwt2FaConfig.SecurityKey` in `appsettings.json` ships with an obviously-fake default. See [JWT Configuration](docs/CONFIGURATION.md#jwt-configuration) in `docs/CONFIGURATION.md` for the full shape.
+> [!IMPORTANT]
+> **The one thing you must change before deploying:** `Jwt2FaConfig.SecurityKey` in `appsettings.json` ships with an obviously-fake default. See [JWT Configuration](docs/CONFIGURATION.md#jwt-configuration) in `docs/CONFIGURATION.md` for the full shape.
 
 ### Database Provider
 
