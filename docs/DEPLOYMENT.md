@@ -46,6 +46,12 @@ The Aiven MySQL instance and any deployed notification mocks
 cost/free-tier terms — this section covers the Cloud Run compute for the
 `angular-dotnet-auth-template` service itself only.
 
+The demo deployment runs inside this always-free tier, but Cloud Run still
+requires a GCP billing account with a card on file to enable the service, even
+when usage never crosses into billed territory. `deploy-cloudrun.yml` also
+caps the service at `--max-instances=2` to limit exposure from the
+`--allow-unauthenticated` services it deploys.
+
 ## Using this for your own deployment
 
 ### Why a generated repo can't deploy into the original project

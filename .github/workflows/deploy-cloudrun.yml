@@ -103,7 +103,7 @@ jobs:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           image: ${{ env.IMAGE }}
-          flags: --allow-unauthenticated
+          flags: --allow-unauthenticated --max-instances=2
           env_vars: |
             Jwt2FaConfig__ValidIssuer=AngularDotNetAuthTemplateAPI
             Jwt2FaConfig__ValidAudience=${{ vars.CLOUD_RUN_URL }}
