@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- `deploy-cloudrun.yml` caps the Cloud Run deploy at `--max-instances=2`.
+- `docs/DEPLOYMENT.md` notes that the demo deployment requires a GCP billing
+  account despite running inside the always-free tier.
+
+### Fixed
+- `CONTRIBUTING.md`'s local API test setup command now starts `sendgridmock`
+  instead of `mailpit`, matching the default email sender and CI.
+
 ## [1.2.5] - 2026-09-22
 
 ### Changed
